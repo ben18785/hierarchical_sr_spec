@@ -234,7 +234,8 @@ def default_edit_library(n_vars=1):
     lib = []
     for v in [f"x{i + 1}" for i in range(n_vars)]:
         lib += [f"{v}*{v}", f"C*{v}", f"{v}+C", f"exp(C*{v})", f"log({v})", f"sqrt({v})",
-                f"sin(C*{v})", f"{v}*{v}*{v}", f"1/{v}", f"{v}/(C+{v})", f"C*{v}+C*{v}*{v}"]
+                f"sin(C*{v})", f"{v}*{v}*{v}", f"1/{v}", f"{v}/(C+{v})", f"C*{v}+C*{v}*{v}",
+                f"({v})**C", f"tanh(C*{v})"]
     return lib
 
 
@@ -268,9 +269,17 @@ def one_step_edits(skeleton: Skeleton, library_strings, n_vars=1):
         sub = sub.xreplace(shift)
         for path in _var_positions(skeleton.expr):
             out.append(_replace_at(skeleton.expr, path, sub))
+        if len(list(_var_positions(skeleton.expr))) > 1:
+            # the same substitution at every occurrence, sharing constants
+            # (x -> x**C everywhere turns Michaelis-Menten into Hill)
+            xs = {s for s in skeleton.expr.free_symbols if not is_const(s)}
+            out.append(skeleton.expr.xreplace({x: sub for x in xs}))
     c_new = sp.Symbol("c99", real=True)
+    c_new2 = sp.Symbol("c98", real=True)
     out.append(skeleton.expr + c_new)
     out.append(skeleton.expr * c_new)
+    for x in {s for s in skeleton.expr.free_symbols if not is_const(s)}:
+        out.append(skeleton.expr * sp.exp(c_new2 * x))     # damping / cutoff
     return out
 
 

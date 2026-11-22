@@ -30,6 +30,7 @@ class GibbsConfig:
     update_gamma: bool = True
     init: str = "argmax"          # chain 0 always argmax; "argmax" | "random" for the others
     relabel: bool = True          # block move: resample the skeleton of a whole cluster
+    relabel_every: int = 1        # sweeps between block moves
     thin: int = 1
     seed: int = 0
 
@@ -82,7 +83,7 @@ def _log_crp_weight(n_minus: np.ndarray, log_gamma: float, log_p: np.ndarray) ->
     return np.logaddexp(log_n, log_gamma + log_p)
 
 
-def _relabel_blocks(rng, z, n_e, Lf, log_p, gamma):
+def _relabel_blocks(rng, z, n_e, members, Mc, model, log_p, gamma):
     """For each cluster (the datasets sharing one skeleton), resample its
     skeleton label with the partition held fixed.
 
@@ -90,23 +91,23 @@ def _relabel_blocks(rng, z, n_e, Lf, log_p, gamma):
     cluster, the Polya-urn probability of the assignment depends on e only
     through gamma P(e) prod_{k=1}^{m-1} (k + gamma P(e)) (m = cluster size),
     so the exact conditional is
-        P(e) ∝ P(e) prod_{k=1}^{m-1} (k + gamma P(e)) prod_{j in cluster} exp(L[j, e])
-    over every label not used by another cluster. This lets a whole cluster
-    move between skeletons, which single-site updates can only do through
-    low-probability intermediate states (spec section 8, rich-get-richer).
+        P(e) ∝ P(e) prod_{k=1}^{m-1} (k + gamma P(e)) exp(M_e(cluster))
+    over every label not used by another cluster, where M_e is the cluster
+    marginal (sum_j L[j, e] for independent constants). This lets a whole
+    cluster move between skeletons, which single-site updates can only do
+    through low-probability intermediate states (spec section 8).
     """
     C = len(n_e)
     gp = gamma * np.exp(log_p)
-    for e in rng.permutation(np.flatnonzero(n_e > 0)):
-        members = np.flatnonzero(z == e)
-        m = len(members)
-        if m == 0:
-            continue
-        lw = log_p + Lf[members].sum(axis=0)
+    for e in rng.permutation(list(members)):
+        e = int(e)
+        S = sorted(members[e])
+        m = len(S)
+        lw = log_p + model.marginal_all(S)
         if m > 1:
             k = np.arange(1, m)[:, None]
             lw = lw + np.log(k + gp[None, :]).sum(axis=0)
-        other = (n_e > 0)
+        other = n_e > 0
         other[e] = False
         lw[other] = -np.inf
         top = lw.max()
@@ -114,11 +115,14 @@ def _relabel_blocks(rng, z, n_e, Lf, log_p, gamma):
             continue
         p = np.exp(lw - top)
         p /= p.sum()
-        new = rng.choice(C, p=p)
+        new = int(rng.choice(C, p=p))
         if new != e:
-            z[members] = new
+            z[S] = new
             n_e[new] = m
             n_e[e] = 0
+            members[new] = members.pop(e)
+            Mc.pop(e, None)
+            Mc[new] = model.marginal(new, S)
 
 
 def escobar_west_gamma(rng, gamma: float, K: int, n: int, a: float, b: float) -> float:
@@ -132,21 +136,29 @@ def escobar_west_gamma(rng, gamma: float, K: int, n: int, a: float, b: float) ->
 
 
 def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsConfig, seed: int,
-              init: str = "argmax", theta0: dict | None = None, z_init=None):
+              init: str = "argmax", theta0: dict | None = None, z_init=None, model=None):
+    """One chain. ``model`` supplies cluster marginals M_e(S) (see hsr.pooled);
+    the default is the independent-constants model, M_e(S) = sum_j L[j, e]."""
+    from .pooled import IndependentModel
     rng = np.random.default_rng(seed)
-    J, C = L.shape
+    model = IndependentModel(L) if model is None else model
+    S1 = model.singletons()
+    J, C = S1.shape
     theta = grammar.prior_mean() if theta0 is None else theta0
     gamma = cfg.gamma_init
     log_p = grammar.log_prob(counts, theta)
-    Lf = np.where(np.isfinite(L), L, -np.inf)
     if z_init is not None:
         z = np.asarray(z_init, dtype=int).copy()
     elif init == "argmax":
-        z = np.argmax(log_p[None, :] + Lf, axis=1)
+        z = np.argmax(log_p[None, :] + S1, axis=1)
     else:
-        lw = log_p[None, :] + Lf
+        lw = log_p[None, :] + S1
         z = np.array([rng.choice(C, p=np.exp(row - logsumexp(row))) for row in lw])
     n_e = np.bincount(z, minlength=C).astype(float)
+    members = {}
+    for j, e in enumerate(z):
+        members.setdefault(int(e), set()).add(j)
+    Mc = {e: model.marginal(e, sorted(S)) for e, S in members.items()}
 
     kept = []
     nt_names = grammar.nonterminals
@@ -157,18 +169,38 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
     for sweep in range(cfg.n_sweeps):
         log_gamma = np.log(gamma)
         for j in rng.permutation(J):
-            n_e[z[j]] -= 1
-            lw = _log_crp_weight(n_e, log_gamma, log_p) + Lf[j]
+            e0 = int(z[j])
+            members[e0].discard(j)
+            n_e[e0] -= 1
+            if members[e0]:
+                Mc[e0] = model.marginal(e0, sorted(members[e0]))
+            else:
+                del members[e0]
+                Mc.pop(e0, None)
+            # every skeleton as a new cluster ...
+            lw = log_gamma + log_p + S1[j]
+            # ... and the occupied ones as existing clusters
+            joint = {}
+            for e, S in members.items():
+                joint[e] = model.marginal(e, sorted(S | {j}))
+                lw[e] = np.log(n_e[e] + gamma * np.exp(log_p[e])) + joint[e] - Mc[e]
             top = lw.max()
             if not np.isfinite(top):  # every candidate failed for this dataset
                 lw = np.zeros(C)
                 top = 0.0
             p = np.exp(lw - top)
             p /= p.sum()
-            z[j] = rng.choice(C, p=p)
-            n_e[z[j]] += 1
-        if cfg.relabel:
-            _relabel_blocks(rng, z, n_e, Lf, log_p, gamma)
+            e1 = int(rng.choice(C, p=p))
+            z[j] = e1
+            n_e[e1] += 1
+            if e1 in members:
+                members[e1].add(j)
+                Mc[e1] = joint[e1]
+            else:
+                members[e1] = {j}
+                Mc[e1] = S1[j, e1]
+        if cfg.relabel and sweep % cfg.relabel_every == 0:
+            _relabel_blocks(rng, z, n_e, members, Mc, model, log_p, gamma)
         in_use = np.flatnonzero(n_e > 0)
         if cfg.update_theta:
             theta = grammar.sample_theta(rng, counts[in_use].sum(axis=0))
@@ -195,7 +227,7 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
 
 
 def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsConfig | None = None,
-              z_init=None) -> GibbsResult:
+              z_init=None, model=None) -> GibbsResult:
     """Run cfg.n_chains chains and pool them. ``z_init`` (J,) fixes the
     starting assignment of every chain (default: cfg.init)."""
     cfg = cfg or GibbsConfig()
@@ -204,7 +236,7 @@ def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
     chains = []
     for c in range(cfg.n_chains):
         init = "argmax" if c == 0 else cfg.init
-        chains.append(run_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c, init=init, z_init=z_init))
+        chains.append(run_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c, init=init, z_init=z_init, model=model))
     cap = np.stack([ch["assign_probs"] for ch in chains])
     return GibbsResult(
         assign_probs=cap.mean(axis=0),
