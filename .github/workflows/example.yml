@@ -1,0 +1,36 @@
+# One worked example (a single population, every method). Fast: ~2 minutes.
+name: example
+on:
+  workflow_dispatch:
+    inputs:
+      setting:
+        description: "mixture | all_A | grammar"
+        default: "mixture"
+      n:
+        description: "points per dataset"
+        default: "20"
+      noise:
+        description: "noise sd as a fraction of each curve's range"
+        default: "0.05"
+      seed:
+        default: "1"
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[plots]"
+      - env:
+          SETTING: ${{ inputs.setting }}
+          N: ${{ inputs.n }}
+          NOISE: ${{ inputs.noise }}
+          SEED: ${{ inputs.seed }}
+        run: python benchmarks/example.py --setting "$SETTING" --n "$N" --noise "$NOISE" --seed "$SEED" --out results/example
+      - run: cat results/example/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: example
+          path: results/example
