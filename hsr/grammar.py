@@ -2,8 +2,8 @@
 
     E -> E + F | E - F | F
     F -> F * T | F / T | T
-    T -> ( E ) | R ( E ) | V | C
-    R -> exp | log | sin | sqrt
+    T -> ( E ) | R ( E ) | V | C | ( E )^C
+    R -> exp | log | sin | sqrt | tanh
     V -> x1 | ... | xd
     C -> const
 
@@ -17,13 +17,13 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-FUNCTIONS = ("exp", "log", "sin", "sqrt")
+FUNCTIONS = ("exp", "log", "sin", "sqrt", "tanh")
 
 # Ordered options for the structural nonterminals. Order matters: it is the
 # order of the Dirichlet parameters and of the count vectors.
 E_RULES = ("E+F", "E-F", "F")
 F_RULES = ("F*T", "F/T", "T")
-T_RULES = ("(E)", "R(E)", "V", "C")
+T_RULES = ("(E)", "R(E)", "V", "C", "(E)^C")
 
 
 @dataclass
@@ -39,8 +39,8 @@ class Grammar:
         default = {
             "E": np.array([1.0, 1.0, 4.0]),
             "F": np.array([1.0, 1.0, 4.0]),
-            "T": np.array([0.5, 1.0, 3.0, 2.0]),
-            "R": np.array([0.5, 0.5, 0.5, 0.5]),
+            "T": np.array([0.5, 1.0, 3.0, 2.0, 0.5]),
+            "R": np.array([0.5, 0.5, 0.5, 0.5, 0.5]),
             "V": np.ones(self.n_vars),
         }
         for key, value in self.alpha.items():
@@ -143,6 +143,9 @@ class Grammar:
                 return f"{choose('R')}({gen('E')})"
             if opt == "V":
                 return choose("V")
+            if opt == "(E)^C":
+                state["consts"] += 1
+                return f"({gen('E')})**C"
             state["consts"] += 1
             return "C"
 
@@ -184,6 +187,8 @@ class Grammar:
                     table["T"][s].append((f"({es})", nc, hv))
                     for fn in FUNCTIONS:
                         table["T"][s].append((f"{fn}({es})", nc, hv))
+                    if nc + 1 <= max_consts:
+                        table["T"][s].append((f"({es})**C", nc + 1, hv))
             # F
             for (ts, nc, hv) in table["T"][s - 1] if s >= 2 else []:
                 table["F"][s].append((ts, nc, hv))

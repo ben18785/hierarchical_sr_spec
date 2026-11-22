@@ -18,7 +18,7 @@ def test_prior_mean_normalised(g):
 
 
 def test_rule_indexing_is_flat_and_complete(g):
-    assert g.n_rules == 3 + 3 + 4 + 4 + 1
+    assert g.n_rules == 3 + 3 + 5 + 5 + 1
     assert sorted(g.rule_index.values()) == list(range(g.n_rules))
 
 
@@ -102,14 +102,14 @@ def test_enumeration_contains_small_forms_and_respects_constant_cap(g):
 def test_enumeration_count_without_pruning_matches_recursion():
     """With a constant-free grammar (no pruning applies) the number of
     derivations of each size follows the CFG recursion."""
-    g = Grammar(alpha={"T": [0.5, 1, 3, 2]})
+    g = Grammar()
     out = g.enumerate(7, max_consts=0)
     # sizes 3: x1 ; 5: x1*x1, x1/x1, x1+x1, x1-x1 ; 6: (x1) is pruned? no: (x1) has a var -> kept
     # count with the recursion restricted to constant-free strings
     N = 7
     T = [0] * (N + 1); F = [0] * (N + 1); E = [0] * (N + 1)
     for s in range(1, N + 1):
-        T[s] = (1 if s == 1 else 0) + 5 * E[s - 1]
+        T[s] = (1 if s == 1 else 0) + 6 * E[s - 1]   # (E) and 5 functions; (E)^C needs a constant
         F[s] = T[s - 1] + 2 * sum(F[a] * T[s - 1 - a] for a in range(1, s - 1))
         E[s] = F[s - 1] + 2 * sum(E[a] * F[s - 1 - a] for a in range(1, s - 1))
     assert len(out) == sum(E[: N + 1])

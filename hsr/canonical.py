@@ -53,7 +53,7 @@ def parse_skeleton(s: str, n_vars: int = 1, positive: bool = True) -> sp.Expr:
     n_c = len(re.findall(r"\bc\d+\b", s2))
     for i in range(n_c):
         local[f"c{i}"] = const_symbol(i)
-    local.update({"exp": sp.exp, "log": sp.log, "sin": sp.sin, "sqrt": sp.sqrt})
+    local.update({"exp": sp.exp, "log": sp.log, "sin": sp.sin, "sqrt": sp.sqrt, "tanh": sp.tanh})
     return sp.sympify(s2, locals=local)
 
 
@@ -522,7 +522,7 @@ def _count_T(item, cnt):
     if item.is_Number:
         cnt[("T", "C")] += 1
         return
-    if isinstance(item, (sp.exp, sp.log, sp.sin)):
+    if isinstance(item, (sp.exp, sp.log, sp.sin, sp.tanh)):
         cnt[("T", "R(E)")] += 1
         cnt[("R", type(item).__name__)] += 1
         _count_E(item.args[0], cnt)
@@ -531,6 +531,11 @@ def _count_T(item, cnt):
         if item.exp.is_Rational and item.exp.q in (1, 2):
             cnt[("T", "(E)")] += 1
             _count_E(item, cnt)
+            return
+        if is_const(item.exp):
+            # b**C: the power production T -> (E)^C
+            cnt[("T", "(E)^C")] += 1
+            _count_E(item.base, cnt)
             return
         # b**p with p non-half or symbolic: exp(p*log(b))
         cnt[("T", "R(E)")] += 1
