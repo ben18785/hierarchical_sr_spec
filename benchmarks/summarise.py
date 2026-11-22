@@ -20,7 +20,8 @@ from collections import defaultdict
 import numpy as np
 
 METRICS = ["recovery", "lpd_in", "lpd_out", "ari", "weight_error",
-           "family_recovery", "variant_when_parent", "variant_detected"]
+           "family_recovery", "variant_when_parent", "variant_detected",
+           "extension_when_parent", "extension_detected", "theme_family", "theme_parent"]
 METRIC_LABEL = {
     "recovery": "form recovery (fraction of datasets)",
     "lpd_in": "held-out log density, inside range",
@@ -30,8 +31,12 @@ METRIC_LABEL = {
     "family_recovery": "family recovery (parent or variant chosen)",
     "variant_when_parent": "variant chosen when the truth is the parent",
     "variant_detected": "variant chosen when the truth is the variant",
+    "extension_when_parent": "variant or fixed-exponent specialisation chosen when the truth is the parent",
+    "extension_detected": "variant or fixed-exponent specialisation chosen when the truth is the variant",
+    "theme_family": "most probable theme is in the family",
+    "theme_parent": "most probable theme is the parent",
 }
-MAIN_METHODS = ["hier", "hier_pooled", "no_pool", "no_pool_bma", "complete_pool", "oracle"]
+MAIN_METHODS = ["hier", "hier_pooled", "hier_themes", "no_pool", "no_pool_bma", "complete_pool", "oracle"]
 
 
 def variant_of(r):
@@ -40,6 +45,8 @@ def variant_of(r):
         parts.append("edits")
     if r.get("grow_rounds"):
         parts.append(f"grow={r['grow_rounds']}")
+    if r.get("themes"):
+        parts.append("themes")
     return ",".join(parts)
 
 
@@ -67,7 +74,8 @@ def mean_se(v):
 def aggregate(rows):
     cells = defaultdict(list)
     for r in rows:
-        for m in METRICS + ["n_forms_mean", "chain_disagreement", "rhat_n_forms", "frac_datasets_true_in_C"]:
+        for m in METRICS + ["n_forms_mean", "chain_disagreement", "rhat_n_forms", "frac_datasets_true_in_C",
+                            "n_themes_mean", "rho_mean"]:
             if m in r:
                 cells[(r["variant"], r["setting"], r["noise"], r["n"], r["kind"], r["method"], m)].append(r[m])
     return {k: mean_se(v) for k, v in cells.items()}
@@ -149,7 +157,7 @@ def plots(agg, rows, out):
 def _plots_for_variant(agg, rows, out, variant, plt):
     slug = variant.replace("scale=", "").replace(",", "_").replace("=", "")
     settings = sorted({k[1] for k in agg if k[0] == variant})
-    colours = {"hier": "#1f77b4", "hier_pooled": "#9467bd", "no_pool": "#d62728", "no_pool_bma": "#ff9896",
+    colours = {"hier": "#1f77b4", "hier_pooled": "#9467bd", "hier_themes": "#17becf", "no_pool": "#d62728", "no_pool_bma": "#ff9896",
                "complete_pool": "#7f7f7f", "oracle": "#2ca02c"}
     for setting in settings:
         for metric in METRICS:
@@ -187,7 +195,7 @@ def _plots_for_variant(agg, rows, out, variant, plt):
     from hsr.metrics import reliability_curve
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.2))
     for ax, kind in zip(axes, ["laplace", "bic"]):
-        for meth in ["hier", "hier_pooled", "no_pool_bma", "oracle"]:
+        for meth in ["hier", "hier_pooled", "hier_themes", "no_pool_bma", "oracle"]:
             p, y = [], []
             for r in rows:
                 if r["variant"] == variant and r["kind"] == kind and r["method"] == meth and "calib_p" in r:

@@ -18,15 +18,16 @@ import numpy as np
 from scipy.special import logsumexp
 
 from . import baselines
-from .candidates import CandidateSet, expand_candidates, from_skeletons
+from .candidates import CandidateSet, default_n_jobs, edit_graph, expand_candidates, from_skeletons
 from .canonical import canonicalise, counts_array
 from .families import SETTINGS as FAMILY_SETTINGS
-from .families import family_metrics, family_population
+from .families import family_metrics, family_population, theme_metrics
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .likelihood import (CompiledSkeleton, LikelihoodTable, compute_likelihoods, predictive_logpdf,
                          scale_population)
 from .pooled import PooledModel
+from .themes import EditKernel, run_gibbs_themes
 from .metrics import adjusted_rand_index, form_recovery, reliability_pairs, weight_error
 from .simulate import all_A_population, benchmark_population, grammar_population
 
@@ -98,6 +99,7 @@ def evaluate(name, probs, pop, skeletons, table, sx, sy, true_idx, weights_est=N
         "recovery": form_recovery(top_keys, pop.true_keys),
         "ari": adjusted_rand_index(top, pop.labels),
         "n_distinct_top": int(len(set(top.tolist()))),
+        "top_keys": top_keys,
     }
     if weights_est is None:
         weights_est = {}
@@ -144,7 +146,8 @@ def _scaled_grammar(g: Grammar, scale: float) -> Grammar:
 
 def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig, expand=False,
                   sensitivity=False, kinds=("laplace", "bic"), J=30, n_starts=10, seed_base=12345,
-                  scaling="pooled", tau=3.0, grow_rounds=0, pooled=False):
+                  scaling="pooled", tau=3.0, grow_rounds=0, pooled=False, themes=False, theme_top_k=10,
+                  theme_min_mass=0.02):
     t0 = time.time()
     seed = seed_base + 1_000_003 * rep + int(1000 * noise) * 7919 + n * 104729 + SETTING_SEED[setting]
     rng = np.random.default_rng(abs(seed))
@@ -168,6 +171,26 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
                                     tau=tau, seed=rep + 7 + n_added, compiled_cache=_COMPILED)
         table = table.extend(extra)
         n_added += len(new_idx)
+    # themes: a second growth round around the skeletons that matter, which
+    # also records the edit graph (parent -> one-step edit) for the kernel
+    edges = set()
+    n_added_themes = 0
+    if themes:
+        L0 = table.laplace
+        post = baselines.no_pooling_posterior(L0, cset.counts, grammar)
+        sources = set()
+        for j in range(J):
+            sources.update(np.argsort(post[j])[-theme_top_k:].tolist())
+        pm0 = PooledModel(table, [sk.n_consts for sk in cset.skeletons], tau_ref=tau, tau_mu=tau)
+        short = replace(cfg, n_sweeps=300, burn_in=100, n_chains=2)
+        r0 = run_gibbs(L0, cset.counts, grammar, short, model=pm0)
+        sources.update(np.flatnonzero(r0.assign_probs.max(axis=0) >= theme_min_mass).tolist())
+        new_idx, edges = edit_graph(cset, sorted(sources), n_jobs=default_n_jobs())
+        if new_idx:
+            extra = compute_likelihoods([cset.skeletons[i] for i in new_idx], X, Y, n_starts=n_starts,
+                                        tau=tau, seed=rep + 31, compiled_cache=_COMPILED)
+            table = table.extend(extra)
+        n_added_themes = len(new_idx)
     # true forms: make sure every one has an L column (append if missing from C)
     true_in_C = {k: (k in set(cset.keys)) for k in pop.form_keys}
     missing = [k for k, ok in true_in_C.items() if not ok]
@@ -201,7 +224,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         rows.append(evaluate(f"hier", res.assign_probs, pop, sk_C, tabC, sx, sy, true_idx_C, pop_w,
                              gibbs_summary(res)) | {"kind": kind})
 
-        if pooled and kind == "laplace":
+        if (pooled or themes) and kind == "laplace":
             tab_in = LikelihoodTable(table.laplace[:, :n_C], table.bic[:, :n_C], table.phi[:n_C],
                                    table.log_sigma[:, :n_C], table.cov[:n_C])
             pm = PooledModel(tab_in, [s.n_consts for s in sk_C], tau_ref=tau, tau_mu=tau)
@@ -209,6 +232,20 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
             pop_wp = {sk_C[e].key: float(resp.pop_weight[e]) for e in range(n_C)}
             rows.append(evaluate("hier_pooled", resp.assign_probs, pop, sk_C, table, sx, sy, true_idx_C, pop_wp,
                                  gibbs_summary(resp)) | {"kind": kind})
+
+        if themes and kind == "laplace":
+            kernel = EditKernel(n_C, edges)
+            rest = run_gibbs_themes(L, cnt, grammar, kernel, cfg, model=pm)
+            pop_wt = {sk_C[e].key: float(rest.pop_weight[e]) for e in range(n_C)}
+            theme_keys = [sk_C[t].key for t in rest.theme_top]
+            ext = gibbs_summary(rest) | {"theme_top_keys": theme_keys,
+                                         "n_themes_mean": float(rest.n_themes.mean()),
+                                         "rho_mean": float(rest.rho.mean()),
+                                         "n_kernel_edges": kernel.n_edges}
+            if hasattr(pop, "parent_key"):
+                ext |= theme_metrics(pop, theme_keys)
+            rows.append(evaluate("hier_themes", rest.assign_probs, pop, sk_C, table, sx, sy, true_idx_C, pop_wt,
+                                 ext) | {"kind": kind})
 
         z = baselines.no_pooling(L, cnt, grammar)
         rows.append(evaluate("no_pool", one_hot(z, n_C), pop, sk_C, tabC, sx, sy, true_idx_C,
@@ -246,6 +283,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
     meta = {
         "setting": setting, "n": n, "noise": noise, "rep": rep, "J": J,
         "n_candidates": n_C, "scaling": scaling, "tau": tau, "grow_rounds": grow_rounds, "n_added_by_edits": n_added, "expand": expand,
+        "themes": themes, "n_added_by_themes": n_added_themes,
         "true_forms_in_C": true_in_C, "frac_datasets_true_in_C": float(np.mean(true_idx_C >= 0)),
         "seconds_likelihood": t_lik, "seconds_total": time.time() - t0,
     }
@@ -278,6 +316,8 @@ def main(argv=None):
     ap.add_argument("--tau", type=float, default=3.0, help="prior sd of every constant")
     ap.add_argument("--grow", type=int, default=0, help="rounds of data-driven candidate growth")
     ap.add_argument("--pooled", action="store_true", help="also run the pooled-constants model")
+    ap.add_argument("--themes", action="store_true",
+                    help="grow candidates around the posterior and run the themes-and-variations model")
     ap.add_argument("--expand", action="store_true", help="add data-driven one-step edits to C")
     ap.add_argument("--sensitivity", action="store_true", help="also run alpha / gamma-prior variants")
     args = ap.parse_args(argv)
@@ -289,7 +329,7 @@ def main(argv=None):
         for rep in parse_reps(args.reps):
             rows = run_replicate(args.setting, args.n, args.noise, rep, cands, cfg, expand=args.expand,
                                  sensitivity=args.sensitivity, J=args.J, n_starts=args.starts, scaling=args.scaling, tau=args.tau,
-                                 grow_rounds=args.grow, pooled=args.pooled)
+                                 grow_rounds=args.grow, pooled=args.pooled, themes=args.themes)
             for r in rows:
                 fh.write(json.dumps(r) + "\n")
             fh.flush()

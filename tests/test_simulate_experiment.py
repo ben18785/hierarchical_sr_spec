@@ -124,3 +124,15 @@ def test_run_replicate_family_pooled_and_growth(tiny_candidates):
     r = [r for r in rows if r["method"] == "hier_pooled"][0]
     assert "family_recovery" in r and "variant_when_parent" in r
     assert r["n_added_by_edits"] > 0
+
+
+def test_run_replicate_family_themes(tiny_candidates):
+    cfg = GibbsConfig(n_sweeps=40, burn_in=10, n_chains=2)
+    rows = run_replicate("decay_mixture", 10, 0.05, 0, tiny_candidates, cfg, J=6, n_starts=2,
+                         grow_rounds=1, themes=True, theme_top_k=2, kinds=("laplace",))
+    methods = {r["method"] for r in rows}
+    assert {"hier_themes", "hier_pooled", "hier"} <= methods
+    r = [r for r in rows if r["method"] == "hier_themes"][0]
+    assert len(r["theme_top_keys"]) == 6 and len(r["top_keys"]) == 6
+    assert "theme_family" in r and "extension_detected" in r or "extension_when_parent" in r
+    assert r["n_kernel_edges"] > 0 and r["n_added_by_themes"] >= 0

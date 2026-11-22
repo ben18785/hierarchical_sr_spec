@@ -23,6 +23,7 @@ from scipy.special import logsumexp
 
 from .canonical import Skeleton, consts_of, make_vars
 
+LPD_FLOOR = -50.0
 LOG2PI = np.log(2 * np.pi)
 
 
@@ -93,6 +94,9 @@ class CompiledSkeleton:
         self._fg = sp.lambdify(args, [expr] + grads, modules="numpy", cse=True)
         self._h = sp.lambdify(args, hess, modules="numpy", cse=True) if self.k else None
         self._f = sp.lambdify(args, expr, modules="numpy", cse=True)
+        # constants that appear as an exponent (x**c): their null value is 1
+        exps = {a.exp for a in expr.atoms(sp.Pow)}
+        self.exponent_mask = np.array([c in exps for c in self.consts], dtype=bool)
 
     def _call(self, fn, X, phi):
         # X: (B, n, d); phi: (B, k) -> list of (B, n) arrays
@@ -244,6 +248,12 @@ def fit_skeleton(cs: CompiledSkeleton, X, Y, M=None, n_starts=10, tau=3.0, seed=
         starts[:, 0, :] = 1.0
         if S_ > 1:
             starts[:, 1, :] = -1.0 if S_ > 2 else starts[:, 1, :]
+        # exponents: start half of the random starts at the null value 1
+        # (the parent form), with the other constants random
+        em = getattr(cs, "exponent_mask", np.zeros(k, bool))
+        if em.any() and S_ > 3:
+            for s_i in range(2, S_, 2):
+                starts[:, s_i, em] = 1.0
     if extra_starts is not None and k:
         starts = np.concatenate([starts, np.asarray(extra_starts).reshape(J_, -1, k)], axis=1)
         S_ = starts.shape[1]
@@ -367,7 +377,9 @@ def predictive_logpdf(cs: CompiledSkeleton, x_new, y_new, phi, log_sigma, cov, x
         lp = -0.5 * LOG2PI - np.log(sig) - 0.5 * ((y_s[None, :] - f) / sig) ** 2
     lp = np.where(np.isfinite(lp), lp, -np.inf)
     out = logsumexp(lp, axis=0) - np.log(m) - np.log(y_scale)
-    return np.where(np.isfinite(out), out, -1e10)
+    # floor each point's log density: a skeleton that blows up beyond the
+    # observed range should cost a lot, not dominate every average
+    return np.where(np.isfinite(out), np.maximum(out, LPD_FLOOR), LPD_FLOOR)
 
 
 # --------------------------------------------------------- whole L matrix

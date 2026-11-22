@@ -44,7 +44,7 @@ def families_grid(ns=(10, 20)):
     """Saturation and decay families (hsr/families.py), with one round of
     candidate growth and the pooled-constants model alongside the original."""
     from_settings = [f"{fam}_{pop}" for fam in ("saturation", "decay") for pop in ("parent", "extended", "mixture")]
-    return [{"name": f"fam_{s}_n{n}_s05", "setting": s, "n": n, "noise": 0.05, "extra": "--grow 1 --pooled"}
+    return [{"name": f"fam_{s}_n{n}_s05", "setting": s, "n": n, "noise": 0.05, "extra": "--grow 1 --pooled --themes"}
             for s in from_settings for n in ns]
 
 

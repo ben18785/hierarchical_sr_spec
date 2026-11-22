@@ -320,3 +320,50 @@ def canonicalise_many_exprs(strings, grammar, n_jobs=1):
 
 def default_n_jobs():
     return max(1, (os.cpu_count() or 2) - 1)
+
+
+# ------------------------------------------------------------ edit graph
+def specialisations(skeleton: Skeleton):
+    """Expressions obtained by fixing one constant at a null value (0 or 1).
+
+    These are the candidate *parents* of a skeleton: e.g. fixing the exponent
+    of a Hill function at 1 gives Michaelis-Menten."""
+    out = []
+    for c in sorted(consts_of(skeleton.expr), key=lambda s: s.name):
+        for val in (0, 1):
+            out.append(skeleton.expr.xreplace({c: sp.Integer(val)}))
+    return out
+
+
+def edit_graph(cands: CandidateSet, sources, library=None, n_jobs=1):
+    """Grow ``cands`` around ``sources`` and return the edit edges.
+
+    For each source skeleton s: its one-step edits become children of s, and
+    its null-value specialisations (with fewer constants) become parents of
+    s. New skeletons are added to ``cands``. Returns (new_idx, edges) with
+    edges a set of (parent_idx, child_idx), parent != child."""
+    library = library or default_edit_library(cands.grammar.n_vars)
+    n_vars = cands.grammar.n_vars
+    child_strings, parent_strings = {}, {}
+    for i in sources:
+        sk = cands.skeletons[i]
+        child_strings[i] = [str(e) for e in one_step_edits(sk, library, n_vars)]
+        parent_strings[i] = [str(e) for e in specialisations(sk)]
+    allstr = list(dict.fromkeys(s for d in (child_strings, parent_strings) for v in d.values() for s in v))
+    mapping = canonicalise_many_exprs(allstr, cands.grammar, n_jobs)
+    mapping = {s: (k if k is not None and "x" in k else None) for s, k in mapping.items()}
+    new_keys = {k for k in mapping.values() if k is not None}
+    new_idx = cands.add([skeleton_from_key(k, n_vars) for k in sorted(new_keys)])
+    key_idx = {k: i for i, k in enumerate(cands.keys)}
+    edges = set()
+    for i in sources:
+        k_i = cands.skeletons[i].n_consts
+        for s in child_strings[i]:
+            k = mapping.get(s)
+            if k is not None and key_idx[k] != i and cands.skeletons[key_idx[k]].n_consts >= k_i:
+                edges.add((i, key_idx[k]))
+        for s in parent_strings[i]:
+            k = mapping.get(s)
+            if k is not None and key_idx[k] != i and cands.skeletons[key_idx[k]].n_consts < k_i:
+                edges.add((key_idx[k], i))
+    return new_idx, edges
