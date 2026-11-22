@@ -19,21 +19,27 @@ from collections import defaultdict
 
 import numpy as np
 
-METRICS = ["recovery", "lpd_in", "lpd_out", "ari", "weight_error"]
+METRICS = ["recovery", "lpd_in", "lpd_out", "ari", "weight_error",
+           "family_recovery", "variant_when_parent", "variant_detected"]
 METRIC_LABEL = {
     "recovery": "form recovery (fraction of datasets)",
     "lpd_in": "held-out log density, inside range",
     "lpd_out": "held-out log density, beyond range",
     "ari": "adjusted Rand index",
     "weight_error": "population-weight abs. error",
+    "family_recovery": "family recovery (parent or variant chosen)",
+    "variant_when_parent": "variant chosen when the truth is the parent",
+    "variant_detected": "variant chosen when the truth is the variant",
 }
-MAIN_METHODS = ["hier", "no_pool", "no_pool_bma", "complete_pool", "oracle"]
+MAIN_METHODS = ["hier", "hier_pooled", "no_pool", "no_pool_bma", "complete_pool", "oracle"]
 
 
 def variant_of(r):
     parts = [f"scale={r.get('scaling', 'pooled')}", f"tau={r.get('tau', 3.0):g}"]
     if r.get("expand"):
         parts.append("edits")
+    if r.get("grow_rounds"):
+        parts.append(f"grow={r['grow_rounds']}")
     return ",".join(parts)
 
 
@@ -96,6 +102,8 @@ def write_tables(agg, rows, out):
                 methods = [m for m in MAIN_METHODS if any(k[5] == m for k in keys)]
                 methods += sorted({k[5] for k in keys} - set(methods))
                 for metric in METRICS:
+                    if not any(k[6] == metric for k in keys):
+                        continue
                     lines.append(f"**{METRIC_LABEL[metric]}**")
                     lines.append("")
                     header = "| method | " + " | ".join(f"σ={nz:g}, n={n}" for nz in noises for n in ns) + " |"
@@ -134,9 +142,14 @@ def plots(agg, rows, out):
     except ImportError:
         print("matplotlib not installed; skipping plots")
         return
-    variant = "scale=pooled,tau=3"
+    for variant in sorted({k[0] for k in agg}):
+        _plots_for_variant(agg, rows, out, variant, plt)
+
+
+def _plots_for_variant(agg, rows, out, variant, plt):
+    slug = variant.replace("scale=", "").replace(",", "_").replace("=", "")
     settings = sorted({k[1] for k in agg if k[0] == variant})
-    colours = {"hier": "#1f77b4", "no_pool": "#d62728", "no_pool_bma": "#ff9896",
+    colours = {"hier": "#1f77b4", "hier_pooled": "#9467bd", "no_pool": "#d62728", "no_pool_bma": "#ff9896",
                "complete_pool": "#7f7f7f", "oracle": "#2ca02c"}
     for setting in settings:
         for metric in METRICS:
@@ -161,19 +174,20 @@ def plots(agg, rows, out):
                     ax.set_xscale("log")
                     ax.set_xticks([5, 10, 20, 50])
                     ax.set_xticklabels(["5", "10", "20", "50"])
+                    ax.set_xlim(4, 60)
                     ax.set_title(f"{setting}, noise {nz:g}, {kind}", fontsize=10)
                     ax.set_ylabel(METRIC_LABEL[metric], fontsize=9)
                     if i == len(noises) - 1:
                         ax.set_xlabel("points per dataset, n_j")
             axes[0, 0].legend(fontsize=8)
             fig.tight_layout()
-            fig.savefig(os.path.join(out, f"{metric}_{setting}.png"), dpi=120)
+            fig.savefig(os.path.join(out, f"{metric}_{setting}_{slug}.png"), dpi=120)
             plt.close(fig)
     # calibration
     from hsr.metrics import reliability_curve
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.2))
     for ax, kind in zip(axes, ["laplace", "bic"]):
-        for meth in ["hier", "no_pool_bma", "oracle"]:
+        for meth in ["hier", "hier_pooled", "no_pool_bma", "oracle"]:
             p, y = [], []
             for r in rows:
                 if r["variant"] == variant and r["kind"] == kind and r["method"] == meth and "calib_p" in r:
@@ -189,7 +203,7 @@ def plots(agg, rows, out):
         ax.set_title(f"calibration ({kind}, all settings pooled)", fontsize=10)
         ax.legend(fontsize=8)
     fig.tight_layout()
-    fig.savefig(os.path.join(out, "calibration.png"), dpi=120)
+    fig.savefig(os.path.join(out, f"calibration_{slug}.png"), dpi=120)
     plt.close(fig)
 
 
