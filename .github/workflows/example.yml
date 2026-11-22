@@ -1,3 +1,4 @@
+# Manually triggered: gh workflow run example.yml
 # One worked example (a single population, every method). Fast: ~2 minutes.
 name: example
 on:

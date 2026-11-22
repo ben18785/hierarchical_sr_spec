@@ -1,3 +1,4 @@
+# Manually triggered: gh workflow run benchmark.yml -f grid=main
 # Synthetic benchmark (spec section 6). Run from the Actions tab
 # ("Run workflow"). Each matrix job runs `reps` replicate populations of one
 # (variant, setting, n_j, noise) cell; the final job merges everything into
