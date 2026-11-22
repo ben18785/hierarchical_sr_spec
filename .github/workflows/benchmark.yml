@@ -17,7 +17,7 @@ on:
         description: "burn-in sweeps"
         default: "500"
       grid:
-        description: "main | sensitivity | all"
+        description: "main | sensitivity | all | families | families_full"
         default: "all"
 
 jobs:

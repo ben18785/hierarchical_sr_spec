@@ -78,3 +78,49 @@ def test_run_replicate_with_edits_and_sensitivity(tiny_candidates):
                          sensitivity=True, kinds=("laplace",))
     assert rows[0]["n_added_by_edits"] > 0
     assert any(r["method"].startswith("hier[alpha") for r in rows)
+
+
+# ---------------------------------------------------------------- families
+from hsr.families import FAMILIES, SETTINGS, family_metrics, family_population
+
+
+@pytest.mark.parametrize("family", list(FAMILIES))
+def test_family_variant_reduces_to_parent_at_null(family):
+    fam = FAMILIES[family]
+    x = np.linspace(0.1, 5, 50)
+    p = fam["parent"].draw(np.random.default_rng(0))
+    null = np.append(p, 1.0)      # extension coefficient at its null value
+    assert np.allclose(fam["variant"].f(x, null), fam["parent"].f(x, p))
+
+
+@pytest.mark.parametrize("family", list(FAMILIES))
+def test_family_keys_are_canonical_and_distinct(family):
+    fam = FAMILIES[family]
+    kp, kv = fam["parent"].key, fam["variant"].key
+    assert kp != kv
+    assert canonicalise(kp).key == kp and canonicalise(kv).key == kv
+    assert canonicalise(kv).n_consts == canonicalise(kp).n_consts + 1
+
+
+def test_family_populations_and_metrics():
+    rng = np.random.default_rng(1)
+    pop = family_population(rng, "saturation_mixture", 10, 0.05, J=200)
+    frac = np.mean([k == pop.variant_key for k in pop.true_keys])
+    assert abs(frac - 0.3) < 0.08
+    assert len(pop.form_keys) == 2
+    allp = family_population(rng, "decay_parent", 10, 0.05, J=5)
+    assert set(allp.true_keys) == {allp.parent_key}
+    m = family_metrics(allp, [allp.variant_key, allp.parent_key, "other", allp.parent_key, allp.parent_key])
+    assert m["family_recovery"] == 0.8 and m["variant_when_parent"] == 0.2 and m["variant_detected"] is None
+    assert set(SETTINGS) >= {"saturation_extended", "decay_mixture"}
+
+
+def test_run_replicate_family_pooled_and_growth(tiny_candidates):
+    cfg = GibbsConfig(n_sweeps=40, burn_in=10, n_chains=2)
+    rows = run_replicate("saturation_mixture", 10, 0.05, 0, tiny_candidates, cfg, J=8, n_starts=2,
+                         grow_rounds=1, pooled=True, kinds=("laplace",))
+    methods = {r["method"] for r in rows}
+    assert "hier_pooled" in methods and "hier" in methods
+    r = [r for r in rows if r["method"] == "hier_pooled"][0]
+    assert "family_recovery" in r and "variant_when_parent" in r
+    assert r["n_added_by_edits"] > 0
