@@ -135,7 +135,7 @@ def _scaled_grammar(g: Grammar, scale: float) -> Grammar:
 
 def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig, expand=False,
                   sensitivity=False, kinds=("laplace", "bic"), J=30, n_starts=10, seed_base=12345,
-                  scaling="pooled"):
+                  scaling="pooled", tau=3.0):
     t0 = time.time()
     seed = seed_base + 1_000_003 * rep + int(1000 * noise) * 7919 + n * 104729 + SETTING_SEED[setting]
     rng = np.random.default_rng(abs(seed))
@@ -143,7 +143,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
     X, Y, sx, sy = scaled_arrays(pop, scaling)
     grammar = cands.grammar
     cset = from_skeletons(list(cands.skeletons), grammar, dict(cands.stats))
-    table = compute_likelihoods(cset.skeletons, X, Y, n_starts=n_starts, seed=rep, compiled_cache=_COMPILED)
+    table = compute_likelihoods(cset.skeletons, X, Y, n_starts=n_starts, tau=tau, seed=rep, compiled_cache=_COMPILED)
     n_added = 0
     if expand:
         post = baselines.no_pooling_posterior(table.laplace, cset.counts, grammar)
@@ -153,7 +153,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         new_idx = expand_candidates(cset, sorted(top))
         if new_idx:
             extra = compute_likelihoods([cset.skeletons[i] for i in new_idx], X, Y, n_starts=n_starts,
-                                        seed=rep + 7, compiled_cache=_COMPILED)
+                                        tau=tau, seed=rep + 7, compiled_cache=_COMPILED)
             table = table.extend(extra)
         n_added = len(new_idx)
     # true forms: make sure every one has an L column (append if missing from C)
@@ -164,7 +164,8 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
     n_C = len(skeletons)
     if missing:
         sks = [canonicalise(k) for k in missing]
-        extra = compute_likelihoods(sks, X, Y, n_starts=n_starts, seed=rep + 11, compiled_cache=_COMPILED)
+        extra = compute_likelihoods(sks, X, Y, n_starts=n_starts, tau=tau, seed=rep + 11,
+                                    compiled_cache=_COMPILED)
         table = table.extend(extra)
         skeletons += sks
         counts = np.vstack([counts, np.array([counts_array(s.expr, grammar) for s in sks])])
@@ -223,7 +224,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
 
     meta = {
         "setting": setting, "n": n, "noise": noise, "rep": rep, "J": J,
-        "n_candidates": n_C, "scaling": scaling, "n_added_by_edits": n_added, "expand": expand,
+        "n_candidates": n_C, "scaling": scaling, "tau": tau, "n_added_by_edits": n_added, "expand": expand,
         "true_forms_in_C": true_in_C, "frac_datasets_true_in_C": float(np.mean(true_idx_C >= 0)),
         "seconds_likelihood": t_lik, "seconds_total": time.time() - t0,
     }
@@ -253,6 +254,7 @@ def main(argv=None):
     ap.add_argument("--chains", type=int, default=4)
     ap.add_argument("--starts", type=int, default=10)
     ap.add_argument("--scaling", default="pooled", choices=["pooled", "per_dataset", "none"])
+    ap.add_argument("--tau", type=float, default=3.0, help="prior sd of every constant")
     ap.add_argument("--expand", action="store_true", help="add data-driven one-step edits to C")
     ap.add_argument("--sensitivity", action="store_true", help="also run alpha / gamma-prior variants")
     args = ap.parse_args(argv)
@@ -263,7 +265,7 @@ def main(argv=None):
     with open(args.out, "a") as fh:
         for rep in parse_reps(args.reps):
             rows = run_replicate(args.setting, args.n, args.noise, rep, cands, cfg, expand=args.expand,
-                                 sensitivity=args.sensitivity, J=args.J, n_starts=args.starts, scaling=args.scaling)
+                                 sensitivity=args.sensitivity, J=args.J, n_starts=args.starts, scaling=args.scaling, tau=args.tau)
             for r in rows:
                 fh.write(json.dumps(r) + "\n")
             fh.flush()

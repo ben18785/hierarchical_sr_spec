@@ -1,0 +1,82 @@
+# Synthetic benchmark (spec section 6). Run from the Actions tab
+# ("Run workflow"). Each matrix job runs `reps` replicate populations of one
+# (variant, setting, n_j, noise) cell; the final job merges everything into
+# results/summary (tables + plots), uploaded as the `benchmark-summary` artifact.
+name: benchmark
+on:
+  workflow_dispatch:
+    inputs:
+      reps:
+        description: "replicates per cell (python range a:b)"
+        default: "0:20"
+      sweeps:
+        description: "Gibbs sweeps per chain"
+        default: "2000"
+      burn:
+        description: "burn-in sweeps"
+        default: "500"
+      grid:
+        description: "main | sensitivity | all"
+        default: "all"
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.mk.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: mk
+        env:
+          GRID: ${{ inputs.grid }}
+        run: echo "matrix=$(python3 benchmarks/matrix.py --grid "$GRID")" >> "$GITHUB_OUTPUT"
+
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[plots]"
+      - name: run cell
+        run: |
+          mkdir -p results/raw
+          python -m hsr.experiment --setting ${{ matrix.setting }} --n ${{ matrix.n }} \
+            --noise ${{ matrix.noise }} --reps '${{ inputs.reps }}' \
+            --sweeps ${{ inputs.sweeps }} --burn ${{ inputs.burn }} \
+            ${{ matrix.extra }} --out results/raw/${{ matrix.name }}.jsonl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: raw-${{ matrix.name }}
+          path: results/raw/${{ matrix.name }}.jsonl
+
+  summarise:
+    needs: run
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[plots]"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: raw-*
+          path: results/raw
+          merge-multiple: true
+      - run: python benchmarks/summarise.py 'results/raw/*.jsonl' --out results/summary
+      - run: cat results/summary/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-summary
+          path: |
+            results/summary
+            results/raw

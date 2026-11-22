@@ -29,6 +29,7 @@ class GibbsConfig:
     update_theta: bool = True
     update_gamma: bool = True
     init: str = "argmax"          # chain 0 always argmax; "argmax" | "random" for the others
+    relabel: bool = True          # block move: resample the skeleton of a whole cluster
     thin: int = 1
     seed: int = 0
 
@@ -81,6 +82,45 @@ def _log_crp_weight(n_minus: np.ndarray, log_gamma: float, log_p: np.ndarray) ->
     return np.logaddexp(log_n, log_gamma + log_p)
 
 
+def _relabel_blocks(rng, z, n_e, Lf, log_p, gamma):
+    """For each cluster (the datasets sharing one skeleton), resample its
+    skeleton label with the partition held fixed.
+
+    With the partition fixed and the cluster's label e unused by any other
+    cluster, the Polya-urn probability of the assignment depends on e only
+    through gamma P(e) prod_{k=1}^{m-1} (k + gamma P(e)) (m = cluster size),
+    so the exact conditional is
+        P(e) ∝ P(e) prod_{k=1}^{m-1} (k + gamma P(e)) prod_{j in cluster} exp(L[j, e])
+    over every label not used by another cluster. This lets a whole cluster
+    move between skeletons, which single-site updates can only do through
+    low-probability intermediate states (spec section 8, rich-get-richer).
+    """
+    C = len(n_e)
+    gp = gamma * np.exp(log_p)
+    for e in rng.permutation(np.flatnonzero(n_e > 0)):
+        members = np.flatnonzero(z == e)
+        m = len(members)
+        if m == 0:
+            continue
+        lw = log_p + Lf[members].sum(axis=0)
+        if m > 1:
+            k = np.arange(1, m)[:, None]
+            lw = lw + np.log(k + gp[None, :]).sum(axis=0)
+        other = (n_e > 0)
+        other[e] = False
+        lw[other] = -np.inf
+        top = lw.max()
+        if not np.isfinite(top):
+            continue
+        p = np.exp(lw - top)
+        p /= p.sum()
+        new = rng.choice(C, p=p)
+        if new != e:
+            z[members] = new
+            n_e[new] = m
+            n_e[e] = 0
+
+
 def escobar_west_gamma(rng, gamma: float, K: int, n: int, a: float, b: float) -> float:
     """One Escobar & West (1995) update of the DP concentration (b = rate)."""
     eta = rng.beta(gamma + 1.0, n)
@@ -92,14 +132,16 @@ def escobar_west_gamma(rng, gamma: float, K: int, n: int, a: float, b: float) ->
 
 
 def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsConfig, seed: int,
-              init: str = "argmax", theta0: dict | None = None):
+              init: str = "argmax", theta0: dict | None = None, z_init=None):
     rng = np.random.default_rng(seed)
     J, C = L.shape
     theta = grammar.prior_mean() if theta0 is None else theta0
     gamma = cfg.gamma_init
     log_p = grammar.log_prob(counts, theta)
     Lf = np.where(np.isfinite(L), L, -np.inf)
-    if init == "argmax":
+    if z_init is not None:
+        z = np.asarray(z_init, dtype=int).copy()
+    elif init == "argmax":
         z = np.argmax(log_p[None, :] + Lf, axis=1)
     else:
         lw = log_p[None, :] + Lf
@@ -125,6 +167,8 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
             p /= p.sum()
             z[j] = rng.choice(C, p=p)
             n_e[z[j]] += 1
+        if cfg.relabel:
+            _relabel_blocks(rng, z, n_e, Lf, log_p, gamma)
         in_use = np.flatnonzero(n_e > 0)
         if cfg.update_theta:
             theta = grammar.sample_theta(rng, counts[in_use].sum(axis=0))
@@ -150,15 +194,17 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
     }
 
 
-def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsConfig | None = None) -> GibbsResult:
-    """Run cfg.n_chains chains and pool them."""
+def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsConfig | None = None,
+              z_init=None) -> GibbsResult:
+    """Run cfg.n_chains chains and pool them. ``z_init`` (J,) fixes the
+    starting assignment of every chain (default: cfg.init)."""
     cfg = cfg or GibbsConfig()
     if cfg.burn_in >= cfg.n_sweeps:
         raise ValueError("burn_in must be smaller than n_sweeps")
     chains = []
     for c in range(cfg.n_chains):
         init = "argmax" if c == 0 else cfg.init
-        chains.append(run_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c, init=init))
+        chains.append(run_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c, init=init, z_init=z_init))
     cap = np.stack([ch["assign_probs"] for ch in chains])
     return GibbsResult(
         assign_probs=cap.mean(axis=0),

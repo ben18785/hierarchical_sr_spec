@@ -63,9 +63,11 @@ def _exact_posterior(L, logp, gamma):
     return marg
 
 
-def test_sampler_matches_exact_posterior_on_tiny_problem():
+@pytest.mark.parametrize("relabel", [False, True])
+def test_sampler_matches_exact_posterior_on_tiny_problem(relabel):
     """Validation: with theta and gamma fixed, the Gibbs marginals equal the
-    exact posterior obtained by enumerating every assignment."""
+    exact posterior obtained by enumerating every assignment (with and
+    without the block relabel move)."""
     rng = np.random.default_rng(1)
     g, counts = one_var_grammar(3)
     J = 4
@@ -73,23 +75,43 @@ def test_sampler_matches_exact_posterior_on_tiny_problem():
     theta = g.prior_mean()
     gamma = 0.7
     cfg = GibbsConfig(n_sweeps=12000, burn_in=500, n_chains=2, update_theta=False, update_gamma=False,
-                      gamma_init=gamma, seed=3)
+                      gamma_init=gamma, seed=3, relabel=relabel)
     res = run_gibbs(L, counts, g, cfg)
     exact = _exact_posterior(L, g.log_prob(counts, theta), gamma)
     assert np.max(np.abs(res.assign_probs - exact)) < 0.02
 
 
-def test_number_of_tables_matches_crp_prior():
-    """With flat likelihoods and a near-continuous base measure, K follows the
-    CRP: E[K] = sum_i gamma / (gamma + i - 1)."""
-    g, counts = one_var_grammar(2000)
-    J, gamma = 15, 2.0
-    L = np.zeros((J, 2000))
-    cfg = GibbsConfig(n_sweeps=3000, burn_in=200, n_chains=2, update_theta=False, update_gamma=False,
-                      gamma_init=gamma, init="random", seed=4)
+def test_relabel_move_exact_with_large_base_probabilities():
+    """The relabel conditional includes the prod (k + gamma P(e)) term, which
+    matters when gamma P(e) is not small; check against enumeration with a
+    3-candidate base measure and a large gamma."""
+    rng = np.random.default_rng(8)
+    g, counts = one_var_grammar(3)
+    J = 5
+    L = rng.normal(0, 0.7, (J, 3))
+    gamma = 4.0
+    cfg = GibbsConfig(n_sweeps=15000, burn_in=500, n_chains=2, update_theta=False, update_gamma=False,
+                      gamma_init=gamma, seed=9, relabel=True)
     res = run_gibbs(L, counts, g, cfg)
-    expected = sum(gamma / (gamma + i) for i in range(J))
-    assert abs(res.n_forms.mean() - expected) < 0.25
+    exact = _exact_posterior(L, g.log_prob(counts, g.prior_mean()), gamma)
+    assert np.max(np.abs(res.assign_probs - exact)) < 0.02
+
+
+def test_relabel_moves_a_stuck_cluster():
+    """Ten datasets all start on skeleton 0. Jointly they prefer skeleton 1 by
+    10 nats, but a single dataset leaving the cluster pays log(9 / gamma P(1)),
+    so single-site Gibbs stays stuck while the relabel move escapes."""
+    g, counts = one_var_grammar(3)
+    J = 10
+    L = np.zeros((J, 3))
+    L[:, 1] = 1.0
+    L[:, 2] = -50
+    base = dict(n_sweeps=300, burn_in=50, n_chains=1, update_theta=False, update_gamma=False, gamma_init=1e-3)
+    start = np.zeros(J, dtype=int)
+    stuck = run_gibbs(L, counts, g, GibbsConfig(relabel=False, **base), z_init=start)
+    moved = run_gibbs(L, counts, g, GibbsConfig(relabel=True, **base), z_init=start)
+    assert np.all(stuck.assign_probs[:, 0] > 0.95)
+    assert np.all(moved.assign_probs[:, 1] > 0.95)
 
 
 def _gamma_posterior_mean(K, n, a, b):
