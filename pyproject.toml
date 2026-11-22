@@ -21,4 +21,5 @@ hsr = ["data/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 markers = ["slow: validation tests that take more than a few seconds"]
