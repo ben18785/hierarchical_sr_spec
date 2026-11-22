@@ -57,6 +57,13 @@ def parse_skeleton(s: str, n_vars: int = 1, positive: bool = True) -> sp.Expr:
     return sp.sympify(s2, locals=local)
 
 
+def _reparse(s: str, n_vars: int = 1, positive: bool = True) -> sp.Expr:
+    xs = make_vars(n_vars, positive)
+    local = {x.name: x for x in xs}
+    local.update({f"c{i}": const_symbol(i) for i in range(20)})
+    return sp.sympify(s, locals=local)
+
+
 def variables_of(expr):
     return {s for s in expr.free_symbols if not is_const(s)}
 
@@ -218,11 +225,20 @@ def _normalise_denominator(expr, fresh):
     if any(_free_factor(t) == 1 for t in var_terms):
         return expr  # a variable term already has unit coefficient
     k = _free_factor(var_terms[0])
-    if not (is_const(k) and occ[k] == 1):
-        return expr
-    d = fresh()
-    new = (num * d) / sp.expand(den * d)
-    return new.subs(k, 1 / d)
+    if is_const(k) and occ[k] == 1:
+        d = fresh()
+        new = (num * d) / sp.expand(den * d)
+        return new.subs(k, 1 / d)
+    if k.is_Number and k != 0 and _has_unshared_factor(num, occ):
+        # x/(c - x) = -x/(x - c): a numeric leading coefficient (often a sign)
+        # can be moved into a free multiplicative constant of the numerator
+        return (num / k) / sp.expand(den / k)
+    return expr
+
+
+def _has_unshared_factor(num, occ):
+    factors = num.args if isinstance(num, sp.Mul) else (num,)
+    return any(is_const(f) and occ[f] == 1 for f in factors)
 
 
 def _free_factor(term):
@@ -291,9 +307,16 @@ def canonicalise(expr, n_vars: int = 1, simplify: bool = True, max_consts: int |
         return None
     # absorption can expose new merges (e.g. log(sqrt(x)) -> log(x)/2 inside a
     # product); repeat the expand-and-absorb selection until the form is stable
-    for _ in range(4):
+    for _ in range(6):
         nxt = _best_of([expr])
-        if nxt is None or sp.srepr(nxt) == sp.srepr(expr):
+        if nxt is None:
+            break
+        # the key is a printed string, so it must survive re-parsing (sympy
+        # re-evaluates e.g. 2*(c + g) into 2*c + 2*g when parsing)
+        reparsed = _reparse(str(nxt), n_vars, positive)
+        if sp.srepr(reparsed) != sp.srepr(nxt):
+            nxt = _best_of([reparsed]) or nxt
+        if sp.srepr(nxt) == sp.srepr(expr) and str(_reparse(str(nxt), n_vars, positive)) == str(nxt):
             break
         expr = nxt
     if expr.has(sp.zoo, sp.nan, sp.oo, -sp.oo, sp.I):
@@ -306,22 +329,41 @@ def canonicalise(expr, n_vars: int = 1, simplify: bool = True, max_consts: int |
     return Skeleton(key=str(expr), expr=expr, n_consts=n_c)
 
 
+def _together(e):
+    """Combine nested fractions into one (c/(a + 1/x) -> c*x/(a*x + 1))."""
+    try:
+        t = sp.together(e)
+        return t if t != e else None
+    except Exception:  # pragma: no cover
+        return None
+
+
+def _n_divisions(e):
+    """Number of reciprocal nodes; breaks ties in favour of flat fractions."""
+    return sum(1 for node in sp.preorder_traversal(e)
+               if isinstance(node, sp.Pow) and node.exp.is_Number and node.exp < 0)
+
+
 def _shallow_expand(e):
     return sp.expand(e, deep=True, power_exp=False, power_base=False, log=False, multinomial=False)
 
 
 def _best_of(starts):
     """Absorb each start and its shallow expansion; keep the cheapest result
-    by (number of constants, structural size, srepr)."""
+    by (number of constants, number of divisions, structural size, srepr).
+    Each start is also tried with its fractions combined."""
     pool = []
     for st in starts:
-        pool.append(st)
-        try:
-            ex = _shallow_expand(st)
-            if ex != st:
-                pool.append(ex)
-        except Exception:  # pragma: no cover
-            pass
+        for variant in (st, _together(st)):
+            if variant is None:
+                continue
+            pool.append(variant)
+            try:
+                ex = _shallow_expand(variant)
+                if ex != variant:
+                    pool.append(ex)
+            except Exception:  # pragma: no cover
+                pass
     best = None
     for start in pool:
         cand = _absorb_to_fixed_point(start)
@@ -334,10 +376,15 @@ def _best_of(starts):
                 size = structural_size(rule_counts(c2))
             except UnsupportedExpression:
                 continue
-            score = (len(consts_of(c2)), size, sp.srepr(c2))
+            score = (len(consts_of(c2)), _n_divisions(c2), size, sp.srepr(c2))
             if best is None or score < best[0]:
                 best = (score, c2)
     return None if best is None else best[1]
+
+
+def skeleton_score(expr):
+    """Preference order used to pick one representative of a family."""
+    return (len(consts_of(expr)), _n_divisions(expr), structural_size(rule_counts(expr)), sp.srepr(expr))
 
 
 def _absorb_to_fixed_point(expr):

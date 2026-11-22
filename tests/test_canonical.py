@@ -82,8 +82,9 @@ def test_counts_sum_as_factor_needs_parentheses():
 # ----------------------------------------------------- canonicalisation
 MERGES = [
     ["C*exp(C*x1)", "exp(C*x1)*C", "C*C*exp(x1*C)", "exp(C+C*x1)", "C*exp(C*x1-x1)", "exp(C*(x1+C))"],
-    ["C*x1/(C+x1)", "x1*C/(x1+C)", "x1/(C*x1+C)", "C*x1/(C*x1+C)", "x1/(C+x1)/C"],
-    ["C*x1/(C+x1*x1)", "C*x1/(C+C*x1*x1)", "x1/(C*x1*x1+C)"],
+    ["C*x1/(C+x1)", "x1*C/(x1+C)", "x1/(C*x1+C)", "C*x1/(C*x1+C)", "x1/(C+x1)/C", "C/(C+1/x1)",
+     "C*x1/(C-x1)"],
+    ["C*x1/(C+x1*x1)", "C*x1/(C+C*x1*x1)", "x1/(C*x1*x1+C)", "C/(C/x1+x1)", "C/(C/x1-x1)"],
     ["C*x1", "C*(C*x1)", "x1*C/C", "C*x1+C*x1", "-C*x1"],
     ["C+x1", "x1-C", "C+C+x1", "C-C+x1"],
     ["C*log(x1)+C", "C+C*log(x1)", "log(C*x1)*C", "C*(C+log(x1)/C)", "C*(C+log(sqrt(x1)))", "C*(C-log(x1))"],
@@ -209,3 +210,21 @@ def test_shipped_candidates_contain_benchmark_forms(shipped):
     assert canonicalise("C*exp(C*x1)").key in keys
     assert canonicalise("C*x1/(C+x1)").key in keys
     assert all(s.n_consts <= 4 for s in shipped.skeletons)
+
+
+def test_probe_merge_merges_reparameterisations_only():
+    """c0/sqrt(sin(c1*x)) and c0*sqrt(1/sin(c1*x)) are the same function but
+    the symbolic rules keep them apart; probe fitting must merge them and
+    nothing else. (Families equal only up to a boundary of parameter space,
+    such as c*x/(a + x) vs c/(a + 1/x), are deliberately not merged.)"""
+    from hsr.candidates import from_skeletons, merge_by_probes
+    g = Grammar()
+    a = canonicalise("C/sqrt(sin(C*x1))")
+    b = canonicalise("C*sqrt(1/sin(C*x1))")
+    assert a.key != b.key
+    others = [canonicalise(s) for s in ["C*x1/(C+x1*x1)", "C*exp(C*x1)", "C*x1+C", "C*sqrt(sin(C*x1))"]]
+    cands = from_skeletons([a, b] + others, g)
+    merged = merge_by_probes(cands, n_probes=4, n=25)
+    assert len(merged) == 5
+    assert merged.stats["n_probe_merged"] == 1
+    assert (a.key in merged.keys) != (b.key in merged.keys)

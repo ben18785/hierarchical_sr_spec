@@ -171,6 +171,63 @@ def build_candidates(grammar: Grammar, enum_size: int = 12, n_samples: int = 200
     return from_skeletons(skeletons, grammar, stats)
 
 
+# ------------------------------------------------------------ probe merging
+def probe_datasets(n_probes=6, n=30, noise=0.05, seed=0, x_low=0.1, x_high=5.0):
+    """Generic noisy curves (random combinations of several basis functions)
+    used only to detect skeletons that are the same family. They do not
+    depend on any benchmark data."""
+    rng = np.random.default_rng(seed)
+    x = np.sort(rng.uniform(x_low, x_high, (n_probes, n)), axis=1)
+    basis = [lambda t: np.exp(-0.7 * t), lambda t: np.sin(1.3 * t), lambda t: np.sqrt(t),
+             lambda t: t / (1 + t), lambda t: np.log(t + 0.5), lambda t: 0.1 * t**2]
+    y = np.zeros_like(x)
+    for p in range(n_probes):
+        w = rng.normal(0, 1, len(basis))
+        y[p] = sum(wi * b(x[p]) for wi, b in zip(w, basis))
+        y[p] += rng.normal(0, noise * (np.ptp(y[p]) + 1e-9), n)
+    return x, y
+
+
+def merge_by_probes(cands: CandidateSet, n_probes=6, n=30, n_starts=10, decimals=4, seed=0,
+                    verbose=False) -> CandidateSet:
+    """Merge candidates with the same number of constants whose maximised
+    log-likelihoods agree (to ``decimals``) on every probe dataset: these are
+    almost surely reparameterisations of one family that the symbolic rules
+    missed. A failed optimisation can only split a family, never merge two.
+    The representative is the skeleton with the smallest ``skeleton_score``.
+    """
+    from .canonical import skeleton_score
+    from .likelihood import CompiledSkeleton, fit_skeleton, scale_population
+    x, y = probe_datasets(n_probes, n, seed=seed)
+    X, Y, _, _ = scale_population(list(x), list(y), "pooled")
+    X, Y = np.array(X), np.array(Y)
+    groups = {}
+    for i, sk in enumerate(cands.skeletons):
+        try:
+            res = fit_skeleton(CompiledSkeleton(sk, cands.grammar.n_vars), X, Y, n_starts=n_starts, seed=i)
+            ll = res.max_loglik
+        except Exception:
+            ll = np.full(n_probes, -np.inf)
+        if not np.all(np.isfinite(ll)):
+            groups[("unique", i)] = [i]   # cannot judge: keep as is
+            continue
+        key = (sk.n_consts, tuple(np.round(ll, decimals)))
+        groups.setdefault(key, []).append(i)
+    keep, merged = [], []
+    for members in groups.values():
+        best = min(members, key=lambda i: skeleton_score(cands.skeletons[i].expr))
+        keep.append(best)
+        if len(members) > 1:
+            merged.append([cands.skeletons[i].key for i in members])
+    keep.sort()
+    out = cands.subset(keep)
+    out.stats["n_probe_merged"] = len(cands) - len(keep)
+    out.stats["probe_merge_groups"] = merged[:200]
+    if verbose:
+        print(f"probe merge: {len(cands)} -> {len(keep)} candidates ({len(merged)} groups merged)")
+    return out
+
+
 # --------------------------------------------------------- data-driven expansion
 def default_edit_library(n_vars=1):
     """Small subexpressions used to replace a variable occurrence."""
