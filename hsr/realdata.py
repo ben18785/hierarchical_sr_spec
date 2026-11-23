@@ -13,7 +13,9 @@ truth, so methods are compared by held-out log predictive density:
   --split extrap       per group, the points at the largest x are held out
 
 Methods: hier (Laplace and BIC), hier_pooled, hier_themes (with --themes),
-no_pool_bma, and ``reference``: the hierarchical model restricted to the
+no_pool_bma, complete_pool (one form for all groups, constants per group),
+single_curve (one form and one set of constants: all points as one dataset),
+and ``reference``: the hierarchical model restricted to the
 textbook form(s) for the dataset (REFERENCE below), i.e. what a modeller who
 fixed the literature form would get.
 """
@@ -217,6 +219,13 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
         trunc_logq = apply_truncation(table, sks, X, M, spec, tau, sy, _compiled, seed=seed)
         grids = [check_grid(X[j][M[j] > 0, 0]) for j in range(J)]
         _ACCEPT = lambda cs, j, ph: satisfied(cs, ph, grids[j], spec, sy[j])
+    # single-curve baseline: all points as one dataset (one form, one set of constants)
+    X1 = X[M > 0][None]
+    Y1 = Y[M > 0][None]
+    table1 = compute_likelihoods(sks, X1, Y1, n_starts=n_starts, tau=tau, seed=seed + 97, compiled_cache=_COMPILED)
+    if spec is not None:
+        apply_truncation(table1, sks, X1, np.ones(Y1.shape), spec, tau, [sy[0]], _compiled, seed=seed)
+    tab1 = baselines.broadcast_table(table1, J)
     t_lik = time.time() - t0
 
     rows = []
@@ -227,6 +236,12 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
                               gibbs_summary(res)) | {"kind": kind})
         P = baselines.no_pooling_posterior(L, cnt, grammar)
         rows.append(summarise("no_pool_bma", P, sks, table, held, sx, sy, names) | {"kind": kind})
+        Pc = baselines.complete_pooling_posterior(L, cnt, grammar)
+        rows.append(summarise("complete_pool", np.tile(Pc, (J, 1)), sks, table, held, sx, sy, names, Pc)
+                    | {"kind": kind})
+        P1 = baselines.single_curve_posterior(table1.matrix(kind)[0], cnt, grammar)
+        rows.append(summarise("single_curve", np.tile(P1, (J, 1)), sks, tab1, held, sx, sy, names, P1)
+                    | {"kind": kind})
         if ref_idx:
             ores, _ = baselines.oracle(L, cnt, grammar, ref_idx, cfg)
             Pf = np.zeros((J, n_C))

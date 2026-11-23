@@ -36,7 +36,8 @@ METRIC_LABEL = {
     "theme_family": "most probable theme is in the family",
     "theme_parent": "most probable theme is the parent",
 }
-MAIN_METHODS = ["hier", "hier_pooled", "hier_themes", "no_pool", "no_pool_bma", "complete_pool", "oracle"]
+MAIN_METHODS = ["hier", "hier_pooled", "hier_themes", "no_pool", "no_pool_bma", "complete_pool", "single_curve",
+                "oracle"]
 
 
 def variant_of(r):
@@ -164,7 +165,7 @@ def _plots_for_variant(agg, rows, out, variant, plt):
     slug = variant.replace("scale=", "").replace(",", "_").replace("=", "")
     settings = sorted({k[1] for k in agg if k[0] == variant})
     colours = {"hier": "#1f77b4", "hier_pooled": "#9467bd", "hier_themes": "#17becf", "no_pool": "#d62728", "no_pool_bma": "#ff9896",
-               "complete_pool": "#7f7f7f", "oracle": "#2ca02c"}
+               "complete_pool": "#7f7f7f", "single_curve": "#bcbd22", "oracle": "#2ca02c"}
     for setting in settings:
         for metric in METRICS:
             keys = [k for k in agg if k[0] == variant and k[1] == setting and k[6] == metric]

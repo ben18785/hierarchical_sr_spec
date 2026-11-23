@@ -228,6 +228,14 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         trunc_logq = apply_truncation(table, skeletons, X, np.ones(Y.shape), spec, tau, sy, _compiled, seed=rep)
         grids = [check_grid(X[j][:, 0]) for j in range(J)]
         _ACCEPT = lambda cs, j, ph: satisfied(cs, ph, grids[j], spec, sy[j])
+    # single-curve baseline: every dataset's points as one dataset (one form, one set of constants)
+    X1 = np.asarray(X).reshape(1, -1, np.asarray(X).shape[-1])
+    Y1 = np.asarray(Y).reshape(1, -1)
+    table1 = compute_likelihoods(skeletons[:n_C], X1, Y1, n_starts=n_starts, tau=tau, seed=rep + 97,
+                                 compiled_cache=_COMPILED)
+    if spec is not None:
+        apply_truncation(table1, skeletons[:n_C], X1, np.ones(Y1.shape), spec, tau, [sy[0]], _compiled, seed=rep)
+    tab1 = baselines.broadcast_table(table1, J)
     t_lik = time.time() - t0
 
     rows = []
@@ -274,9 +282,16 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         w_np = {sk_C[e].key: float(P[:, e].mean()) for e in range(n_C)}
         rows.append(evaluate("no_pool_bma", P, pop, sk_C, tabC, sx, sy, true_idx_C, w_np) | {"kind": kind})
 
-        e_cp = baselines.complete_pooling(L)
-        rows.append(evaluate("complete_pool", one_hot(np.full(J, e_cp), n_C), pop, sk_C, tabC, sx, sy,
-                             true_idx_C, calibration=False) | {"kind": kind})
+        # one form for all datasets, constants per dataset (posterior over forms)
+        Pc = baselines.complete_pooling_posterior(L, cnt, grammar)
+        w_cp = {sk_C[e].key: float(Pc[e]) for e in np.flatnonzero(Pc > 1e-6)}
+        rows.append(evaluate("complete_pool", np.tile(Pc, (J, 1)), pop, sk_C, tabC, sx, sy, true_idx_C, w_cp)
+                    | {"kind": kind})
+        # one curve (form and constants) for all datasets
+        P1 = baselines.single_curve_posterior(table1.matrix(kind)[0], cnt, grammar)
+        w_1 = {sk_C[e].key: float(P1[e]) for e in np.flatnonzero(P1 > 1e-6)}
+        rows.append(evaluate("single_curve", np.tile(P1, (J, 1)), pop, sk_C, tab1, sx, sy, true_idx_C, w_1)
+                    | {"kind": kind})
 
         ores, _ = baselines.oracle(table.matrix(kind), counts, grammar, form_idx, cfg)
         # map oracle posteriors back to full columns for evaluation
