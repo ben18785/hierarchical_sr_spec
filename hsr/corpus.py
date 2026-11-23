@@ -245,16 +245,24 @@ def _fetch(url, tries=3):
     req = urllib.request.Request(url, headers={"User-Agent": "hsr-corpus/0.1 (python urllib)",
                                                "Accept": "application/xml,*/*"})
     err = None
+    import signal
     for k in range(tries):
+        old = signal.signal(signal.SIGALRM, _alarm)
+        signal.alarm(120)   # whole download, not just each socket read
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
                 return r.read(), None
+        except _Timeout:
+            err = "download took over 120 s"
         except urllib.error.HTTPError as e:
             err = f"HTTP {e.code} {e.reason}"
             if e.code == 404:
                 break
         except Exception as e:  # network, TLS, timeout
             err = repr(e)
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, old)
         time.sleep(2 * (k + 1))
     return None, err
 
