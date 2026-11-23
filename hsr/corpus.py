@@ -178,8 +178,28 @@ def model_keys(path):
 
 
 # ------------------------------------------------------------------- corpus
-def build(out, first, last, cache_dir, sleep=0.2):
+def _fetch(url, tries=3):
+    """GET url -> (bytes, None) or (None, error string). A 404 is not retried."""
+    import urllib.error
     import urllib.request
+    req = urllib.request.Request(url, headers={"User-Agent": "hsr-corpus/0.1 (python urllib)",
+                                               "Accept": "application/xml,*/*"})
+    err = None
+    for k in range(tries):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return r.read(), None
+        except urllib.error.HTTPError as e:
+            err = f"HTTP {e.code} {e.reason}"
+            if e.code == 404:
+                break
+        except Exception as e:  # network, TLS, timeout
+            err = repr(e)
+        time.sleep(2 * (k + 1))
+    return None, err
+
+
+def build(out, first, last, cache_dir, sleep=0.2):
     os.makedirs(cache_dir, exist_ok=True)
     freq = Counter()
     per_model = {}
@@ -188,14 +208,16 @@ def build(out, first, last, cache_dir, sleep=0.2):
         mid = f"BIOMD{i:010d}"
         path = os.path.join(cache_dir, mid + ".xml")
         if not os.path.exists(path):
-            try:
-                with urllib.request.urlopen(BIOMODELS_URL.format(id=mid), timeout=60) as r:
-                    data = r.read()
-                with open(path, "wb") as fh:
-                    fh.write(data)
-            except Exception:
+            data, err = _fetch(BIOMODELS_URL.format(id=mid))
+            if data is None:
                 stats["missing"] += 1
+                if stats["missing"] <= 5:
+                    print(f"{mid}: download failed: {err}", flush=True)
+                if stats["missing"] >= 25 and stats["models"] == 0:
+                    raise RuntimeError(f"first {stats['missing']} downloads all failed; last error: {err}")
                 continue
+            with open(path, "wb") as fh:
+                fh.write(data)
             time.sleep(sleep)
         try:
             keys, n_laws, n_ok = model_keys(path)
