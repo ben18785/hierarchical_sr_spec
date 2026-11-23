@@ -22,9 +22,19 @@ on:
       only:
         description: "optional regex: run only matrix jobs whose name matches"
         default: ""
+      task:
+        description: "benchmark | corpus (build hsr/data/corpus.json from BioModels BIOMD first..last)"
+        default: "benchmark"
+      first:
+        description: "corpus: first BIOMD number"
+        default: "1"
+      last:
+        description: "corpus: last BIOMD number"
+        default: "1100"
 
 jobs:
   plan:
+    if: inputs.task != 'corpus'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.mk.outputs.matrix }}
@@ -64,7 +74,7 @@ jobs:
 
   summarise:
     needs: run
-    if: always()
+    if: always() && inputs.task != 'corpus'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -85,3 +95,20 @@ jobs:
           path: |
             results/summary
             results/raw
+
+  corpus:
+    if: inputs.task == 'corpus'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[corpus]"
+      - run: python -m hsr.corpus build --out corpus.json --first ${{ inputs.first }} --last ${{ inputs.last }} --cache corpus_cache
+      - run: python -m hsr.corpus summary corpus.json | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: corpus
+          path: corpus.json

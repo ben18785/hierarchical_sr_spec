@@ -17,8 +17,9 @@ The corpus is stored as key frequencies (``hsr/data/corpus.json``); rule
 counts for any grammar are derived from the keys, so a context-dependent
 grammar can be fitted to the same file later.
 
-Build (needs network and python-libsbml; run on GitHub Actions):
-    python -m hsr.corpus build --out hsr/data/corpus.json --first 1 --last 1100
+Build (needs network and python-libsbml) on GitHub Actions:
+    gh workflow run benchmark.yml --ref <branch> -f task=corpus -f first=1 -f last=1100
+which runs ``python -m hsr.corpus build`` and uploads corpus.json.
 """
 from __future__ import annotations
 
