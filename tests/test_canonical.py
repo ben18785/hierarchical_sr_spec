@@ -228,3 +228,11 @@ def test_probe_merge_merges_reparameterisations_only():
     assert len(merged) == 5
     assert merged.stats["n_probe_merged"] == 1
     assert (a.key in merged.keys) != (b.key in merged.keys)
+
+
+def test_free_scale_absorbs_numeric_addend_in_exp():
+    from hsr.canonical import canonicalise
+    assert canonicalise("C*exp(C*x1 + 1)").key == canonicalise("C*exp(C*x1)").key
+    assert canonicalise("C*exp(-2*x1 + 1)").key == canonicalise("C*exp(-2*x1)").key
+    # without a free scale the number is part of the form
+    assert canonicalise("exp(C*x1 + 1)").key != canonicalise("exp(C*x1)").key

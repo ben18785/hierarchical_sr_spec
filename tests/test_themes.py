@@ -125,3 +125,38 @@ def test_edit_graph_frees_numeric_exponents():
     pairs = {(c.keys[a], c.keys[b]) for a, b in edges}
     assert ("c0*x1**2/(c1 + x1**2)", "c0*x1**c1/(c2 + x1**c1)") in pairs
     assert ("c0*exp(-2*x1)", "c0*exp(c1*x1)") in pairs
+
+
+def test_weighted_kernel_rows_follow_grammar():
+    log_w = np.log([1.0, 0.6, 0.2, 0.2, 1.0])
+    k = EditKernel(5, [(0, 1), (0, 2), (2, 3), (2, 4)], log_w=log_w)
+    idx, v = k.row(0, 0.4)
+    assert abs(v.sum() - 1) < 1e-12
+    assert np.allclose(dict(zip(idx, v))[1], 0.6 * 0.6 / 0.8)
+    idx, v = k.row(2, 0.4)
+    assert np.allclose(dict(zip(idx, v))[3], 0.6 * 0.2 / 1.2)
+    # push agrees with the rows
+    w = np.array([0.3, 0, 0.7, 0, 0])
+    Q = k.push(w, 0.4)
+    ref = np.zeros(5)
+    for t in (0, 2):
+        i, v = k.row(t, 0.4)
+        ref[i] += w[t] * v
+    assert np.allclose(Q, ref)
+
+
+def test_themes_weighted_kernel_matches_enumeration():
+    rng = np.random.default_rng(11)
+    J, C = 3, 4
+    L = rng.normal(0, 1.0, size=(J, C))
+    g = Grammar()
+    counts = np.abs(rng.normal(2, 1, size=(C, g.n_rules))).round()
+    log_p = g.log_prob(counts, g.prior_mean())
+    kernel = EditKernel(C, [(0, 1), (0, 2), (0, 3), (1, 2)], log_w=log_p)
+    Pz, Pt = _exact(L, log_p, kernel, 0.9, 1.1, 0.5)
+    cfg = GibbsConfig(n_sweeps=40000, burn_in=1000, n_chains=1, gamma_init=0.9, update_gamma=False,
+                      update_theta=False, seed=7)
+    tcfg = ThemeConfig(rho_init=0.5, update_rho=False, gamma0_init=1.1, update_gamma0=False)
+    res = run_gibbs_themes(L, counts, g, kernel, cfg, tcfg)
+    assert np.abs(res.assign_probs - Pz).max() < 0.02
+    assert np.abs(res.theme_probs - Pt).max() < 0.02

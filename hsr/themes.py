@@ -12,10 +12,13 @@ and the cluster's skeleton is a variation on its theme,
 
     e_b | t_b ~ K(. | t_b),
     K(e | t) = rho                     if e = t   (t has at least one known edit)
-             = (1 - rho) / |N(t)|      if e in N(t)
+             = (1 - rho) w_t(e)        if e in N(t)
              = 1                       if e = t and N(t) is empty.
 
-N(t) are the known one-step edits of t (hsr.candidates.edit_graph). The
+N(t) are the known one-step edits of t (hsr.candidates.edit_graph), and
+w_t(e) is either uniform, 1/|N(t)|, or proportional to the grammar prior at
+its prior-mean theta, P(e)/sum_{e' in N(t)} P(e') (fixed for the run, so the
+theta update stays exact). The
 cluster's datasets then contribute the cluster marginal M_e(S) (independent or
 pooled constants, hsr.pooled), exactly as in hsr.gibbs.
 
@@ -46,7 +49,7 @@ from .grammar import Grammar
 
 @dataclass
 class ThemeConfig:
-    rho_a: float = 1.0
+    rho_a: float = 2.0      # Beta(2, 1): mild preference for a cluster sitting on its theme
     rho_b: float = 1.0
     rho_init: float = 0.5
     update_rho: bool = True
@@ -59,15 +62,30 @@ class ThemeConfig:
 class EditKernel:
     """Sparse kernel K(e | t) built from (parent, child) edges over C candidates."""
 
-    def __init__(self, n_cand: int, edges):
+    def __init__(self, n_cand: int, edges, log_w=None):
+        """``log_w`` (C,), optional: log weights of the candidates as variations
+        (the log grammar prior at a fixed theta). Each theme then shares its
+        variation mass 1 - rho in proportion to exp(log_w) over N(t), not
+        uniformly, so the grammar's ranking of variations is kept."""
         self.C = n_cand
         edges = sorted({(int(a), int(b)) for a, b in edges if a != b})
         rows = np.array([a for a, _ in edges], int)
         cols = np.array([b for _, b in edges], int)
         self.n_children = np.bincount(rows, minlength=n_cand).astype(float)
         self.has_children = self.n_children > 0
-        vals = 1.0 / self.n_children[rows] if len(rows) else np.zeros(0)
-        # A[t, e] = 1/|N(t)| for e in N(t)
+        if not len(rows):
+            vals = np.zeros(0)
+        elif log_w is None:
+            vals = 1.0 / self.n_children[rows]
+        else:
+            lw = np.asarray(log_w, float)[cols]
+            lw = np.where(np.isfinite(lw), lw, -np.inf)
+            # normalise within each row (rows are sorted, so contiguous)
+            starts = np.r_[0, np.flatnonzero(np.diff(rows)) + 1]
+            lse = np.logaddexp.reduceat(lw, starts)
+            vals = np.exp(lw - np.repeat(lse, np.diff(np.r_[starts, len(rows)])))
+        self.weighted = log_w is not None
+        # A[t, e] = weight of e among the variations N(t); rows sum to 1
         self.A = sps.csr_matrix((vals, (rows, cols)), shape=(n_cand, n_cand))
         self.At = self.A.T.tocsr()          # row e lists the parents of e
         self.n_edges = len(edges)

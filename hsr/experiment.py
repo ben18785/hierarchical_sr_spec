@@ -234,7 +234,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
                                  gibbs_summary(resp)) | {"kind": kind})
 
         if themes and kind == "laplace":
-            kernel = EditKernel(n_C, edges)
+            kernel = EditKernel(n_C, edges, log_w=grammar.log_prob(cnt, grammar.prior_mean()))
             rest = run_gibbs_themes(L, cnt, grammar, kernel, cfg, model=pm)
             pop_wt = {sk_C[e].key: float(rest.pop_weight[e]) for e in range(n_C)}
             theme_keys = [sk_C[t].key for t in rest.theme_top]

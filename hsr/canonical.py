@@ -107,6 +107,14 @@ def _absorbable(sub, occ) -> bool:
     return any(occ[c] == n for c, n in inside.items())
 
 
+def _strip_exp_numbers(a):
+    if isinstance(a, sp.exp) and isinstance(a.args[0], sp.Add):
+        rest = [t for t in a.args[0].args if not t.is_Number]
+        if len(rest) < len(a.args[0].args):
+            return sp.exp(sp.Add(*rest))
+    return a
+
+
 def _absorb_once(expr, occ, fresh):
     if expr.is_Atom:
         return expr
@@ -115,6 +123,10 @@ def _absorb_once(expr, occ, fresh):
 
     if isinstance(expr, (sp.Add, sp.Mul)):
         args = [_absorb_once(a, occ, fresh) for a in expr.args]
+        if isinstance(expr, sp.Mul) and any(is_const(a) and occ[a] == 1 for a in args):
+            # c*exp(f + k) = (c e^k) exp(f): a free scale constant absorbs a
+            # numeric addend inside an exp factor (c0*exp(c1*x + 1) == c0*exp(c1*x))
+            args = [_strip_exp_numbers(a) for a in args]
         free = [a for a in args if not has_var(a)]
         rest = [a for a in args if has_var(a)]
         if free and not (len(free) == 1 and is_const(free[0])) and _group_ok(free, occ):
