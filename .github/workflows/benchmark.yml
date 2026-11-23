@@ -17,7 +17,7 @@ on:
         description: "burn-in sweeps"
         default: "500"
       grid:
-        description: "main | sensitivity | all | families | families_full | families_corpus | realdata"
+        description: "main | sensitivity | all | families | families_full | families_corpus | realdata | pysr"
         default: "all"
       only:
         description: "optional regex: run only matrix jobs whose name matches"
@@ -60,9 +60,23 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e ".[plots]"
+      - if: matrix.module == 'pysr'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.julia
+            ~/.cache/pip
+          key: pysr-julia-v1
+      - if: matrix.module == 'pysr'
+        run: pip install -e ".[pysr]" && python -c "import pysr"
       - name: run cell
         run: |
           mkdir -p results/raw
+          if [ "${{ matrix.module }}" = "pysr" ]; then
+            python benchmarks/pysr_baseline.py ${{ matrix.args }} --reps '${{ inputs.reps }}' \
+              --out results/raw/${{ matrix.name }}.jsonl
+            exit 0
+          fi
           if [ "${{ matrix.module }}" = "realdata" ]; then
             python -m hsr.realdata ${{ matrix.args }} --sweeps ${{ inputs.sweeps }} --burn ${{ inputs.burn }} \
               --out results/raw/${{ matrix.name }}.jsonl
@@ -79,7 +93,7 @@ jobs:
 
   summarise:
     needs: run
-    if: always() && inputs.task != 'corpus' && inputs.grid != 'realdata'
+    if: always() && inputs.task != 'corpus' && inputs.grid != 'realdata' && inputs.grid != 'pysr'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

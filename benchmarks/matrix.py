@@ -76,10 +76,21 @@ def realdata_grid(extra="--grow 1 --themes"):
     return out
 
 
+def pysr_grid():
+    """PySR baseline on the families cells (reps from the workflow input) and on
+    every real-data job, with the same scaling and splits."""
+    out = [{"name": "pysr_" + j["name"], "module": "pysr",
+            "args": f"--setting {j['setting']} --n {j['n']} --noise {j['noise']}"} for j in families_grid()]
+    out += [{"name": "pysr_" + j["name"], "module": "pysr",
+             "args": " ".join(a for a in j["args"].split() if a not in ("--grow", "1", "--themes"))}
+            for j in realdata_grid()]
+    return out
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full",
-                                                        "families_corpus", "realdata"])
+                                                        "families_corpus", "realdata", "pysr"])
     ap.add_argument("--only", default="", help="regex; keep only jobs whose name matches")
     a = ap.parse_args()
     jobs = []
@@ -95,6 +106,8 @@ if __name__ == "__main__":
         jobs += families_corpus_grid()
     if a.grid == "realdata":
         jobs += realdata_grid()
+    if a.grid == "pysr":
+        jobs += pysr_grid()
     if a.only:
         import re
         jobs = [j for j in jobs if re.search(a.only, j["name"])]
