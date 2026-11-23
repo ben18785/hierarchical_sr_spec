@@ -36,6 +36,8 @@ from .experiment import _COMPILED, gibbs_summary
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .likelihood import LikelihoodTable, compute_likelihoods, predictive_logpdf, scale_population
+from .constraints import Spec, apply_truncation, check_grid, constrained_candidates_path, prepare, satisfied, unscale_y
+from .experiment import _compiled
 from .pooled import PooledModel
 from .themes import EditKernel, run_gibbs_themes
 
@@ -99,6 +101,9 @@ def pad(arrs):
 
 
 # --------------------------------------------------------------- scoring
+_ACCEPT = None   # set by run() when a property spec truncates the prior
+
+
 def heldout_lpd(probs, skeletons, table, held, sx, sy, min_prob=1e-3, n_draws=200):
     """Pointwise log predictive density of the held-out points, mixing over the
     skeletons with posterior mass. Returns (mean over all held-out points,
@@ -115,8 +120,13 @@ def heldout_lpd(probs, skeletons, table, held, sx, sy, min_prob=1e-3, n_draws=20
         if len(idx) == 0:
             idx = np.array([int(np.argmax(row))])
         w = row[idx] / row[idx].sum()
-        comps = np.array([predictive_logpdf(_compiled(skeletons[e]), xh, yh, table.phi[e][j], table.log_sigma[j, e],
-                                            table.cov[e][j], sx[j], sy[j], n_draws=n_draws, seed=j) for e in idx])
+        comps = []
+        for e in idx:
+            cs = _compiled(skeletons[e])
+            acc = None if _ACCEPT is None else (lambda ph, cs=cs, j=j: _ACCEPT(cs, j, ph))
+            comps.append(predictive_logpdf(cs, xh, yh, table.phi[e][j], table.log_sigma[j, e], table.cov[e][j],
+                                           sx[j], sy[j], n_draws=n_draws, seed=j, accept=acc))
+        comps = np.array(comps)
         v = logsumexp(comps + np.log(w)[:, None], axis=0)
         per_group.append(float(np.mean(v)))
         allv += v.tolist()
@@ -139,7 +149,8 @@ def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=No
 
 # ------------------------------------------------------------------- run
 def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scaling="pooled", n_starts=10, tau=3.0,
-        grow_rounds=0, themes=False, theme_top_k=10, theme_min_mass=0.02, seed=0, scale_invariant=False):
+        grow_rounds=0, themes=False, theme_top_k=10, theme_min_mass=0.02, seed=0, scale_invariant=False, spec=None):
+    global _ACCEPT
     t0 = time.time()
     groups = load_groups(data)
     names = list(groups)
@@ -150,17 +161,14 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
         fit.append((x[mf], y[mf]))
         held.append((x[mh], y[mh]))
     Xs, Ys, sx, sy = scale_population([f[0] for f in fit], [f[1] for f in fit], scaling)
+    if spec is not None and spec.fixes_y_scale:
+        Ys, sy = unscale_y(Ys, sy)
     X, M = pad([x[:, 0] for x in Xs])
     Y, _ = pad(Ys)
     X = X[..., None]
     J = len(names)
     grammar = cands.grammar
-    base = list(cands.skeletons)
-    admit = None
-    if scale_invariant:
-        from .properties import ScaleFilter
-        admit = ScaleFilter()
-        base = admit.filter(base)
+    base, admit = prepare(list(cands.skeletons), spec, scale_invariant)
     cset = from_skeletons(base, grammar, dict(cands.stats))
     cset.admit = admit
     lik = lambda sks, s: compute_likelihoods(sks, X, Y, M, n_starts=n_starts, tau=tau, seed=s,
@@ -203,6 +211,12 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
     sks = list(cset.skeletons)
     cnt = cset.counts
     n_C = len(sks)
+    _ACCEPT = None
+    trunc_logq = None
+    if spec is not None:
+        trunc_logq = apply_truncation(table, sks, X, M, spec, tau, sy, _compiled, seed=seed)
+        grids = [check_grid(X[j][M[j] > 0, 0]) for j in range(J)]
+        _ACCEPT = lambda cs, j, ph: satisfied(cs, ph, grids[j], spec, sy[j])
     t_lik = time.time() - t0
 
     rows = []
@@ -221,7 +235,7 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
             pw[ref_idx] = ores.pop_weight
             rows.append(summarise("reference", Pf, sks, table, held, sx, sy, names, pw) | {"kind": kind})
         if kind == "laplace":
-            pm = PooledModel(table, [s.n_consts for s in sks], tau_ref=tau, tau_mu=tau)
+            pm = PooledModel(table, [s.n_consts for s in sks], tau_ref=tau, tau_mu=tau, trunc_logq=trunc_logq)
             resp = run_gibbs(L, cnt, grammar, cfg, model=pm)
             rows.append(summarise("hier_pooled", resp.assign_probs, sks, table, held, sx, sy, names,
                                   resp.pop_weight, gibbs_summary(resp)) | {"kind": kind})
@@ -236,7 +250,7 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
     meta = {"data": os.path.basename(data), "split": split, "J": J, "n_fit": int(M.sum()),
             "n_heldout": int(sum(len(h[0]) for h in held)), "scaling": scaling, "tau": tau,
             "grow_rounds": grow_rounds, "n_added_by_edits": n_added, "themes": themes, "n_candidates": n_C,
-            "scale_invariant": scale_invariant,
+            "scale_invariant": scale_invariant, "constraints": None if spec is None else spec.label,
             "reference_keys": [sks[i].key for i in ref_idx],
             "seconds_likelihood": t_lik, "seconds_total": time.time() - t0}
     for r in rows:
@@ -262,6 +276,8 @@ def main(argv=None):
     ap.add_argument("--themes", action="store_true")
     ap.add_argument("--scale-invariant", action="store_true",
                     help="keep only skeletons whose constants absorb changes of units in x and y (hsr.properties)")
+    ap.add_argument("--constrain", default=None,
+                    help='known properties of f, e.g. "range=0,1;limit_inf=1;monotone=increasing" (hsr.constraints)')
     ap.add_argument("--corpus", default=None, help="corpus JSON: corpus-informed grammar prior")
     ap.add_argument("--kappa", type=float, default=50.0)
     args = ap.parse_args(argv)
@@ -270,12 +286,15 @@ def main(argv=None):
         from .corpus import corpus_alpha, load as load_corpus
         grammar = Grammar(alpha=corpus_alpha(load_corpus(args.corpus), Grammar(), kappa=args.kappa))
         prior_label = f"corpus_k{args.kappa:g}"
+    spec = Spec.parse(args.constrain)
+    if spec is not None and spec.exact and args.candidates == ap.get_default("candidates"):
+        args.candidates = constrained_candidates_path(spec)
     cands = CandidateSet.from_json(args.candidates, grammar)
     cfg = GibbsConfig(n_sweeps=args.sweeps, burn_in=args.burn, n_chains=args.chains)
     name = os.path.splitext(os.path.basename(args.data))[0]
     reference = args.reference if args.reference is not None else REFERENCE.get(name, [])
     rows = run(args.data, args.split, cands, cfg, reference, args.scaling, args.starts, args.tau, args.grow,
-               args.themes, scale_invariant=args.scale_invariant)
+               args.themes, scale_invariant=args.scale_invariant, spec=spec)
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "a") as fh:
         for r in rows:

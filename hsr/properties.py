@@ -29,6 +29,7 @@ import numpy as np
 from scipy.optimize import least_squares
 
 CACHE = os.path.join(os.path.dirname(__file__), "data", "scale_invariant.json")
+CACHE_X = os.path.join(os.path.dirname(__file__), "data", "scale_invariant_x.json")
 _GRID = np.linspace(0.2, 3.0, 25)
 _FINE = np.linspace(0.15, 3.8, 400)   # covers a * _GRID for the factors below
 _TRANSFORMS = ((1.25, 1.0), (1.0, 1.25), (0.8, 1.0))
@@ -62,7 +63,7 @@ def _absorbs(cs, phi, a, b, tol, rng, n_starts=6):
     return False
 
 
-def scale_invariant(skeleton, tol=1e-5, seed=0, n_phi=2, max_phi=6) -> bool:
+def scale_invariant(skeleton, tol=1e-5, seed=0, n_phi=2, max_phi=6, y=True) -> bool:
     """True if units changes in x and y can be absorbed by the constants (see
     module docstring): the refits are exact for ``n_phi`` of up to ``max_phi``
     random constant vectors. A non-invariant skeleton cannot be refitted exactly
@@ -73,7 +74,7 @@ def scale_invariant(skeleton, tol=1e-5, seed=0, n_phi=2, max_phi=6) -> bool:
     from .likelihood import CompiledSkeleton
     cs = CompiledSkeleton(skeleton)
     if cs.k == 0:
-        return False
+        return False   # nothing can absorb a change of units in x
     rng = np.random.default_rng(seed)
     tested = passed = 0
     for i in range(60):
@@ -86,7 +87,7 @@ def scale_invariant(skeleton, tol=1e-5, seed=0, n_phi=2, max_phi=6) -> bool:
         if not np.all(np.isfinite(vf)) or np.abs(vf).max() > 50 * np.sqrt(np.mean(v ** 2)):
             continue
         tested += 1
-        if all(_absorbs(cs, phi, a, b, tol, rng) for a, b in _TRANSFORMS):
+        if all(_absorbs(cs, phi, a, b, tol, rng) for a, b in _TRANSFORMS if y or b == 1.0):
             passed += 1
             if passed >= n_phi:
                 return True
@@ -95,10 +96,10 @@ def scale_invariant(skeleton, tol=1e-5, seed=0, n_phi=2, max_phi=6) -> bool:
     return passed > 0
 
 
-def _worker(key):
+def _worker(key, y=True):
     from .candidates import skeleton_from_key
     try:
-        return key, bool(scale_invariant(skeleton_from_key(key)))
+        return key, bool(scale_invariant(skeleton_from_key(key), y=y))
     except Exception:
         return key, True
 
@@ -106,7 +107,11 @@ def _worker(key):
 class ScaleFilter:
     """Callable skeleton -> bool with a persistent key cache."""
 
-    def __init__(self, path=CACHE):
+    def __init__(self, path=None, y=True):
+        """y=False: require invariance to the units of x only (for data whose y
+        scale is fixed, e.g. a bounded response)."""
+        self.y = y
+        path = path or (CACHE if y else CACHE_X)
         self.path = path
         self.cache = {}
         if path and os.path.exists(path):
@@ -116,7 +121,7 @@ class ScaleFilter:
     def __call__(self, skeleton) -> bool:
         v = self.cache.get(skeleton.key)
         if v is None:
-            v = bool(scale_invariant(skeleton))
+            v = bool(scale_invariant(skeleton, y=self.y))
             self.cache[skeleton.key] = v
         return v
 
@@ -124,13 +129,21 @@ class ScaleFilter:
         return [s for s in skeletons if self(s)]
 
 
-def build(candidates_path, out=CACHE, n_jobs=None):
+def build(candidates_path, out=CACHE, n_jobs=None, y=True):
     from concurrent.futures import ProcessPoolExecutor
+    from functools import partial
     with open(candidates_path) as fh:
         keys = json.load(fh)["keys"]
+    if os.path.exists(out):
+        with open(out) as fh:
+            old = json.load(fh)
+    else:
+        old = {}
+    todo = [k for k in keys if k not in old]
     n_jobs = n_jobs or os.cpu_count()
     with ProcessPoolExecutor(n_jobs) as ex:
-        res = dict(ex.map(_worker, keys, chunksize=16))
+        res = dict(ex.map(partial(_worker, y=y), todo, chunksize=16))
+    res = old | res
     with open(out, "w") as fh:
         json.dump(res, fh, indent=0, sort_keys=True)
     print(f"{sum(res.values())} of {len(res)} candidates are scale invariant -> {out}")
@@ -141,6 +154,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["build"])
     ap.add_argument("--candidates", default=os.path.join(os.path.dirname(__file__), "data", "candidates.json"))
-    ap.add_argument("--out", default=CACHE)
+    ap.add_argument("--out", default=None)
+    ap.add_argument("--x-only", action="store_true", help="units of x only (cache scale_invariant_x.json)")
     a = ap.parse_args()
-    build(a.candidates, a.out)
+    build(a.candidates, a.out or (CACHE_X if a.x_only else CACHE), y=not a.x_only)

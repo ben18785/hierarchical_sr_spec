@@ -26,6 +26,7 @@ from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .likelihood import (CompiledSkeleton, LikelihoodTable, compute_likelihoods, predictive_logpdf,
                          scale_population)
+from .constraints import Spec, apply_truncation, check_grid, constrained_candidates_path, prepare, satisfied, unscale_y
 from .pooled import PooledModel
 from .themes import EditKernel, run_gibbs_themes
 from .metrics import adjusted_rand_index, form_recovery, reliability_pairs, weight_error
@@ -61,7 +62,7 @@ def _compiled(sk):
     return cs
 
 
-def lpd(pop, probs, skeletons, table, sx, sy, which="in", min_prob=1e-3, n_draws=200, seed=0):
+def lpd(pop, probs, skeletons, table, sx, sy, which="in", min_prob=1e-3, n_draws=200, seed=0, accept=None):
     """Mean pointwise log predictive density over datasets, mixing over the
     skeletons that carry posterior mass (columns of ``probs`` refer to
     ``skeletons`` and to ``table`` columns)."""
@@ -76,8 +77,9 @@ def lpd(pop, probs, skeletons, table, sx, sy, which="in", min_prob=1e-3, n_draws
         comps = []
         for e in idx:
             cs = _compiled(skeletons[e])
+            acc = None if accept is None else (lambda ph, cs=cs, j=j: accept(cs, j, ph))
             comps.append(predictive_logpdf(cs, xn, yn, table.phi[e][j], table.log_sigma[j, e], table.cov[e][j],
-                                           sx[j], sy[j], n_draws=n_draws, seed=seed + j))
+                                           sx[j], sy[j], n_draws=n_draws, seed=seed + j, accept=acc))
         comps = np.array(comps)
         mix = logsumexp(comps + np.log(w)[:, None], axis=0)
         per_ds.append(np.mean(mix))
@@ -88,6 +90,9 @@ def one_hot(idx, n_cols):
     P = np.zeros((len(idx), n_cols))
     P[np.arange(len(idx)), idx] = 1.0
     return P
+
+
+_ACCEPT = None   # set by run_replicate when a property spec truncates the prior
 
 
 def evaluate(name, probs, pop, skeletons, table, sx, sy, true_idx, weights_est=None, extras=None,
@@ -106,8 +111,8 @@ def evaluate(name, probs, pop, skeletons, table, sx, sy, true_idx, weights_est=N
         for k in top_keys:
             weights_est[k] = weights_est.get(k, 0.0) + 1.0 / len(top_keys)
     out["weight_error"] = weight_error(weights_est, pop.form_keys, pop.form_weights)
-    out["lpd_in"], _ = lpd(pop, probs, skeletons, table, sx, sy, "in")
-    out["lpd_out"], _ = lpd(pop, probs, skeletons, table, sx, sy, "out")
+    out["lpd_in"], _ = lpd(pop, probs, skeletons, table, sx, sy, "in", accept=_ACCEPT)
+    out["lpd_out"], _ = lpd(pop, probs, skeletons, table, sx, sy, "out", accept=_ACCEPT)
     out["p_true_mean"] = float(np.mean([probs[j, t] if t >= 0 else 0.0 for j, t in enumerate(true_idx)]))
     if calibration:
         p, y = reliability_pairs(probs, true_idx)
@@ -147,19 +152,18 @@ def _scaled_grammar(g: Grammar, scale: float) -> Grammar:
 def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig, expand=False,
                   sensitivity=False, kinds=("laplace", "bic"), J=30, n_starts=10, seed_base=12345,
                   scaling="pooled", tau=3.0, grow_rounds=0, pooled=False, themes=False, theme_top_k=10,
-                  theme_min_mass=0.02, scale_invariant=False):
+                  theme_min_mass=0.02, scale_invariant=False, spec=None):
+    global _ACCEPT
     t0 = time.time()
     seed = seed_base + 1_000_003 * rep + int(1000 * noise) * 7919 + n * 104729 + SETTING_SEED[setting]
     rng = np.random.default_rng(abs(seed))
     pop = make_population(setting, rng, n, noise, cands, J)
     X, Y, sx, sy = scaled_arrays(pop, scaling)
+    if spec is not None and spec.fixes_y_scale:
+        Y, sy = unscale_y(Y, sy)
+        Y, sy = np.array(Y), np.array(sy)
     grammar = cands.grammar
-    base = list(cands.skeletons)
-    admit = None
-    if scale_invariant:
-        from .properties import ScaleFilter
-        admit = ScaleFilter()
-        base = admit.filter(base)
+    base, admit = prepare(list(cands.skeletons), spec, scale_invariant)
     cset = from_skeletons(base, grammar, dict(cands.stats))
     cset.admit = admit
     table = compute_likelihoods(cset.skeletons, X, Y, n_starts=n_starts, tau=tau, seed=rep, compiled_cache=_COMPILED)
@@ -217,6 +221,13 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
     in_C = np.arange(n_C)
     true_idx_C = np.array([t if t < n_C else -1 for t in true_idx_all])
     form_idx = [key_to_idx[k] for k in pop.form_keys]
+    _ACCEPT = None
+    trunc_logq = None
+    if spec is not None:
+        # truncate the prior of every column to the region with the properties
+        trunc_logq = apply_truncation(table, skeletons, X, np.ones(Y.shape), spec, tau, sy, _compiled, seed=rep)
+        grids = [check_grid(X[j][:, 0]) for j in range(J)]
+        _ACCEPT = lambda cs, j, ph: satisfied(cs, ph, grids[j], spec, sy[j])
     t_lik = time.time() - t0
 
     rows = []
@@ -234,7 +245,8 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         if (pooled or themes) and kind == "laplace":
             tab_in = LikelihoodTable(table.laplace[:, :n_C], table.bic[:, :n_C], table.phi[:n_C],
                                    table.log_sigma[:, :n_C], table.cov[:n_C])
-            pm = PooledModel(tab_in, [s.n_consts for s in sk_C], tau_ref=tau, tau_mu=tau)
+            pm = PooledModel(tab_in, [s.n_consts for s in sk_C], tau_ref=tau, tau_mu=tau,
+                             trunc_logq=None if trunc_logq is None else trunc_logq[:, :n_C])
             resp = run_gibbs(L, cnt, grammar, cfg, model=pm)
             pop_wp = {sk_C[e].key: float(resp.pop_weight[e]) for e in range(n_C)}
             rows.append(evaluate("hier_pooled", resp.assign_probs, pop, sk_C, table, sx, sy, true_idx_C, pop_wp,
@@ -291,6 +303,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         "setting": setting, "n": n, "noise": noise, "rep": rep, "J": J,
         "n_candidates": n_C, "scaling": scaling, "tau": tau, "grow_rounds": grow_rounds, "n_added_by_edits": n_added, "expand": expand,
         "themes": themes, "n_added_by_themes": n_added_themes, "scale_invariant": scale_invariant,
+        "constraints": None if spec is None else spec.label,
         "true_forms_in_C": true_in_C, "frac_datasets_true_in_C": float(np.mean(true_idx_C >= 0)),
         "seconds_likelihood": t_lik, "seconds_total": time.time() - t0,
     }
@@ -329,6 +342,8 @@ def main(argv=None):
     ap.add_argument("--sensitivity", action="store_true", help="also run alpha / gamma-prior variants")
     ap.add_argument("--scale-invariant", action="store_true",
                     help="keep only skeletons whose constants absorb changes of units in x and y (hsr.properties)")
+    ap.add_argument("--constrain", default=None,
+                    help='known properties of f, e.g. "range=0,1;limit_inf=1;monotone=increasing" (hsr.constraints)')
     ap.add_argument("--corpus", default=None,
                     help="corpus JSON (hsr.corpus): set the grammar's Dirichlet prior from its rule frequencies")
     ap.add_argument("--kappa", type=float, default=50.0, help="prior sample size of the corpus prior")
@@ -344,6 +359,9 @@ def main(argv=None):
         grammar = Grammar(alpha=corpus_alpha(load_corpus(args.corpus, exclude), Grammar(), kappa=args.kappa))
         prior_label = f"corpus{'_heldout' if args.corpus_heldout else ''}_k{args.kappa:g}"
         print("grammar prior", prior_label, {k: np.round(v, 2).tolist() for k, v in grammar.alpha.items()}, flush=True)
+    spec = Spec.parse(args.constrain)
+    if spec is not None and spec.exact and args.candidates == ap.get_default("candidates"):
+        args.candidates = constrained_candidates_path(spec)
     cands = CandidateSet.from_json(args.candidates, grammar)
     cfg = GibbsConfig(n_sweeps=args.sweeps, burn_in=args.burn, n_chains=args.chains)
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
@@ -352,7 +370,7 @@ def main(argv=None):
             rows = run_replicate(args.setting, args.n, args.noise, rep, cands, cfg, expand=args.expand,
                                  sensitivity=args.sensitivity, J=args.J, n_starts=args.starts, scaling=args.scaling, tau=args.tau,
                                  grow_rounds=args.grow, pooled=args.pooled, themes=args.themes,
-                                 scale_invariant=args.scale_invariant)
+                                 scale_invariant=args.scale_invariant, spec=spec)
             for r in rows:
                 r["grammar_prior"] = prior_label
                 fh.write(json.dumps(r) + "\n")

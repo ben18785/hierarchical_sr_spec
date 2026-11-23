@@ -49,6 +49,8 @@ def variant_of(r):
         parts.append("themes")
     if r.get("scale_invariant"):
         parts.append("scaleinv")
+    if r.get("constraints"):
+        parts.append(r["constraints"])
     if r.get("grammar_prior", "default") != "default":
         parts.append(r["grammar_prior"])
     return ",".join(parts)

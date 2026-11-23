@@ -77,6 +77,21 @@ FAMILIES = {
             ext_index=2),
         "null": "stretching exponent beta = 1",
     },
+    # bounded, increasing, -> 1 (a CDF): the test case for hsr.constraints
+    "cdf": {
+        "parent": Form(
+            "exponential_cdf",
+            lambda x, c: 1 - sp.exp(c[0] * x),
+            lambda x, p: 1 - np.exp(-p[0] * x),
+            lambda rng: np.array([_ln(rng, 0.6, 0.3)])),
+        "variant": Form(
+            "weibull_cdf",
+            lambda x, c: 1 - sp.exp(c[0] * x ** c[1]),
+            lambda x, p: 1 - np.exp(-(p[0] * x) ** p[1]),
+            lambda rng: np.array([_ln(rng, 0.6, 0.3), _ln(rng, 1.7, 0.25)]),
+            ext_index=1),
+        "null": "Weibull shape = 1",
+    },
 }
 
 POPULATIONS = {"parent": 0.0, "extended": 1.0, "mixture": 0.3}   # fraction of datasets from the variant

@@ -353,7 +353,7 @@ def log_ml_importance(cs: CompiledSkeleton, x, y, mode, cov, n_draws=20000, df=4
 
 # ----------------------------------------------------- posterior predictive
 def predictive_logpdf(cs: CompiledSkeleton, x_new, y_new, phi, log_sigma, cov, x_scale, y_scale,
-                      n_draws=200, seed=0):
+                      n_draws=200, seed=0, accept=None):
     """Pointwise log predictive density of y_new (original units) under the
     Laplace posterior of one skeleton for one dataset. Falls back to the MAP
     plug-in if the covariance is unusable."""
@@ -369,6 +369,11 @@ def predictive_logpdf(cs: CompiledSkeleton, x_new, y_new, phi, log_sigma, cov, x
             draws = mode[None, :]
     else:
         draws = mode[None, :]
+    if accept is not None and draws.shape[0] > 1:
+        # truncated prior (hsr.constraints): keep only draws with the properties
+        keep = accept(draws[:, :cs.k])
+        if keep.any():
+            draws = draws[keep]
     m = draws.shape[0]
     X = np.broadcast_to(x_new[None], (m,) + x_new.shape)
     with np.errstate(all="ignore"):

@@ -89,6 +89,29 @@ def families_si_grid(ns=(10, 20), kappa=50):
     return out
 
 
+CDF_SPEC = "range=0,1;limit_inf=1;monotone=increasing"
+FORAGE_SPEC = "nonneg;value0=0;monotone=increasing"
+
+
+def constraints_grid(ns=(10, 20)):
+    """Known-property constraints (hsr.constraints): the cdf family without any
+    filter, with the scale-invariance filter, and with the filter plus the
+    constraint; and FoRAGE with nonnegative, zero at zero prey, increasing."""
+    base = "--grow 1 --pooled --themes"
+    out = []
+    for pop in ("parent", "extended", "mixture"):
+        for n in ns:
+            job = {"name": f"fam_cdf_{pop}_n{n}_s05", "setting": f"cdf_{pop}", "n": n, "noise": 0.05}
+            out.append(job | {"extra": base})
+            out.append(job | {"name": job["name"] + "_si", "extra": base + " --scale-invariant"})
+            out.append(job | {"name": job["name"] + "_si_con",
+                              "extra": base + f" --scale-invariant --constrain '{CDF_SPEC}'"})
+    for j in realdata_grid(f"--grow 1 --themes --scale-invariant --constrain '{FORAGE_SPEC}'", "_si_con"):
+        if "forage" in j["name"]:
+            out.append(j)
+    return out
+
+
 def pysr_grid():
     """PySR baseline on the families cells (reps from the workflow input) and on
     every real-data job, with the same scaling and splits."""
@@ -103,7 +126,7 @@ def pysr_grid():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full",
-                                                        "families_corpus", "realdata", "realdata_si", "families_si", "pysr"])
+                                                        "families_corpus", "realdata", "realdata_si", "families_si", "constraints", "pysr"])
     ap.add_argument("--only", default="", help="regex; keep only jobs whose name matches")
     a = ap.parse_args()
     jobs = []
@@ -123,6 +146,8 @@ if __name__ == "__main__":
         jobs += realdata_grid("--grow 1 --themes --scale-invariant", "_si")
     if a.grid == "families_si":
         jobs += families_si_grid()
+    if a.grid == "constraints":
+        jobs += constraints_grid()
     if a.grid == "pysr":
         jobs += pysr_grid()
     if a.only:

@@ -127,7 +127,10 @@ class PooledModel:
     """
 
     def __init__(self, table, n_consts, tau_ref=3.0, tau_mu=3.0, grid=DEFAULT_GRID, s0=1.0,
-                 weak_frac=0.5, weak_factor=1.0):
+                 weak_frac=0.5, weak_factor=1.0, trunc_logq=None):
+        """``trunc_logq`` (J, C): log P(A | N(0, tau_ref^2)) terms added to the
+        table by hsr.constraints.apply_truncation; pooled skeletons drop them
+        (see apply_truncation)."""
         self.tau_ref, self.tau_mu = tau_ref, tau_mu
         self.grid = np.asarray(grid, float)
         self.logw = grid_log_weights(self.grid, s0)
@@ -147,7 +150,7 @@ class PooledModel:
             c = np.zeros((self.J, len(idx), G))
             m = np.stack([table.phi[e] for e in idx], axis=1)               # (J, Ck, k)
             V = np.stack([table.cov[e][:, :k, :k] for e in idx], axis=1)    # (J, Ck, k, k)
-            Lk = L[:, idx]
+            Lk = L[:, idx] if trunc_logq is None else L[:, idx] + np.asarray(trunc_logq)[:, idx]
             for g, s in enumerate(self.grid):
                 Ag, ag, cg = member_terms(Lk.reshape(-1), m.reshape(-1, k), V.reshape(-1, k, k), s, tau_ref)
                 A[:, :, g] = Ag.reshape(self.J, len(idx), k, k)
