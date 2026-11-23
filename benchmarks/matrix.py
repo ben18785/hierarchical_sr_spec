@@ -51,6 +51,7 @@ def families_grid(ns=(10, 20)):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full"])
+    ap.add_argument("--only", default="", help="regex; keep only jobs whose name matches")
     a = ap.parse_args()
     jobs = []
     if a.grid in ("main", "all"):
@@ -61,4 +62,7 @@ if __name__ == "__main__":
         jobs += families_grid()
     if a.grid == "families_full":
         jobs += families_grid(NS)
+    if a.only:
+        import re
+        jobs = [j for j in jobs if re.search(a.only, j["name"])]
     print(json.dumps({"include": jobs}))
