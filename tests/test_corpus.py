@@ -33,3 +33,13 @@ def test_corpus_alpha_follows_frequencies():
     for nt in g.nonterminals:
         assert np.all(alpha[nt] >= 0.1)
         assert abs(alpha[nt].sum() - (100 + 0.1 * len(alpha[nt]))) < 1e-9
+
+
+def test_constant_products_collapse_to_standard_forms():
+    from hsr.corpus import _to_sympy, project
+    hill = "c0*x1**c1/(c2 + x1**c1)"
+    for f in ["V*S^n/(K^n + S^n)", "V*(S/(K1*K2))^n/((S/(K1*K2))^n + 1)"]:
+        e, m = _to_sympy(f)
+        assert project(e, ["S"], m) == {hill}
+    e, m = _to_sympy("Vm*S/(Km*(1 + I/Ki) + S)")
+    assert project(e, ["S"], m) == {"c0*x1/(c1 + x1)"}

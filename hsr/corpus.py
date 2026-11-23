@@ -106,6 +106,42 @@ def _to_sympy(formula: str):
     return expr, {k: local[v] for k, v in names.items()}
 
 
+def collapse_constants(expr, x, prefix="k"):
+    """Replace every maximal x-free part of ``expr`` that is not a plain number
+    by one fresh constant: within a sum or product, all x-free terms merge into
+    a single constant (c1*c2*x -> k0*x, c0/c3 + x/c4 -> k0 + k1*x)."""
+    memo = {}
+
+    def new(part):
+        # identical constant parts share one constant (a Hill exponent n used twice stays shared)
+        if part not in memo:
+            memo[part] = sp.Symbol(f"{prefix}{len(memo)}", real=True)
+        return memo[part]
+
+    def rec(e):
+        if not e.has(x):
+            return e if e.is_number else new(e)
+        if e.is_Add or e.is_Mul:
+            free = [a for a in e.args if not a.has(x)]
+            dep = [rec(a) for a in e.args if a.has(x)]
+            if free and not all(a.is_number for a in free):
+                dep.append(new(e.func(*free)))
+            else:
+                dep += free
+            return e.func(*dep)
+        if e.is_Pow and e.base.is_Mul and not e.exp.has(x):
+            # (k*f)**p -> k'*f**p
+            free = [a for a in e.base.args if not a.has(x)]
+            if free and not all(a.is_number for a in free):
+                dep = sp.Mul(*[a for a in e.base.args if a.has(x)])
+                return new(sp.Pow(sp.Mul(*free), e.exp)) * rec(sp.Pow(dep, e.exp))
+        if not e.args:
+            return e
+        return e.func(*[rec(a) for a in e.args])
+
+    return rec(expr)
+
+
 def project(expr, variables, sym_map):
     """One-variable canonical keys of ``expr``: for each name in ``variables``
     that occurs in it, that symbol -> x1 and every other symbol -> a constant."""
@@ -122,7 +158,10 @@ def project(expr, variables, sym_map):
                 sub[s] = sp.Symbol(f"c{k}", real=True)
                 k += 1
         try:
-            sk = canonicalise(expr.xreplace(sub), 1, max_consts=None)
+            e = collapse_constants(expr.xreplace(sub), x1)
+            e = e.xreplace({s: sp.Symbol(f"c{i}", real=True)
+                            for i, s in enumerate(sorted(e.free_symbols - {x1}, key=str))})
+            sk = canonicalise(e, 1, max_consts=None)
         except Exception:
             sk = None
         if sk is not None:
