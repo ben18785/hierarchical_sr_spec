@@ -320,9 +320,22 @@ def main(argv=None):
                     help="grow candidates around the posterior and run the themes-and-variations model")
     ap.add_argument("--expand", action="store_true", help="add data-driven one-step edits to C")
     ap.add_argument("--sensitivity", action="store_true", help="also run alpha / gamma-prior variants")
+    ap.add_argument("--corpus", default=None,
+                    help="corpus JSON (hsr.corpus): set the grammar's Dirichlet prior from its rule frequencies")
+    ap.add_argument("--kappa", type=float, default=50.0, help="prior sample size of the corpus prior")
+    ap.add_argument("--corpus-heldout", action="store_true",
+                    help="drop every benchmark-family key (parents, variants, specialisations) from the corpus")
     args = ap.parse_args(argv)
 
-    cands = CandidateSet.from_json(args.candidates)
+    grammar, prior_label = None, "default"
+    if args.corpus:
+        from .corpus import corpus_alpha, load as load_corpus
+        from .families import FAMILIES, family_keys
+        exclude = [k for fam in FAMILIES for k in family_keys(fam)] if args.corpus_heldout else []
+        grammar = Grammar(alpha=corpus_alpha(load_corpus(args.corpus, exclude), Grammar(), kappa=args.kappa))
+        prior_label = f"corpus{'_heldout' if args.corpus_heldout else ''}_k{args.kappa:g}"
+        print("grammar prior", prior_label, {k: np.round(v, 2).tolist() for k, v in grammar.alpha.items()}, flush=True)
+    cands = CandidateSet.from_json(args.candidates, grammar)
     cfg = GibbsConfig(n_sweeps=args.sweeps, burn_in=args.burn, n_chains=args.chains)
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "a") as fh:
@@ -331,6 +344,7 @@ def main(argv=None):
                                  sensitivity=args.sensitivity, J=args.J, n_starts=args.starts, scaling=args.scaling, tau=args.tau,
                                  grow_rounds=args.grow, pooled=args.pooled, themes=args.themes)
             for r in rows:
+                r["grammar_prior"] = prior_label
                 fh.write(json.dumps(r) + "\n")
             fh.flush()
             hier = [r for r in rows if r["method"] == "hier" and r["kind"] == "laplace"][0]

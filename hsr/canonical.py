@@ -153,7 +153,7 @@ def _absorb_once(expr, occ, fresh):
             if free and _group_ok(free, occ, allow_numbers=True):
                 rest = sp.Mul(*[a for a in arg.args if has_var(a)])
                 return sp.log(rest) + fresh()
-        if isinstance(arg, sp.Pow) and arg.exp.is_Number and has_var(arg.base):
+        if isinstance(arg, sp.Pow) and not has_var(arg.exp) and has_var(arg.base):
             # log(f**p) = p log f; p becomes part of the multiplicative scale
             return arg.exp * sp.log(arg.base)
         return sp.log(arg)
@@ -161,7 +161,9 @@ def _absorb_once(expr, occ, fresh):
     if isinstance(expr, sp.Pow):
         base = _absorb_once(expr.base, occ, fresh)
         ex = _absorb_once(expr.exp, occ, fresh)
-        if ex.is_Number and isinstance(base, sp.Mul):
+        if not has_var(ex) and isinstance(base, sp.Mul):
+            # (c*f)**p = c**p * f**p; c**p is a fresh constant when c is
+            # unshared, for numeric or constant p ((c0*x)**c1 == c*x**c1)
             free = [a for a in base.args if not has_var(a)]
             if free and _group_ok(free, occ, allow_numbers=True):
                 rest = sp.Mul(*[a for a in base.args if has_var(a)])
@@ -365,6 +367,14 @@ def _best_of(starts):
     by (number of constants, number of divisions, structural size, srepr).
     Each start is also tried with its fractions combined."""
     pool = []
+    for st in list(starts):
+        try:
+            # x*x**c -> x**(c + 1), which absorption turns into x**c
+            ps = sp.powsimp(st, combine="exp")
+            if ps != st:
+                starts = list(starts) + [ps]
+        except Exception:  # pragma: no cover
+            pass
     for st in starts:
         for variant in (st, _together(st)):
             if variant is None:

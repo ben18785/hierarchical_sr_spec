@@ -47,6 +47,8 @@ def variant_of(r):
         parts.append(f"grow={r['grow_rounds']}")
     if r.get("themes"):
         parts.append("themes")
+    if r.get("grammar_prior", "default") != "default":
+        parts.append(r["grammar_prior"])
     return ",".join(parts)
 
 
