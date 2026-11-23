@@ -17,7 +17,7 @@ on:
         description: "burn-in sweeps"
         default: "500"
       grid:
-        description: "main | sensitivity | all | families | families_full"
+        description: "main | sensitivity | all | families | families_full | families_corpus"
         default: "all"
       only:
         description: "optional regex: run only matrix jobs whose name matches"

@@ -48,9 +48,22 @@ def families_grid(ns=(10, 20)):
             for s in from_settings for n in ns]
 
 
+def families_corpus_grid(ns=(10, 20), kappa=50):
+    """The families grid twice: default grammar prior, and the corpus prior with
+    every benchmark-family form held out of the corpus."""
+    base = "--grow 1 --pooled --themes"
+    out = []
+    for job in families_grid(ns):
+        out.append(job | {"extra": base})
+        out.append(job | {"name": job["name"] + f"_corpusHO{kappa}",
+                          "extra": base + f" --corpus hsr/data/corpus.json --corpus-heldout --kappa {kappa}"})
+    return out
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full"])
+    ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full",
+                                                        "families_corpus"])
     ap.add_argument("--only", default="", help="regex; keep only jobs whose name matches")
     a = ap.parse_args()
     jobs = []
@@ -62,6 +75,8 @@ if __name__ == "__main__":
         jobs += families_grid()
     if a.grid == "families_full":
         jobs += families_grid(NS)
+    if a.grid == "families_corpus":
+        jobs += families_corpus_grid()
     if a.only:
         import re
         jobs = [j for j in jobs if re.search(a.only, j["name"])]
