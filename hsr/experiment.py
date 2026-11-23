@@ -126,13 +126,18 @@ def evaluate(name, probs, pop, skeletons, table, sx, sy, true_idx, weights_est=N
 
 
 def gibbs_summary(res):
+    from .diagnostics import summary as diag_summary
     rh = res.rhat(res.n_forms.astype(float))
-    return {
+    out = {
         "n_forms_mean": float(res.n_forms.mean()),
         "gamma_mean": float(res.gamma.mean()),
         "rhat_n_forms": None if not np.isfinite(rh) else float(rh),
         "chain_disagreement": res.chain_disagreement(),
     }
+    d = diag_summary(res)
+    out.update({"max_rhat": d["max_rhat"], "min_ess_bulk": d["min_ess_bulk"], "chain_tv_mean": d["chain_tv_mean"],
+                "converged": d["converged"], "diagnostics": {"rhat": d["rhat"], "ess_bulk": d["ess_bulk"]}})
+    return out
 
 
 SENSITIVITY = {

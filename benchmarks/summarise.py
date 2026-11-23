@@ -82,7 +82,7 @@ def aggregate(rows):
     cells = defaultdict(list)
     for r in rows:
         for m in METRICS + ["n_forms_mean", "chain_disagreement", "rhat_n_forms", "frac_datasets_true_in_C",
-                            "n_themes_mean", "rho_mean"]:
+                            "n_themes_mean", "rho_mean", "max_rhat", "min_ess_bulk", "chain_tv_mean", "converged"]:
             if m in r:
                 cells[(r["variant"], r["setting"], r["noise"], r["n"], r["kind"], r["method"], m)].append(r[m])
     return {k: mean_se(v) for k, v in cells.items()}
@@ -130,12 +130,15 @@ def write_tables(agg, rows, out):
                         lines.append(f"| {meth} | " + " | ".join(cells) + " |")
                     lines.append("")
                 # diagnostics for the hierarchical sampler
-                lines.append("**hier diagnostics** (posterior mean number of forms; max chain TV disagreement; "
+                lines.append("**hier diagnostics** (posterior mean number of forms; max / mean chain TV disagreement; "
+                             "max rank-normalised split R-hat and min bulk ESS over label-invariant summaries; "
+                             "fraction of replicates flagged converged (R-hat < 1.05, ESS >= 100); "
                              "fraction of datasets whose true form is in C)")
                 lines.append("")
                 lines.append("| | " + " | ".join(f"σ={nz:g}, n={n}" for nz in noises for n in ns) + " |")
                 lines.append("|" + "---|" * (1 + len(noises) * len(ns)))
-                for m in ["n_forms_mean", "chain_disagreement", "frac_datasets_true_in_C"]:
+                for m in ["n_forms_mean", "chain_disagreement", "chain_tv_mean", "max_rhat", "min_ess_bulk", "converged",
+                          "frac_datasets_true_in_C"]:
                     cells = [fmt(agg.get((variant, setting, nz, n, kind, "hier", m), (np.nan, np.nan, 0)))
                              for nz in noises for n in ns]
                     lines.append(f"| {m} | " + " | ".join(cells) + " |")

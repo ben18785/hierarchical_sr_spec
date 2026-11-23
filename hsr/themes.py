@@ -171,7 +171,7 @@ def run_chain_themes(L, counts, grammar: Grammar, kernel: EditKernel, cfg: Gibbs
     assign = np.zeros((J, C))
     theme_counts = np.zeros((J, C))
     pop = np.zeros(C)
-    n_forms, n_themes, gammas, gamma0s, rhos, kept = [], [], [], [], [], []
+    n_forms, n_themes, gammas, gamma0s, rhos, kept, log_liks = [], [], [], [], [], [], []
     thetas = {nt: [] for nt in grammar.nonterminals}
     for sweep in range(cfg.n_sweeps):
         # ---- 1. single-dataset moves
@@ -266,6 +266,7 @@ def run_chain_themes(L, counts, grammar: Grammar, kernel: EditKernel, cfg: Gibbs
             pop += (n_e + gamma * Q) / (gamma + J)
             n_forms.append(B)
             n_themes.append(len(used_themes))
+            log_liks.append(float(sum(Mc.values())))
             gammas.append(gamma)
             gamma0s.append(gamma0)
             rhos.append(rho)
@@ -276,7 +277,8 @@ def run_chain_themes(L, counts, grammar: Grammar, kernel: EditKernel, cfg: Gibbs
     return {"assign_probs": assign / nk, "theme_probs": theme_counts / nk, "pop": pop / nk,
             "n_forms": np.array(n_forms), "n_themes": np.array(n_themes), "gamma": np.array(gammas),
             "gamma0": np.array(gamma0s), "rho": np.array(rhos),
-            "theta": {nt: np.array(v) for nt, v in thetas.items()}, "z": np.array(kept)}
+            "theta": {nt: np.array(v) for nt, v in thetas.items()}, "z": np.array(kept),
+            "log_lik": np.array(log_liks)}
 
 
 def run_gibbs_themes(L, counts, grammar: Grammar, kernel: EditKernel, cfg: GibbsConfig | None = None,
@@ -296,6 +298,7 @@ def run_gibbs_themes(L, counts, grammar: Grammar, kernel: EditKernel, cfg: Gibbs
         gamma=np.stack([ch["gamma"] for ch in chains]),
         theta={nt: np.stack([ch["theta"][nt] for ch in chains]) for nt in grammar.nonterminals},
         z_samples=np.stack([ch["z"] for ch in chains]),
+        log_lik=np.stack([ch["log_lik"] for ch in chains]),
         theme_probs=np.mean([ch["theme_probs"] for ch in chains], axis=0),
         n_themes=np.stack([ch["n_themes"] for ch in chains]),
         rho=np.stack([ch["rho"] for ch in chains]),

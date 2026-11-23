@@ -28,7 +28,8 @@ class GibbsConfig:
     gamma_init: float = 1.0
     update_theta: bool = True
     update_gamma: bool = True
-    init: str = "argmax"          # chain 0 always argmax; "argmax" | "random" for the others
+    init: str = "random"          # chain 0 always argmax; others "random" (each dataset's form drawn from
+                                  # its own posterior: dispersed starts) or "argmax"
     relabel: bool = True          # block move: resample the skeleton of a whole cluster
     relabel_every: int = 1        # sweeps between block moves
     thin: int = 1
@@ -44,6 +45,7 @@ class GibbsResult:
     gamma: np.ndarray             # (n_chains, n_kept)
     theta: dict                   # nt -> (n_chains, n_kept, n_options)
     z_samples: np.ndarray         # (n_chains, n_kept, J)
+    log_lik: np.ndarray = None    # (n_chains, n_kept) sum of cluster marginals (label-invariant diagnostic)
 
     @property
     def top(self) -> np.ndarray:
@@ -171,7 +173,7 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
     nt_names = grammar.nonterminals
     assign_counts = np.zeros((J, C))
     pop = np.zeros(C)
-    n_forms, gammas = [], []
+    n_forms, gammas, log_liks = [], [], []
     thetas = {nt: [] for nt in nt_names}
     for sweep in range(cfg.n_sweeps):
         log_gamma = np.log(gamma)
@@ -219,6 +221,7 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
             pop += (n_e + gamma * np.exp(log_p)) / (gamma + J)
             n_forms.append(len(in_use))
             gammas.append(gamma)
+            log_liks.append(float(sum(Mc.values())))
             for nt in nt_names:
                 thetas[nt].append(theta[nt])
             kept.append(z.copy())
@@ -230,6 +233,7 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
         "gamma": np.array(gammas),
         "theta": {nt: np.array(v) for nt, v in thetas.items()},
         "z": np.array(kept),
+        "log_lik": np.array(log_liks),
     }
 
 
@@ -253,4 +257,5 @@ def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
         gamma=np.stack([ch["gamma"] for ch in chains]),
         theta={nt: np.stack([ch["theta"][nt] for ch in chains]) for nt in grammar.nonterminals},
         z_samples=np.stack([ch["z"] for ch in chains]),
+        log_lik=np.stack([ch["log_lik"] for ch in chains]),
     )
