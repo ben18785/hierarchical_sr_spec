@@ -99,3 +99,20 @@ def test_edit_graph_links_parents_to_variants():
     _, e2 = edit_graph(c2, [0])
     k2 = c2.keys
     assert ("c0*x1/(c1 + x1)", "c0*x1**c1/(c2 + x1**c1)") in {(k2[a], k2[b]) for a, b in e2}
+
+
+def test_edit_graph_handles_reprinted_keys():
+    # x1/(c0 + x1)/2 canonicalises to "x1/(2*(c0 + x1))", which sympify re-prints as
+    # "x1/(2*c0 + 2*x1)"; the edges must still resolve (this raised KeyError before)
+    g = Grammar()
+    c = from_skeletons([skeleton_from_key("c1*x1/(c0 + x1)")], g)
+    import hsr.candidates as hc
+    orig = hc.one_step_edits
+    sym = {v.name: v for v in c.skeletons[0].expr.free_symbols}
+    x1, c0 = sym["x1"], sym["c0"]
+    hc.one_step_edits = lambda sk, library, n_vars: [x1 / (c0 + x1) / 2]
+    try:
+        new, edges = edit_graph(c, [0])
+    finally:
+        hc.one_step_edits = orig
+    assert new and all(0 <= a < len(c.keys) and 0 <= b < len(c.keys) for a, b in edges)

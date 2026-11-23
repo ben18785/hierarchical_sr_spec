@@ -352,9 +352,12 @@ def edit_graph(cands: CandidateSet, sources, library=None, n_jobs=1):
     allstr = list(dict.fromkeys(s for d in (child_strings, parent_strings) for v in d.values() for s in v))
     mapping = canonicalise_many_exprs(allstr, cands.grammar, n_jobs)
     mapping = {s: (k if k is not None and "x" in k else None) for s, k in mapping.items()}
-    new_keys = {k for k in mapping.values() if k is not None}
-    new_idx = cands.add([skeleton_from_key(k, n_vars) for k in sorted(new_keys)])
-    key_idx = {k: i for i, k in enumerate(cands.keys)}
+    # skeleton_from_key may re-print a key (e.g. x1/(2*(c0 + x1)) -> x1/(2*c0 + 2*x1)),
+    # so look skeletons up by the rebuilt key
+    rebuilt = {k: skeleton_from_key(k, n_vars) for k in {k for k in mapping.values() if k is not None}}
+    new_idx = cands.add([rebuilt[k] for k in sorted(rebuilt)])
+    pos = {k: i for i, k in enumerate(cands.keys)}
+    key_idx = {k: pos[sk.key] for k, sk in rebuilt.items()}
     edges = set()
     for i in sources:
         k_i = cands.skeletons[i].n_consts
