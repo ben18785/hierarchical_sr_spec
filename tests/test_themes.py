@@ -116,3 +116,12 @@ def test_edit_graph_handles_reprinted_keys():
     finally:
         hc.one_step_edits = orig
     assert new and all(0 <= a < len(c.keys) and 0 <= b < len(c.keys) for a, b in edges)
+
+
+def test_edit_graph_frees_numeric_exponents():
+    g = Grammar()
+    c = from_skeletons([skeleton_from_key("c0*x1**2/(c1 + x1**2)"), skeleton_from_key("c0*exp(-2*x1)")], g)
+    _, edges = edit_graph(c, [0, 1])
+    pairs = {(c.keys[a], c.keys[b]) for a, b in edges}
+    assert ("c0*x1**2/(c1 + x1**2)", "c0*x1**c1/(c2 + x1**c1)") in pairs
+    assert ("c0*exp(-2*x1)", "c0*exp(c1*x1)") in pairs

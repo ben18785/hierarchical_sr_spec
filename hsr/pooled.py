@@ -97,6 +97,19 @@ def member_terms(L, m, V, s, tau_ref, min_precision=1e-6, min_variance=1e-8):
     return A, a, c
 
 
+def weak_fraction(V, tau_ref, weak_factor=1.0):
+    """Fraction of datasets whose Laplace covariance V (J, k, k) has a direction
+    where the data precision (V^-1 - I/tau_ref^2) is below weak_factor/tau_ref^2."""
+    ok = np.all(np.isfinite(V.reshape(len(V), -1)), axis=1)
+    if not ok.any():
+        return 0.0
+    Vo = 0.5 * (V[ok] + np.swapaxes(V[ok], 1, 2))
+    ev = np.linalg.eigvalsh(Vo)                         # posterior variances
+    post_prec_min = 1.0 / np.maximum(ev.max(axis=1), 1e-300)
+    data_prec_min = post_prec_min - 1.0 / tau_ref**2
+    return float(np.mean(data_prec_min < weak_factor / tau_ref**2))
+
+
 def _integrate_mu(Asum, asum, csum, k, tau_mu):
     """log ∫ N(mu; 0, tau_mu^2 I) exp(-1/2 mu'Asum mu + asum'mu + csum) dmu (batched)."""
     Q = Asum + np.eye(k) / tau_mu**2
@@ -113,7 +126,8 @@ class PooledModel:
     Laplace fit under prior N(0, tau_ref^2) (tau_ref = the ``tau`` used there).
     """
 
-    def __init__(self, table, n_consts, tau_ref=3.0, tau_mu=3.0, grid=DEFAULT_GRID, s0=1.0):
+    def __init__(self, table, n_consts, tau_ref=3.0, tau_mu=3.0, grid=DEFAULT_GRID, s0=1.0,
+                 weak_frac=0.5, weak_factor=1.0):
         self.tau_ref, self.tau_mu = tau_ref, tau_mu
         self.grid = np.asarray(grid, float)
         self.logw = grid_log_weights(self.grid, s0)
@@ -144,6 +158,20 @@ class PooledModel:
         for k, grp in self.groups.items():
             self.pos[grp["idx"]] = np.arange(len(grp["idx"]))
         self._singletons = None
+        # skeletons whose constants are not identified (a direction where the
+        # data carry less precision than the reference prior) in more than
+        # weak_frac of the datasets are not pooled: M_e(S) = sum_j L_je.
+        # Along such a direction (e.g. the scale symmetry of
+        # c0 - log(c1 x^2 + c2 x + c3)) the members' linearised ridges can all
+        # pass near one degenerate point, and the Gaussian algebra then reports
+        # a large, false pooling gain (benchmark run 2, decay family).
+        self.L = np.where(np.isfinite(L), L, -np.inf)
+        self.unpooled = np.zeros(self.C, bool)
+        for e in range(self.C):
+            k = int(self.k[e])
+            if k == 0:
+                continue
+            self.unpooled[e] = weak_fraction(table.cov[e][:, :k, :k], tau_ref, weak_factor) > weak_frac
 
     # ------------------------------------------------------------------ API
     def marginal(self, e: int, members) -> float:
@@ -154,8 +182,8 @@ class PooledModel:
         k = int(self.k[e])
         grp = self.groups[k]
         p = self.pos[e]
-        if k == 0:
-            return float(grp["c"][members, p].sum())
+        if k == 0 or self.unpooled[e]:
+            return float(self.L[members, e].sum())
         Asum = grp["A"][members, p].sum(axis=0)       # (G, k, k)
         asum = grp["a"][members, p].sum(axis=0)       # (G, k)
         csum = grp["c"][members, p].sum(axis=0)       # (G,)
@@ -175,6 +203,7 @@ class PooledModel:
             csum = grp["c"][members].sum(axis=0)
             Mg = _integrate_mu(Asum, asum, csum, k, self.tau_mu)
             out[grp["idx"]] = logsumexp(self.logw + Mg, axis=-1)
+        out[self.unpooled] = self.L[members][:, self.unpooled].sum(axis=0)
         return out
 
     def singletons(self) -> np.ndarray:
@@ -187,6 +216,7 @@ class PooledModel:
                     continue
                 Mg = _integrate_mu(grp["A"], grp["a"], grp["c"], k, self.tau_mu)   # (J, Ck, G)
                 out[:, grp["idx"]] = logsumexp(self.logw + Mg, axis=-1)
+            out[:, self.unpooled] = self.L[:, self.unpooled]
             self._singletons = out
         return self._singletons
 

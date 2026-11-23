@@ -155,3 +155,21 @@ def test_posterior_mu_recovers_shared_mean():
     assert abs(mean[0] - 2.0) < 0.05 and sd[0] < 0.1
     assert np.isclose(wg.sum(), 1.0)
     assert wg[model.grid <= 0.25].sum() > 0.5   # identical constants: small spread favoured
+
+
+def test_non_identified_skeleton_is_not_pooled():
+    """A skeleton with a direction the data barely constrain (posterior variance
+    close to the reference prior's) in every dataset gets M_e(S) = sum_j L_je,
+    so it cannot gain from pooling; a well-identified one still can."""
+    J = 12
+    rng = np.random.default_rng(4)
+    phis = [1.0 + rng.normal(0, 0.02, (J, 2)), 1.0 + rng.normal(0, 0.02, (J, 2))]
+    vars_ = [np.tile([0.01, 0.01], (J, 1)), np.tile([0.01, 8.0], (J, 1))]
+    L = np.full((J, 2), -3.0)
+    pm = PooledModel(fake_table(L, phis, vars_), [2, 2])
+    assert list(pm.unpooled) == [False, True]
+    members = list(range(J))
+    assert pm.marginal(1, members) == pytest.approx(L[:, 1].sum())
+    assert pm.marginal_all(members)[1] == pytest.approx(L[:, 1].sum())
+    assert np.allclose(pm.singletons()[:, 1], L[:, 1])
+    assert pm.marginal(0, members) > L[:, 0].sum() + 10

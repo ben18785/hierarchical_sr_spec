@@ -255,6 +255,34 @@ def _replace_at(expr, path, new):
     return expr.func(*args)
 
 
+def _number_positions(expr, path=()):
+    if isinstance(expr, sp.Number):
+        if expr not in (sp.Integer(0), sp.Integer(1), sp.Integer(-1)):
+            yield path
+        return
+    for i, a in enumerate(expr.args):
+        yield from _number_positions(a, path + (i,))
+
+
+def free_numbers(expr, c_new):
+    """Generalisations: each numeric literal other than 0 and +-1 replaced, one
+    at a time, by a fresh constant (x**2 -> x**C turns C x^2/(C + x^2) into
+    Hill; exp(-2 x) -> exp(C x)). The reverse of ``specialisations``."""
+    paths = list(_number_positions(expr))
+    out = [_replace_at(expr, path, c_new) for path in paths]
+    # the same literal at every occurrence, sharing one constant
+    vals = [_get_at(expr, p) for p in paths]
+    for v in {v for v in vals if vals.count(v) > 1}:
+        out.append(expr.xreplace({v: c_new}))
+    return out
+
+
+def _get_at(expr, path):
+    for i in path:
+        expr = expr.args[i]
+    return expr
+
+
 def one_step_edits(skeleton: Skeleton, library_strings, n_vars=1):
     """All expressions obtained by replacing one variable occurrence with a
     library expression, plus the skeleton with one extra additive or
@@ -276,6 +304,7 @@ def one_step_edits(skeleton: Skeleton, library_strings, n_vars=1):
             out.append(skeleton.expr.xreplace({x: sub for x in xs}))
     c_new = sp.Symbol("c99", real=True)
     c_new2 = sp.Symbol("c98", real=True)
+    out.extend(free_numbers(skeleton.expr, c_new))
     out.append(skeleton.expr + c_new)
     out.append(skeleton.expr * c_new)
     for x in {s for s in skeleton.expr.free_symbols if not is_const(s)}:
