@@ -60,10 +60,26 @@ def families_corpus_grid(ns=(10, 20), kappa=50):
     return out
 
 
+REAL = {"indometh": "pooled", "theoph": "pooled", "orange": "pooled", "dnase": "pooled", "co2": "pooled",
+        "loblolly": "pooled", "forage_replaced": "per_dataset"}
+REAL_SPLITS = ["full", "interp:0:3", "interp:1:3", "interp:2:3", "extrap"]
+
+
+def realdata_grid(extra="--grow 1 --themes"):
+    """hsr.realdata jobs: every dataset x split (FoRAGE curves are in different
+    units, so they are scaled per dataset)."""
+    out = []
+    for d, sc in REAL.items():
+        for sp in REAL_SPLITS:
+            out.append({"name": f"real_{d}_{sp.replace(':', '')}", "module": "realdata",
+                        "args": f"--data hsr/data/real/{d}.csv --split {sp} --scaling {sc} {extra}"})
+    return out
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full",
-                                                        "families_corpus"])
+                                                        "families_corpus", "realdata"])
     ap.add_argument("--only", default="", help="regex; keep only jobs whose name matches")
     a = ap.parse_args()
     jobs = []
@@ -77,6 +93,8 @@ if __name__ == "__main__":
         jobs += families_grid(NS)
     if a.grid == "families_corpus":
         jobs += families_corpus_grid()
+    if a.grid == "realdata":
+        jobs += realdata_grid()
     if a.only:
         import re
         jobs = [j for j in jobs if re.search(a.only, j["name"])]

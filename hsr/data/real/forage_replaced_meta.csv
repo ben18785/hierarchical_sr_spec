@@ -1,0 +1,134 @@
+group,n,Source,Prey replaced?,Data type,Dim,Predator scientific name,Prey scientific name,Predation or Parasitism
+143,8,O'Donoghue et al 1998 ECOLOGY,Y,Mean,2,Canis latrans,Lepus americanus,Predator
+144,8,O'Donoghue et al 1998 ECOLOGY,Y,Mean,2,Lynx canadensis,Lepus americanus,Predator
+189,11,Dale et al 1994 J ANIM ECOL,Y,Raw data,2,Canis lupus,Rangifer tarandus,Predator
+191,9,Angerbj?rn 1989 OECOLOGIA,Y,Raw data,2,Vulpes vulpes,Lepus timidus,Predator
+192,11,Korpimäki and Norrdahl 1991 ECOLOGY,Y,Raw data,2,Falco tinnunculus,Microtus spp.,Predator
+193,11,Korpimäki and Norrdahl 1991 ECOLOGY,Y,Raw data,2,Asio flammeus,Microtus spp.,Predator
+194,11,Korpimäki and Norrdahl 1991 ECOLOGY,Y,Raw data,2,Asio otus,Microtus spp.,Predator
+228,11,Nilsen et al 2009 J ANIM ECOL,Y,Raw data,2,Lynx lynx,Capreolus capreolus,Predator
+229,8,Nilsen et al 2009 J ANIM ECOL,Y,Raw data,2,Lynx lynx,Capreolus capreolus,Predator
+230,30,Nilsen et al 2009 J ANIM ECOL,Y,Raw data,2,Lynx lynx,Capreolus capreolus,Predator
+231,27,Nilsen et al 2009 J ANIM ECOL,Y,Raw data,2,Lynx lynx,Capreolus capreolus,Predator
+237,9,Everson 1979 CAN ENT,Y,Mean,2,Phytoseiulus persimilis,Tetranychus urticae,Predator
+284,21,McCoull et al 1998 AUS J ENTOMOL,Y,Raw data,3,Naucoris congrex ,Culicidae,Predator
+285,27,McCoull et al 1998 AUS J ENTOMOL,Y,Raw data,3,Naucoris congrex ,Culicidae,Predator
+286,31,McCoull et al 1998 AUS J ENTOMOL,Y,Raw data,3,Naucoris congrex ,Culicidae,Predator
+287,27,McCoull et al 1998 AUS J ENTOMOL,Y,Raw data,3,Naucoris congrex ,Culicidae,Predator
+353,10,Elliott 2003 FRESH BIOL,Y,Mean,2,Perlodes microcephalus,Baetis rhodani,Predator
+354,10,Elliott 2003 FRESH BIOL,Y,Mean,2,Perlodes microcephalus,Chironomus sp,Predator
+355,10,Elliott 2003 FRESH BIOL,Y,Mean,2,Isoperla grammatica,Baetis rhodani,Predator
+356,10,Elliott 2003 FRESH BIOL,Y,Mean,2,Isoperla grammatica,Chironomus sp,Predator
+357,10,Elliott 2003 FRESH BIOL,Y,Mean,2,Dinocras cephalotes,Baetis rhodani,Predator
+358,10,Elliott 2003 FRESH BIOL,Y,Mean,2,Dinocras cephalotes,Chironomus sp,Predator
+359,10,Elliott 2003 FRESH BIOL,Y,Mean,2,Perla bipunctata,Baetis rhodani,Predator
+360,10,Elliott 2003 FRESH BIOL,Y,Mean,2,Perla bipunctata,Chironomus sp,Predator
+488,8,Redpath and Thirgood 1999 J ANIM ECOL,Y,Mean,2,Circus cyaneus,Lagopus lagopus scoticus,Predator
+489,8,Redpath and Thirgood 1999 J ANIM ECOL,Y,Mean,2,Circus cyaneus,Lagopus lagopus scoticus,Predator
+493,11,Gilg et al 2006 OIKOS,Y,Mean,2,Stercorarius longicaudus,Dicrostonyx groenlandicus,Predator
+494,9,Gilg et al 2006 OIKOS,Y,Mean,2,Alopex lagopus,Dicrostonyx groenlandicus,Predator
+514,8,Ranta and Nuutinen 1985 J ANIM ECOL,Y,Mean,3,Lissotriton vulgaris (Triturus vulgaris),Daphnia longispina,Predator
+515,8,Ranta and Nuutinen 1985 J ANIM ECOL,Y,Mean,3,Lissotriton vulgaris (Triturus vulgaris),Daphnia magna,Predator
+516,8,Ranta and Nuutinen 1985 J ANIM ECOL,Y,Mean,3,Lissotriton vulgaris (Triturus vulgaris),Daphnia longispina,Predator
+517,8,Ranta and Nuutinen 1985 J ANIM ECOL,Y,Mean,3,Lissotriton vulgaris (Triturus vulgaris),Daphnia magna,Predator
+518,8,Ranta and Nuutinen 1985 J ANIM ECOL,Y,Mean,3,Lissotriton vulgaris (Triturus vulgaris),Daphnia longispina,Predator
+519,8,Ranta and Nuutinen 1985 J ANIM ECOL,Y,Mean,3,Lissotriton vulgaris (Triturus vulgaris),Daphnia magna,Predator
+520,8,Ranta and Nuutinen 1985 J ANIM ECOL,Y,Mean,3,Lissotriton vulgaris (Triturus vulgaris),Daphnia longispina,Predator
+524,11,Michalko and Pekar 2017 AM NAT,Y,Raw data,2,Philodromus buchari,Dictyna spp.,Predator
+525,13,Michalko and Pekar 2017 AM NAT,Y,Raw data,2,Philodromus buchari,Dictyna spp.,Predator
+550,33,Twardochleb et al 2012 ECOLOGICAL APPLICATIONS,Y,Raw data,2,Pacifastacus leniusculus,Potamopyrgus antipodarum,Predator
+558,9,Holling 1965 MEM ENT SOC CANADA,Y,Mean,2,Hierodula crassa,Musca domestica,Predator
+569,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Iphiseius degenerans,Mononychellus tanajoa,Predator
+570,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Iphiseius degenerans,Mononychellus tanajoa,Predator
+571,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Iphiseius degenerans,Mononychellus tanajoa,Predator
+572,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Neoseiulus teke,Mononychellus tanajoa,Predator
+573,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Neoseiulus teke,Mononychellus tanajoa,Predator
+574,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Neoseiulus teke,Mononychellus tanajoa,Predator
+575,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Iphiseius degenerans,Mononychellus tanajoa,Predator
+576,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Iphiseius degenerans,Mononychellus tanajoa,Predator
+577,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Iphiseius degenerans,Mononychellus tanajoa,Predator
+578,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Neoseiulus teke,Mononychellus tanajoa,Predator
+579,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Neoseiulus teke,Mononychellus tanajoa,Predator
+580,13,Nwilene and Nachman 1996 EXP APPL ACAR,Y,Mean,2,Neoseiulus teke,Mononychellus tanajoa,Predator
+583,9,Liznarova and Pekar 2013 ANIM BEHAV,Y,Mean,2,Zodarion rubidum,Tetramorium caespitum,Predator
+618,10,Elliott 2005 FRESH BIOL,Y,Mean,2.5,Rhyacophila dorsalis,Chironomus sp.,Predator
+619,10,Elliott 2005 FRESH BIOL,Y,Mean,2.5,Rhyacophila dorsalis,Chironomus sp.,Predator
+620,10,Elliott 2005 FRESH BIOL,Y,Mean,2.5,Rhyacophila dorsalis,Chironomus sp.,Predator
+621,10,Elliott 2005 FRESH BIOL,Y,Mean,2.5,Rhyacophila dorsalis,Chironomus sp.,Predator
+673,43,Rossi et al 2006 ECOL RES,Y,Raw data,2.5,Nesticodes rufipes,Musca domestica,Predator
+674,38,Rossi et al 2006 ECOL RES,Y,Raw data,2.5,Nesticodes rufipes,Musca domestica,Predator
+744,8,Fox and Murdoch 1978 J OF ANIMAL ECOLOGY,Y,Mean,3,Notonecta hoffmanni,Culex quinquefasciatus,Predator
+745,8,Fox and Murdoch 1978 J OF ANIMAL ECOLOGY,Y,Mean,3,Notonecta hoffmanni,Culex quinquefasciatus,Predator
+846,10,Reeve et al 1978 LIMNOLOGY AND OCEANOGRAPHY,Y,Mean,3,Mnemiopsis mccradyi,Acartia tonsa,Predator
+862,14,Messier 1994 ECOLOGY,Y,Raw data,2,Canis lupus,Alces alces,Predator
+941,17,Nielsen 1999 J ANIM ECOL,Y,Raw data,2,Falco rusticolus,Lagopus mutus,Predator
+948,12,Krishnaraj & Pritchard 1995 CAN J ZOOL,Y,Mean,3,Coenagrion resolutum,Daphnia magna,Predator
+949,12,Krishnaraj & Pritchard 1995 CAN J ZOOL,Y,Mean,3,Coenagrion resolutum,Daphnia magna,Predator
+950,8,Krishnaraj & Pritchard 1995 CAN J ZOOL,Y,Mean,3,Coenagrion resolutum,Daphnia magna,Predator
+951,12,Krishnaraj & Pritchard 1995 CAN J ZOOL,Y,Mean,3,Lestes disjunctus,Daphnia magna,Predator
+952,12,Krishnaraj & Pritchard 1995 CAN J ZOOL,Y,Mean,3,Lestes disjunctus,Daphnia magna,Predator
+953,12,Krishnaraj & Pritchard 1995 CAN J ZOOL,Y,Mean,3,Lestes disjunctus,Daphnia magna,Predator
+955,8,Englund & Harms 2001 OIKOS,Y,Mean,3,Utricularia vulgaris,Polyphemus pediculus,Predator
+972,8,Samu and Biro 1993 EUR J ENTOMOL,Y,Mean,2,Pardosa hortensis,Drosophila melanogaster,Predator
+983,14,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Anyphaena accentuata,Cacopsylla pyri,Predator
+984,19,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Anyphaena accentuata,Cacopsylla pyri,Predator
+985,20,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Anyphaena accentuata,Cacopsylla pyri,Predator
+986,21,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Anyphaena accentuata,Cacopsylla pyri,Predator
+987,22,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Anyphaena accentuata,Cacopsylla pyri,Predator
+988,11,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Philodromus spp.,Cacopsylla pyri,Predator
+989,17,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Philodromus spp.,Cacopsylla pyri,Predator
+990,19,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Philodromus spp.,Cacopsylla pyri,Predator
+991,21,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Philodromus spp.,Cacopsylla pyri,Predator
+992,21,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Philodromus spp.,Cacopsylla pyri,Predator
+993,18,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Anyphaena accentuata,Philodromus spp.,Predator
+994,21,Pekar et al 2014 J APPL ECOL,Y,Raw data,2,Anyphaena accentuata,Philodromus spp.,Predator
+1195,19,Sarmento et al 2007 BRAZ ARCH BIOL TECH,Y,Raw data,2,Eriopis connexa,Macrosiphum euphorbiae,Predator
+1196,19,Sarmento et al 2007 BRAZ ARCH BIOL TECH,Y,Raw data,2,Eriopis connexa,Macrosiphum euphorbiae,Predator
+1206,78,Koski and Johnson 2002 CJFAS,Y,Raw data,3,Oncorhynchus nerka,Daphnia spp.,Predator
+1207,10,Moss and Beauchamp 2007 J FISH BIOL,Y,Raw data,3,Oncorhynchus gorbuscha,Tisbe spp.,Predator
+1208,9,Moss and Beauchamp 2007 J FISH BIOL,Y,Raw data,3,Oncorhynchus gorbuscha,Tisbe spp.,Predator
+1209,26,Moss and Beauchamp 2007 J FISH BIOL,Y,Raw data,3,Oncorhynchus keta,Tisbe spp.,Predator
+1211,18,Moss and Beauchamp 2007 J FISH BIOL,Y,Raw data,3,Oncorhynchus keta,(Americamysis bahia) Mysidopsis bahia,Predator
+1226,29,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Squalus acanthias,Clupea harengus,Predator
+1227,27,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Squalus acanthias,Merluccius bilinearis,Predator
+1228,28,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Squalus acanthias,Scomber scombrus,Predator
+1229,27,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Squalus acanthias,Doryteuthis pealeii,Predator
+1230,22,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Pollachius virens,Clupea harengus,Predator
+1231,28,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Pollachius virens,Merluccius bilinearis,Predator
+1232,27,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Merluccius bilinearis,Clupea harengus,Predator
+1233,27,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Merluccius bilinearis,Merluccius bilinearis,Predator
+1234,29,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Merluccius bilinearis,Scomber scombrus,Predator
+1235,25,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Gadus morhua,Clupea harengus,Predator
+1236,29,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Gadus morhua,Merluccius bilinearis,Predator
+1237,26,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Gadus morhua,Scomber scombrus,Predator
+1238,25,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Urophycis tenuis,Clupea harengus,Predator
+1239,27,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Urophycis tenuis,Merluccius bilinearis,Predator
+1240,26,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Lophius americanus,Clupea harengus,Predator
+1241,27,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Lophius americanus,Scomber scombrus,Predator
+1242,27,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Lophius americanus,Doryteuthis pealeii,Predator
+1243,20,Moustahfid et al 2010 OEC,Y,Raw data,2.5,Leucoraja ocellata,Clupea harengus,Predator
+1443,10,Letcher et al 1997 CJFAS,Y,Mean,3,Perca fluviatilis,Artemia spp.,Predator
+1444,9,Letcher et al 1997 CJFAS,Y,Mean,3,Coregonus hoyi,Artemia spp.,Predator
+1445,9,Letcher et al 1997 CJFAS,Y,Mean,3,Alosa pseudoharengus,Artemia spp.,Predator
+1446,10,Letcher et al 1997 CJFAS,Y,Mean,3,Perca fluviatilis,Artemia spp.,Predator
+1447,10,Letcher et al 1997 CJFAS,Y,Mean,3,Coregonus hoyi,Artemia spp.,Predator
+1448,8,Letcher et al 1997 CJFAS,Y,Mean,3,Alosa pseudoharengus,Artemia spp.,Predator
+1486,19,De Villemereuil and López-Sepulcre 2011 ECOL MOD,Y,Raw data,3,Poecilia reticulata,,Predator
+1487,16,De Villemereuil and López-Sepulcre 2011 ECOL MOD,Y,Raw data,3,Poecilia reticulata,,Predator
+1488,17,De Villemereuil and López-Sepulcre 2011 ECOL MOD,Y,Raw data,3,Poecilia reticulata,,Predator
+1489,20,De Villemereuil and López-Sepulcre 2011 ECOL MOD,Y,Raw data,3,Poecilia reticulata,,Predator
+1490,19,De Villemereuil and López-Sepulcre 2011 ECOL MOD,Y,Raw data,3,Poecilia reticulata,,Predator
+1491,19,De Villemereuil and López-Sepulcre 2011 ECOL MOD,Y,Raw data,3,Poecilia reticulata,,Predator
+1492,14,De Villemereuil and López-Sepulcre 2011 ECOL MOD,Y,Raw data,3,Anablepsoides hartii,,Predator
+1493,15,De Villemereuil and López-Sepulcre 2011 ECOL MOD,Y,Raw data,3,Anablepsoides hartii,,Predator
+1668,29,Koski and Johnson 2002,Y,Raw data,3,Oncorhynchus nerka,Daphnia spp.,Predator
+1720,89,Vucetich et al 2002 Ecology,Y,Raw data,2,Canis lupus ,Alces alces,Predator
+2061,34,Haskell et al 2017 PLOS ONE,Y,Raw data,3,Oncorhynchus tshawytscha,Daphnia pulex,Predator
+2195,21,Papanikolaou et al 2020 ECOL EVOL,Y,Raw data,2,Macrolophus pygmaeus,Ephestia kuehniella,Predator
+2196,26,Papanikolaou et al 2020 ECOL EVOL,Y,Raw data,2,Macrolophus pygmaeus,Ephestia kuehniella,Predator
+2197,27,Papanikolaou et al 2020 ECOL EVOL,Y,Raw data,2,Macrolophus pygmaeus,Ephestia kuehniella,Predator
+2198,31,Papanikolaou et al 2020 ECOL EVOL,Y,Raw data,2,Macrolophus pygmaeus,Ephestia kuehniella,Predator
+2199,30,Papanikolaou et al 2020 ECOL EVOL,Y,Raw data,2,Macrolophus pygmaeus,Ephestia kuehniella,Predator
+2200,31,Papanikolaou et al 2020 ECOL EVOL,Y,Raw data,2,Macrolophus pygmaeus,Ephestia kuehniella,Predator
+2201,29,Papanikolaou et al 2020 ECOL EVOL,Y,Raw data,2,Macrolophus pygmaeus,Ephestia kuehniella,Predator
+2202,35,Papanikolaou et al 2020 ECOL EVOL,Y,Raw data,2,Macrolophus pygmaeus,Ephestia kuehniella,Predator

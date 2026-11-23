@@ -17,7 +17,7 @@ on:
         description: "burn-in sweeps"
         default: "500"
       grid:
-        description: "main | sensitivity | all | families | families_full | families_corpus"
+        description: "main | sensitivity | all | families | families_full | families_corpus | realdata"
         default: "all"
       only:
         description: "optional regex: run only matrix jobs whose name matches"
@@ -63,6 +63,11 @@ jobs:
       - name: run cell
         run: |
           mkdir -p results/raw
+          if [ "${{ matrix.module }}" = "realdata" ]; then
+            python -m hsr.realdata ${{ matrix.args }} --sweeps ${{ inputs.sweeps }} --burn ${{ inputs.burn }} \
+              --out results/raw/${{ matrix.name }}.jsonl
+            exit 0
+          fi
           python -m hsr.experiment --setting ${{ matrix.setting }} --n ${{ matrix.n }} \
             --noise ${{ matrix.noise }} --reps '${{ inputs.reps }}' \
             --sweeps ${{ inputs.sweeps }} --burn ${{ inputs.burn }} \
@@ -74,7 +79,7 @@ jobs:
 
   summarise:
     needs: run
-    if: always() && inputs.task != 'corpus'
+    if: always() && inputs.task != 'corpus' && inputs.grid != 'realdata'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
