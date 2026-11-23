@@ -65,14 +65,27 @@ REAL = {"indometh": "pooled", "theoph": "pooled", "orange": "pooled", "dnase": "
 REAL_SPLITS = ["full", "interp:0:3", "interp:1:3", "interp:2:3", "extrap"]
 
 
-def realdata_grid(extra="--grow 1 --themes"):
+def realdata_grid(extra="--grow 1 --themes", suffix=""):
     """hsr.realdata jobs: every dataset x split (FoRAGE curves are in different
     units, so they are scaled per dataset)."""
     out = []
     for d, sc in REAL.items():
         for sp in REAL_SPLITS:
-            out.append({"name": f"real_{d}_{sp.replace(':', '')}", "module": "realdata",
+            out.append({"name": f"real_{d}_{sp.replace(':', '')}{suffix}", "module": "realdata",
                         "args": f"--data hsr/data/real/{d}.csv --split {sp} --scaling {sc} {extra}"})
+    return out
+
+
+def families_si_grid(ns=(10, 20), kappa=50):
+    """Families cells: as before, with the scale-invariance filter, and with the
+    filter plus the held-out corpus prior."""
+    base = "--grow 1 --pooled --themes"
+    out = []
+    for job in families_grid(ns):
+        out.append(job | {"extra": base})
+        out.append(job | {"name": job["name"] + "_si", "extra": base + " --scale-invariant"})
+        out.append(job | {"name": job["name"] + f"_si_corpusHO{kappa}",
+                          "extra": base + f" --scale-invariant --corpus hsr/data/corpus.json --corpus-heldout --kappa {kappa}"})
     return out
 
 
@@ -90,7 +103,7 @@ def pysr_grid():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full",
-                                                        "families_corpus", "realdata", "pysr"])
+                                                        "families_corpus", "realdata", "realdata_si", "families_si", "pysr"])
     ap.add_argument("--only", default="", help="regex; keep only jobs whose name matches")
     a = ap.parse_args()
     jobs = []
@@ -106,6 +119,10 @@ if __name__ == "__main__":
         jobs += families_corpus_grid()
     if a.grid == "realdata":
         jobs += realdata_grid()
+    if a.grid == "realdata_si":
+        jobs += realdata_grid("--grow 1 --themes --scale-invariant", "_si")
+    if a.grid == "families_si":
+        jobs += families_si_grid()
     if a.grid == "pysr":
         jobs += pysr_grid()
     if a.only:

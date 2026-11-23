@@ -139,7 +139,7 @@ def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=No
 
 # ------------------------------------------------------------------- run
 def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scaling="pooled", n_starts=10, tau=3.0,
-        grow_rounds=0, themes=False, theme_top_k=10, theme_min_mass=0.02, seed=0):
+        grow_rounds=0, themes=False, theme_top_k=10, theme_min_mass=0.02, seed=0, scale_invariant=False):
     t0 = time.time()
     groups = load_groups(data)
     names = list(groups)
@@ -155,7 +155,14 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
     X = X[..., None]
     J = len(names)
     grammar = cands.grammar
-    cset = from_skeletons(list(cands.skeletons), grammar, dict(cands.stats))
+    base = list(cands.skeletons)
+    admit = None
+    if scale_invariant:
+        from .properties import ScaleFilter
+        admit = ScaleFilter()
+        base = admit.filter(base)
+    cset = from_skeletons(base, grammar, dict(cands.stats))
+    cset.admit = admit
     lik = lambda sks, s: compute_likelihoods(sks, X, Y, M, n_starts=n_starts, tau=tau, seed=s,
                                              compiled_cache=_COMPILED)
     table = lik(cset.skeletons, seed)
@@ -229,6 +236,7 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
     meta = {"data": os.path.basename(data), "split": split, "J": J, "n_fit": int(M.sum()),
             "n_heldout": int(sum(len(h[0]) for h in held)), "scaling": scaling, "tau": tau,
             "grow_rounds": grow_rounds, "n_added_by_edits": n_added, "themes": themes, "n_candidates": n_C,
+            "scale_invariant": scale_invariant,
             "reference_keys": [sks[i].key for i in ref_idx],
             "seconds_likelihood": t_lik, "seconds_total": time.time() - t0}
     for r in rows:
@@ -252,6 +260,8 @@ def main(argv=None):
     ap.add_argument("--tau", type=float, default=3.0)
     ap.add_argument("--grow", type=int, default=0)
     ap.add_argument("--themes", action="store_true")
+    ap.add_argument("--scale-invariant", action="store_true",
+                    help="keep only skeletons whose constants absorb changes of units in x and y (hsr.properties)")
     ap.add_argument("--corpus", default=None, help="corpus JSON: corpus-informed grammar prior")
     ap.add_argument("--kappa", type=float, default=50.0)
     args = ap.parse_args(argv)
@@ -265,7 +275,7 @@ def main(argv=None):
     name = os.path.splitext(os.path.basename(args.data))[0]
     reference = args.reference if args.reference is not None else REFERENCE.get(name, [])
     rows = run(args.data, args.split, cands, cfg, reference, args.scaling, args.starts, args.tau, args.grow,
-               args.themes)
+               args.themes, scale_invariant=args.scale_invariant)
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "a") as fh:
         for r in rows:

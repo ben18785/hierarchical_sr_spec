@@ -147,14 +147,21 @@ def _scaled_grammar(g: Grammar, scale: float) -> Grammar:
 def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig, expand=False,
                   sensitivity=False, kinds=("laplace", "bic"), J=30, n_starts=10, seed_base=12345,
                   scaling="pooled", tau=3.0, grow_rounds=0, pooled=False, themes=False, theme_top_k=10,
-                  theme_min_mass=0.02):
+                  theme_min_mass=0.02, scale_invariant=False):
     t0 = time.time()
     seed = seed_base + 1_000_003 * rep + int(1000 * noise) * 7919 + n * 104729 + SETTING_SEED[setting]
     rng = np.random.default_rng(abs(seed))
     pop = make_population(setting, rng, n, noise, cands, J)
     X, Y, sx, sy = scaled_arrays(pop, scaling)
     grammar = cands.grammar
-    cset = from_skeletons(list(cands.skeletons), grammar, dict(cands.stats))
+    base = list(cands.skeletons)
+    admit = None
+    if scale_invariant:
+        from .properties import ScaleFilter
+        admit = ScaleFilter()
+        base = admit.filter(base)
+    cset = from_skeletons(base, grammar, dict(cands.stats))
+    cset.admit = admit
     table = compute_likelihoods(cset.skeletons, X, Y, n_starts=n_starts, tau=tau, seed=rep, compiled_cache=_COMPILED)
     n_added = 0
     for _ in range(grow_rounds if grow_rounds else (1 if expand else 0)):
@@ -283,7 +290,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
     meta = {
         "setting": setting, "n": n, "noise": noise, "rep": rep, "J": J,
         "n_candidates": n_C, "scaling": scaling, "tau": tau, "grow_rounds": grow_rounds, "n_added_by_edits": n_added, "expand": expand,
-        "themes": themes, "n_added_by_themes": n_added_themes,
+        "themes": themes, "n_added_by_themes": n_added_themes, "scale_invariant": scale_invariant,
         "true_forms_in_C": true_in_C, "frac_datasets_true_in_C": float(np.mean(true_idx_C >= 0)),
         "seconds_likelihood": t_lik, "seconds_total": time.time() - t0,
     }
@@ -320,6 +327,8 @@ def main(argv=None):
                     help="grow candidates around the posterior and run the themes-and-variations model")
     ap.add_argument("--expand", action="store_true", help="add data-driven one-step edits to C")
     ap.add_argument("--sensitivity", action="store_true", help="also run alpha / gamma-prior variants")
+    ap.add_argument("--scale-invariant", action="store_true",
+                    help="keep only skeletons whose constants absorb changes of units in x and y (hsr.properties)")
     ap.add_argument("--corpus", default=None,
                     help="corpus JSON (hsr.corpus): set the grammar's Dirichlet prior from its rule frequencies")
     ap.add_argument("--kappa", type=float, default=50.0, help="prior sample size of the corpus prior")
@@ -342,7 +351,8 @@ def main(argv=None):
         for rep in parse_reps(args.reps):
             rows = run_replicate(args.setting, args.n, args.noise, rep, cands, cfg, expand=args.expand,
                                  sensitivity=args.sensitivity, J=args.J, n_starts=args.starts, scaling=args.scaling, tau=args.tau,
-                                 grow_rounds=args.grow, pooled=args.pooled, themes=args.themes)
+                                 grow_rounds=args.grow, pooled=args.pooled, themes=args.themes,
+                                 scale_invariant=args.scale_invariant)
             for r in rows:
                 r["grammar_prior"] = prior_label
                 fh.write(json.dumps(r) + "\n")

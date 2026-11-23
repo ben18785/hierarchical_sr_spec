@@ -55,6 +55,9 @@ class CandidateSet:
         """Add new skeletons (deduplicated by key); return indices of the added ones."""
         have = set(self.keys)
         new = [s for s in skeletons if s.key not in have]
+        admit = getattr(self, "admit", None)
+        if admit is not None:
+            new = [s for s in new if admit(s)]
         new = list({s.key: s for s in new}.values())
         if not new:
             return []
@@ -386,7 +389,9 @@ def edit_graph(cands: CandidateSet, sources, library=None, n_jobs=1):
     rebuilt = {k: skeleton_from_key(k, n_vars) for k in {k for k in mapping.values() if k is not None}}
     new_idx = cands.add([rebuilt[k] for k in sorted(rebuilt)])
     pos = {k: i for i, k in enumerate(cands.keys)}
-    key_idx = {k: pos[sk.key] for k, sk in rebuilt.items()}
+    # keys rejected by cands.admit (if set) were not added and get no edges
+    key_idx = {k: pos[sk.key] for k, sk in rebuilt.items() if sk.key in pos}
+    mapping = {s: (k if k in key_idx else None) for s, k in mapping.items()}
     edges = set()
     for i in sources:
         k_i = cands.skeletons[i].n_consts
