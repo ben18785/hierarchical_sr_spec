@@ -135,10 +135,23 @@ def heldout_lpd(probs, skeletons, table, held, sx, sy, min_prob=1e-3, n_draws=20
     return (float(np.mean(allv)) if allv else None), per_group
 
 
-def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=None, extras=None, top_n=15):
+def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=None, extras=None, top_n=15,
+              res=None, group_top=5, group_min=0.01):
+    """One output row. Besides point summaries it records posterior
+    uncertainty: each group's posterior over forms (up to ``group_top`` forms
+    with probability >= ``group_min``), and for sampler results the (J, J)
+    co-assignment matrix and the posterior over the number of forms."""
     top = np.argmax(probs, axis=1)
     out = {"method": name, "top_keys": [skeletons[e].key for e in top],
            "top_prob": [float(probs[j, e]) for j, e in enumerate(top)], "groups": list(groups)}
+    gp = []
+    for j in range(probs.shape[0]):
+        idx = np.argsort(probs[j])[::-1][:group_top]
+        gp.append([[skeletons[e].key, round(float(probs[j, e]), 4)] for e in idx if probs[j, e] >= group_min])
+    out["group_posterior"] = gp
+    if res is not None:
+        out["coassignment"] = np.round(res.coassignment(), 3).tolist()
+        out["n_forms_posterior"] = {int(k): round(v, 4) for k, v in res.n_forms_distribution().items()}
     if pop_weight is None:
         pop_weight = probs.mean(axis=0)
     order = np.argsort(pop_weight)[::-1][:top_n]
@@ -233,7 +246,7 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
         L = table.matrix(kind)
         res = run_gibbs(L, cnt, grammar, cfg)
         rows.append(summarise("hier", res.assign_probs, sks, table, held, sx, sy, names, res.pop_weight,
-                              gibbs_summary(res)) | {"kind": kind})
+                              gibbs_summary(res), res=res) | {"kind": kind})
         P = baselines.no_pooling_posterior(L, cnt, grammar)
         rows.append(summarise("no_pool_bma", P, sks, table, held, sx, sy, names) | {"kind": kind})
         Pc = baselines.complete_pooling_posterior(L, cnt, grammar)
@@ -253,7 +266,7 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
             pm = PooledModel(table, [s.n_consts for s in sks], tau_ref=tau, tau_mu=tau, trunc_logq=trunc_logq)
             resp = run_gibbs(L, cnt, grammar, cfg, model=pm)
             rows.append(summarise("hier_pooled", resp.assign_probs, sks, table, held, sx, sy, names,
-                                  resp.pop_weight, gibbs_summary(resp)) | {"kind": kind})
+                                  resp.pop_weight, gibbs_summary(resp), res=resp) | {"kind": kind})
             if themes:
                 kernel = EditKernel(n_C, edges, log_w=grammar.log_prob(cnt, grammar.prior_mean()))
                 rest = run_gibbs_themes(L, cnt, grammar, kernel, cfg, model=pm)
@@ -261,7 +274,7 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
                                              "n_themes_mean": float(rest.n_themes.mean()),
                                              "rho_mean": float(rest.rho.mean())}
                 rows.append(summarise("hier_themes", rest.assign_probs, sks, table, held, sx, sy, names,
-                                      rest.pop_weight, ext) | {"kind": kind})
+                                      rest.pop_weight, ext, res=rest) | {"kind": kind})
     meta = {"data": os.path.basename(data), "split": split, "J": J, "n_fit": int(M.sum()),
             "n_heldout": int(sum(len(h[0]) for h in held)), "scaling": scaling, "tau": tau,
             "grow_rounds": grow_rounds, "n_added_by_edits": n_added, "themes": themes, "n_candidates": n_C,

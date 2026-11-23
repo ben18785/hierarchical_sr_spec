@@ -49,6 +49,13 @@ class GibbsResult:
     def top(self) -> np.ndarray:
         return np.argmax(self.assign_probs, axis=1)
 
+    def coassignment(self) -> np.ndarray:
+        """(J, J) posterior probability that datasets i and j use the same
+        skeleton (clusters are identified by their skeleton), over all chains
+        and kept sweeps."""
+        z = self.z_samples.reshape(-1, self.z_samples.shape[-1])     # (draws, J)
+        return (z[:, :, None] == z[:, None, :]).mean(axis=0)
+
     def n_forms_distribution(self):
         vals, cnt = np.unique(self.n_forms, return_counts=True)
         return dict(zip(vals.tolist(), (cnt / cnt.sum()).tolist()))

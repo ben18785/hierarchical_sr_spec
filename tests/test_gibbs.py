@@ -179,3 +179,13 @@ def test_burn_in_validation():
     g, counts = one_var_grammar(2)
     with pytest.raises(ValueError):
         run_gibbs(np.zeros((2, 2)), counts, g, GibbsConfig(n_sweeps=10, burn_in=10))
+
+
+def test_coassignment_from_samples():
+    import numpy as np
+    from hsr.gibbs import GibbsResult
+    z = np.array([[[0, 0, 1], [0, 1, 1]], [[2, 2, 2], [0, 0, 1]]])      # (chains, kept, J)
+    r = GibbsResult(None, None, None, None, None, None, z)
+    C = r.coassignment()
+    assert np.allclose(np.diag(C), 1)
+    assert np.isclose(C[0, 1], 3 / 4) and np.isclose(C[1, 2], 2 / 4) and np.isclose(C[0, 2], 1 / 4)
