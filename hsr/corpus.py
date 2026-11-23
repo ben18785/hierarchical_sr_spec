@@ -200,16 +200,37 @@ def sbml_laws(path):
     return species, laws
 
 
-def model_keys(path):
+class _Timeout(BaseException):
+    pass
+
+
+def _alarm(signum, frame):
+    raise _Timeout()
+
+
+def model_keys(path, law_timeout=10):
+    """Keys of one model. A law whose reduction takes longer than
+    ``law_timeout`` seconds (sympy can stall on very large laws) is skipped."""
+    import signal
     species, laws = sbml_laws(path)
     keys = set()
     n_ok = 0
     for f in laws:
+        if len(f) > 2000:
+            continue
         parsed = _to_sympy(f)
         if parsed is None:
             continue
         expr, syms = parsed
-        ks = project(expr, species, syms)
+        old = signal.signal(signal.SIGALRM, _alarm)
+        signal.alarm(law_timeout)
+        try:
+            ks = project(expr, species, syms)
+        except _Timeout:
+            ks = set()
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, old)
         if ks:
             n_ok += 1
         keys |= ks
