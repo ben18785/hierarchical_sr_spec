@@ -34,6 +34,8 @@ class GibbsConfig:
     relabel_every: int = 1        # sweeps between block moves
     split_merge: int = 3          # split-merge proposals per sweep (0 = off)
     single_site: bool = True      # single-dataset Gibbs updates (off only for testing other moves)
+    n_temps: int = 1              # > 1: non-reversible parallel tempering with this many replicas (hsr.tempering)
+    pt_tune_rounds: int = 6       # schedule-tuning rounds of 1, 2, 4, ... iterations (discarded)
     thin: int = 1
     seed: int = 0
 
@@ -50,6 +52,7 @@ class GibbsResult:
     log_lik: np.ndarray = None    # (n_chains, n_kept) sum of cluster marginals (label-invariant diagnostic)
     log_post: np.ndarray = None   # (n_chains, n_kept) log_lik + log P(partition, labels | gamma, theta)
     seconds: float = None         # wall time of the sampler
+    pt: list = None               # per chain: parallel-tempering diagnostics (betas, barrier, swaps, round trips)
 
     @property
     def top(self) -> np.ndarray:
@@ -301,38 +304,53 @@ def escobar_west_gamma(rng, gamma: float, K: int, n: int, a: float, b: float) ->
     return rng.gamma(shape, 1.0 / rate)
 
 
-def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsConfig, seed: int,
-              init: str = "argmax", theta0: dict | None = None, z_init=None, model=None):
-    """One chain. ``model`` supplies cluster marginals M_e(S) (see hsr.pooled);
-    the default is the independent-constants model, M_e(S) = sum_j L[j, e]."""
-    from .pooled import IndependentModel
-    rng = np.random.default_rng(seed)
-    model = IndependentModel(L) if model is None else model
-    S1 = model.singletons()
-    J, C = S1.shape
-    theta = grammar.prior_mean() if theta0 is None else theta0
-    gamma = cfg.gamma_init
-    log_p = grammar.log_prob(counts, theta)
-    if z_init is not None:
-        z = np.asarray(z_init, dtype=int).copy()
-    elif init == "argmax":
-        z = np.argmax(log_p[None, :] + S1, axis=1)
-    else:
-        lw = log_p[None, :] + S1
-        z = np.array([rng.choice(C, p=np.exp(row - logsumexp(row))) for row in lw])
-    n_e = np.bincount(z, minlength=C).astype(float)
-    members = {}
-    for j, e in enumerate(z):
-        members.setdefault(int(e), set()).add(j)
-    Mc = {e: model.marginal(e, sorted(S)) for e, S in members.items()}
+class ChainState:
+    """State of one collapsed-Gibbs chain (assignments, theta, gamma) with
+    one-sweep updates, so that several chains can be advanced together (as in
+    parallel tempering, hsr.tempering). ``model`` supplies the cluster
+    marginals M_e(S) (hsr.pooled); the default is the independent-constants
+    model, M_e(S) = sum_j L[j, e]."""
 
-    kept = []
-    nt_names = grammar.nonterminals
-    assign_counts = np.zeros((J, C))
-    pop = np.zeros(C)
-    n_forms, gammas, log_liks, log_posts = [], [], [], []
-    thetas = {nt: [] for nt in nt_names}
-    for sweep in range(cfg.n_sweeps):
+    def __init__(self, L, counts, grammar: Grammar, cfg: GibbsConfig, seed: int, init="argmax", theta0=None,
+                 z_init=None, model=None):
+        from .pooled import IndependentModel
+        self.rng = np.random.default_rng(seed)
+        self.cfg, self.grammar, self.counts = cfg, grammar, counts
+        self.set_model(IndependentModel(L) if model is None else model, rebuild=False)
+        J, C = self.S1.shape
+        self.J, self.C = J, C
+        self.theta = grammar.prior_mean() if theta0 is None else theta0
+        self.gamma = cfg.gamma_init
+        self.log_p = grammar.log_prob(counts, self.theta)
+        rng = self.rng
+        if z_init is not None:
+            z = np.asarray(z_init, dtype=int).copy()
+        elif init == "argmax":
+            z = np.argmax(self.log_p[None, :] + self.S1, axis=1)
+        else:
+            lw = self.log_p[None, :] + self.S1
+            z = np.array([rng.choice(C, p=np.exp(row - logsumexp(row))) for row in lw])
+        self.z = z
+        self.n_e = np.bincount(z, minlength=C).astype(float)
+        self.members = {}
+        for j, e in enumerate(z):
+            self.members.setdefault(int(e), set()).add(j)
+        self.Mc = {e: self.model.marginal(e, sorted(S)) for e, S in self.members.items()}
+        self.n_sweeps_done = 0
+
+    def set_model(self, model, rebuild=True):
+        """Change the cluster-marginal model (e.g. its temperature) and
+        recompute the cached marginals of the current clusters."""
+        self.model = model
+        self.S1 = model.singletons()
+        if rebuild:
+            self.Mc = {e: model.marginal(e, sorted(S)) for e, S in self.members.items()}
+
+    def sweep(self):
+        cfg, rng, model = self.cfg, self.rng, self.model
+        z, n_e, members, Mc, S1 = self.z, self.n_e, self.members, self.Mc, self.S1
+        J, C = self.J, self.C
+        gamma, log_p = self.gamma, self.log_p
         log_gamma = np.log(gamma)
         for j in (rng.permutation(J) if cfg.single_site else ()):
             e0 = int(z[j])
@@ -368,35 +386,71 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
         if cfg.split_merge and J > 1:
             _split_merge(rng, z, n_e, members, Mc, model, log_p, gamma, _log_similarity(S1, log_p),
                          cfg.split_merge)
-        if cfg.relabel and sweep % cfg.relabel_every == 0:
+        if cfg.relabel and self.n_sweeps_done % cfg.relabel_every == 0:
             _relabel_blocks(rng, z, n_e, members, Mc, model, log_p, gamma)
         in_use = np.flatnonzero(n_e > 0)
         if cfg.update_theta:
-            theta = grammar.sample_theta(rng, counts[in_use].sum(axis=0))
-            log_p = grammar.log_prob(counts, theta)
+            self.theta = self.grammar.sample_theta(rng, self.counts[in_use].sum(axis=0))
+            self.log_p = self.grammar.log_prob(self.counts, self.theta)
         if cfg.update_gamma:
-            gamma = escobar_west_gamma(rng, gamma, len(in_use), J, cfg.gamma_a, cfg.gamma_b)
+            self.gamma = escobar_west_gamma(rng, gamma, len(in_use), J, cfg.gamma_a, cfg.gamma_b)
+        self.n_sweeps_done += 1
+
+    def swap_state(self, other):
+        """Exchange the sampler state (not the model or rng) with another chain."""
+        for a in ("z", "n_e", "members", "theta", "gamma", "log_p"):
+            va, vb = getattr(self, a), getattr(other, a)
+            setattr(self, a, vb)
+            setattr(other, a, va)
+        self.Mc = {e: self.model.marginal(e, sorted(S)) for e, S in self.members.items()}
+        other.Mc = {e: other.model.marginal(e, sorted(S)) for e, S in other.members.items()}
+
+
+class _Recorder:
+    def __init__(self, J, C, nt_names):
+        self.assign = np.zeros((J, C))
+        self.pop = np.zeros(C)
+        self.n_forms, self.gammas, self.log_liks, self.log_posts, self.kept = [], [], [], [], []
+        self.thetas = {nt: [] for nt in nt_names}
+
+    def record(self, st: ChainState, log_lik):
+        J = st.J
+        in_use = np.flatnonzero(st.n_e > 0)
+        self.assign[np.arange(J), st.z] += 1
+        self.pop += (st.n_e + st.gamma * np.exp(st.log_p)) / (st.gamma + J)
+        self.n_forms.append(len(in_use))
+        self.gammas.append(st.gamma)
+        self.log_liks.append(float(log_lik))
+        self.log_posts.append(self.log_liks[-1] + partition_log_prior(st.n_e, st.log_p, st.gamma))
+        for nt in self.thetas:
+            self.thetas[nt].append(st.theta[nt])
+        self.kept.append(st.z.copy())
+
+    def result(self):
+        n = max(len(self.kept), 1)
+        return {
+            "assign_probs": self.assign / n,
+            "pop": self.pop / n,
+            "n_forms": np.array(self.n_forms),
+            "gamma": np.array(self.gammas),
+            "theta": {nt: np.array(v) for nt, v in self.thetas.items()},
+            "z": np.array(self.kept),
+            "log_lik": np.array(self.log_liks),
+            "log_post": np.array(self.log_posts),
+        }
+
+
+def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsConfig, seed: int,
+              init: str = "argmax", theta0: dict | None = None, z_init=None, model=None):
+    """One chain. ``model`` supplies cluster marginals M_e(S) (see hsr.pooled);
+    the default is the independent-constants model, M_e(S) = sum_j L[j, e]."""
+    st = ChainState(L, counts, grammar, cfg, seed, init, theta0, z_init, model)
+    rec = _Recorder(st.J, st.C, grammar.nonterminals)
+    for sweep in range(cfg.n_sweeps):
+        st.sweep()
         if sweep >= cfg.burn_in and (sweep - cfg.burn_in) % cfg.thin == 0:
-            assign_counts[np.arange(J), z] += 1
-            pop += (n_e + gamma * np.exp(log_p)) / (gamma + J)
-            n_forms.append(len(in_use))
-            gammas.append(gamma)
-            log_liks.append(float(sum(Mc.values())))
-            log_posts.append(log_liks[-1] + partition_log_prior(n_e, log_p, gamma))
-            for nt in nt_names:
-                thetas[nt].append(theta[nt])
-            kept.append(z.copy())
-    n_kept = len(kept)
-    return {
-        "assign_probs": assign_counts / max(n_kept, 1),
-        "pop": pop / max(n_kept, 1),
-        "n_forms": np.array(n_forms),
-        "gamma": np.array(gammas),
-        "theta": {nt: np.array(v) for nt, v in thetas.items()},
-        "z": np.array(kept),
-        "log_lik": np.array(log_liks),
-        "log_post": np.array(log_posts),
-    }
+            rec.record(st, sum(st.Mc.values()))
+    return rec.result()
 
 
 def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsConfig | None = None,
@@ -411,7 +465,13 @@ def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
     chains = []
     for c in range(cfg.n_chains):
         init = "argmax" if c == 0 else cfg.init
-        chains.append(run_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c, init=init, z_init=z_init, model=model))
+        if cfg.n_temps > 1:
+            from .tempering import run_pt_chain
+            chains.append(run_pt_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c, init=init, model=model,
+                                       z_init=z_init))
+        else:
+            chains.append(run_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c, init=init, z_init=z_init,
+                                    model=model))
     cap = np.stack([ch["assign_probs"] for ch in chains])
     return GibbsResult(
         assign_probs=cap.mean(axis=0),
@@ -424,4 +484,5 @@ def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
         log_lik=np.stack([ch["log_lik"] for ch in chains]),
         log_post=np.stack([ch["log_post"] for ch in chains]),
         seconds=time.time() - t0,
+        pt=[ch["pt"] for ch in chains] if cfg.n_temps > 1 else None,
     )

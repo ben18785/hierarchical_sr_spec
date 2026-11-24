@@ -103,6 +103,24 @@ def prior_grid(ns=(10, 20), kappa=50):
     return out
 
 
+def sampler_grid():
+    """Sampler checks on the hardest cells (units filter): split-merge alone and
+    with non-reversible parallel tempering (8 replicas, 600 sweeps after tuning;
+    the themes sampler is not tempered yet), plus FoRAGE."""
+    base = "--grow 1 --pooled --themes --scale-invariant"
+    out = []
+    for job in families_grid((10, 20)):
+        if job["name"] not in ("fam_saturation_parent_n20_s05", "fam_decay_extended_n20_s05",
+                               "fam_saturation_mixture_n10_s05"):
+            continue
+        out.append(job | {"name": job["name"] + "_si_sm", "extra": base})
+        out.append(job | {"name": job["name"] + "_si_pt8", "extra": base + " --temps 8 --sweeps 600 --burn 100"})
+    for j in realdata_grid("--grow 1 --themes --scale-invariant --temps 8 --sweeps 600 --burn 100", "_si_pt8"):
+        if "forage" in j["name"] and "full" in j["name"]:
+            out.append(j)
+    return out
+
+
 CDF_SPEC = "range=0,1;limit_inf=1;monotone=increasing"
 FORAGE_SPEC = "nonneg;value0=0;monotone=increasing"
 
@@ -141,7 +159,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full",
                                                         "families_corpus", "realdata", "realdata_si", "families_si", "constraints", "pysr",
-                                                        "prior"])
+                                                        "prior", "sampler"])
     ap.add_argument("--only", default="", help="regex; keep only jobs whose name matches")
     a = ap.parse_args()
     jobs = []
@@ -167,6 +185,8 @@ if __name__ == "__main__":
         jobs += pysr_grid()
     if a.grid == "prior":
         jobs += prior_grid()
+    if a.grid == "sampler":
+        jobs += sampler_grid()
     if a.only:
         import re
         jobs = [j for j in jobs if re.search(a.only, j["name"])]

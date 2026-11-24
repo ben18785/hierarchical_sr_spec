@@ -242,3 +242,32 @@ def test_split_merge_matches_exact_posterior(single_site):
     lp = g.log_prob(counts, g.prior_mean())
     assert np.max(np.abs(res.assign_probs - _exact_posterior(L, lp, gamma))) < 0.02
     assert np.max(np.abs(res.coassignment() - _exact_coassign(L, lp, gamma))) < 0.02
+
+
+def test_parallel_tempering_matches_exact_posterior():
+    """Non-reversible PT (DEO swaps, tuned schedule): the beta = 1 replica's
+    marginals and co-assignments equal the exact posterior."""
+    rng = np.random.default_rng(17)
+    g, counts = one_var_grammar(3)
+    J = 5
+    L = rng.normal(0, 0.6, (J, 3))
+    L[:3, 0] += 3.0
+    L[3:, 2] += 3.0
+    gamma = 1.0
+    cfg = GibbsConfig(n_sweeps=8000, burn_in=200, n_chains=2, update_theta=False, update_gamma=False,
+                      gamma_init=gamma, seed=19, n_temps=4, pt_tune_rounds=5, split_merge=0)
+    res = run_gibbs(L, counts, g, cfg)
+    lp = g.log_prob(counts, g.prior_mean())
+    assert np.max(np.abs(res.assign_probs - _exact_posterior(L, lp, gamma))) < 0.02
+    assert np.max(np.abs(res.coassignment() - _exact_coassign(L, lp, gamma))) < 0.02
+    assert res.pt[0]["betas"][0] == 0.0 and res.pt[0]["betas"][-1] == 1.0
+    assert res.pt[0]["round_trips"] > 0
+
+
+def test_tempered_model_keeps_failed_fits_impossible():
+    from hsr.pooled import IndependentModel
+    from hsr.tempering import TemperedModel
+    L = np.array([[1.0, -np.inf], [2.0, 0.5]])
+    tm = TemperedModel(IndependentModel(L), 0.0)
+    assert tm.singletons()[0, 1] == -np.inf and tm.singletons()[1, 0] == 0.0
+    assert TemperedModel(IndependentModel(L), 0.5).marginal(0, [0, 1]) == 1.5

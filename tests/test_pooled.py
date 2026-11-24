@@ -191,3 +191,19 @@ def test_split_merge_with_pooled_model_matches_enumeration():
     res = run_gibbs(L, counts, g, cfg, model=model)
     exact = _exact_posterior(model, g.log_prob(counts, g.prior_mean()), gamma, J, 3)
     assert np.max(np.abs(res.assign_probs - exact)) < 0.02
+
+
+def test_parallel_tempering_with_pooled_model_matches_enumeration():
+    rng = np.random.default_rng(6)
+    g, counts = one_var_grammar(3)
+    J = 4
+    L = rng.normal(0, 1, (J, 3))
+    phis = [rng.normal(1, 0.5, (J, 1)), rng.normal(-1, 0.5, (J, 2)), np.zeros((J, 0))]
+    vars_ = [rng.uniform(0.05, 0.5, (J, 1)), rng.uniform(0.05, 0.5, (J, 2)), np.zeros((J, 0))]
+    model = PooledModel(fake_table(L, phis, vars_), [1, 2, 0])
+    gamma = 0.8
+    cfg = GibbsConfig(n_sweeps=8000, burn_in=200, n_chains=2, update_theta=False, update_gamma=False,
+                      gamma_init=gamma, seed=3, n_temps=3, pt_tune_rounds=4)
+    res = run_gibbs(L, counts, g, cfg, model=model)
+    exact = _exact_posterior(model, g.log_prob(counts, g.prior_mean()), gamma, J, 3)
+    assert np.max(np.abs(res.assign_probs - exact)) < 0.02

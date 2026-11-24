@@ -313,6 +313,8 @@ def main(argv=None):
     ap.add_argument("--sweeps", type=int, default=1000)
     ap.add_argument("--burn", type=int, default=250)
     ap.add_argument("--chains", type=int, default=4)
+    ap.add_argument("--temps", type=int, default=1, help="> 1: non-reversible parallel tempering replicas per chain")
+    ap.add_argument("--split-merge", type=int, default=3, help="split-merge proposals per sweep")
     ap.add_argument("--starts", type=int, default=10)
     ap.add_argument("--tau", type=float, default=3.0)
     ap.add_argument("--grow", type=int, default=0)
@@ -337,7 +339,8 @@ def main(argv=None):
     if spec is not None and spec.exact and args.candidates == ap.get_default("candidates"):
         args.candidates = constrained_candidates_path(spec)
     cands = CandidateSet.from_json(args.candidates, grammar)
-    cfg = GibbsConfig(n_sweeps=args.sweeps, burn_in=args.burn, n_chains=args.chains)
+    cfg = GibbsConfig(n_sweeps=args.sweeps, burn_in=args.burn, n_chains=args.chains, n_temps=args.temps,
+                      split_merge=args.split_merge)
     name = os.path.splitext(os.path.basename(args.data))[0]
     reference = args.reference if args.reference is not None else REFERENCE.get(name, [])
     rows = run(args.data, args.split, cands, cfg, reference, args.scaling, args.starts, args.tau, args.grow,

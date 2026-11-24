@@ -17,7 +17,7 @@ on:
         description: "burn-in sweeps"
         default: "500"
       grid:
-        description: "main | sensitivity | all | families | families_full | families_corpus | families_si | constraints | realdata | realdata_si | pysr | prior"
+        description: "main | sensitivity | all | families | families_full | families_corpus | families_si | constraints | realdata | realdata_si | pysr | prior | sampler"
         default: "all"
       only:
         description: "optional regex: run only matrix jobs whose name matches"
@@ -78,7 +78,7 @@ jobs:
             exit 0
           fi
           if [ "${{ matrix.module }}" = "realdata" ]; then
-            python -m hsr.realdata ${{ matrix.args }} --sweeps ${{ inputs.sweeps }} --burn ${{ inputs.burn }} \
+            python -m hsr.realdata --sweeps ${{ inputs.sweeps }} --burn ${{ inputs.burn }} ${{ matrix.args }} \
               --out results/raw/${{ matrix.name }}.jsonl
             exit 0
           fi
@@ -93,7 +93,7 @@ jobs:
 
   summarise:
     needs: run
-    if: always() && inputs.task != 'corpus' && !startsWith(inputs.grid, 'realdata') && inputs.grid != 'pysr' && inputs.grid != 'constraints' && inputs.grid != 'prior'
+    if: always() && inputs.task != 'corpus' && !startsWith(inputs.grid, 'realdata') && inputs.grid != 'pysr' && inputs.grid != 'constraints' && inputs.grid != 'prior' && inputs.grid != 'sampler'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
