@@ -38,6 +38,9 @@ hpyv:
   sweeps: 20
   keep: 10
   calib_samples: 4000
+  # variants run by the workflow (all of `variants` if empty); the full set of
+  # 17 was compared on the five original corpora (results/grammar/hpy_variants.md)
+  run: [sym0, hpy2, hpy3_depth, hpy2_src, form_ad, form_ad3_depth, tree_ad3]
   variants:
     sym0: {n: 0, drop_L: [], drop_R: []}
     hpy2: {n: 2}

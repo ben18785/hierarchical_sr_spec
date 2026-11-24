@@ -611,7 +611,8 @@ rule grammar_table:
 #
 #     snakemake --use-conda --cores 4 hpyv
 HPYV = config["hpyv"]
-HPYV_VARIANTS = list(HPYV["variants"])
+# variants to run: config hpyv.run (a subset, by name) or all defined variants
+HPYV_VARIANTS = list(HPYV.get("run") or HPYV["variants"])
 HPYV_RUNS = ([f"seed{s}" for s in SEEDS] + [f"transfer_{n}" for n in TRANSFER]
              + [f"loso_{t}_{w}" for t in LOSO for w in ("pooled", "equal")])
 HPYV_CODE = ["hsr/treecode.py", "hsr/pyp.py", "hsr/adaptor.py", "hsr/treecheck.py", "hsr/fnprior_tools.py"]
