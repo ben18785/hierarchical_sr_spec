@@ -529,3 +529,278 @@ def catalogue_build(src, r_eval, out):
                   f"in_corpus={v['in_corpus']} {v['note']}")
     return res
 
+
+# ------------------------------------------- R curve catalogues (by package)
+def curve_verify(row, evals, tol=1e-6, min_points=5):
+    """Compare a transcribed formula with the R evaluations of the package's
+    implementation (workflow/scripts/rcurves_eval.R): (verified, n points,
+    max relative error). Unlike ``catalogue_verify`` the error is relative to
+    |y| itself (not max(1, |y|)), so that forms with small values, e.g.
+    Arrhenius factors exp(-E/kT), are compared meaningfully; points where R
+    returns 0, NA or a non-finite value, or the formula is not real, are skipped."""
+    import numpy as np
+    expr, x, params = catalogue_expr(row)
+    f = sp.lambdify([x] + list(params.values()), expr, modules=["numpy", "scipy"])
+    errs = []
+    for e in evals:
+        yv = float(e["y"]) if e["y"] not in ("NA", "") else np.nan
+        if not np.isfinite(yv) or yv == 0.0:
+            continue
+        with np.errstate(all="ignore"):
+            try:
+                yc = complex(f(float(e["x"]), *[float(v) for v in e["params"].split(",")]))
+            except (ZeroDivisionError, OverflowError, ValueError):
+                continue
+        if not (np.isfinite(yc.real) and abs(yc.imag) <= 1e-12 * max(1.0, abs(yc.real))):
+            continue
+        errs.append(abs(yc.real - yv) / abs(yv))
+    ok = len(errs) >= min_points and max(errs) < tol
+    return bool(ok), len(errs), (float(max(errs)) if errs else None)
+
+
+def curves_build(src, r_eval, out, label=""):
+    """Corpus of an R curve catalogue (``hsr/data/sources/<name>_curves.csv``):
+    rows are package functions (or branches of piecewise ones) transcribed as
+    sympy formulas in x; a row enters the corpus only if it agrees with the R
+    evaluation of the package's implementation (rows without ``r_call`` are
+    kept with verified = false). Rows are grouped into models by the
+    ``model`` column (the original publication, so that a model implemented in
+    two packages counts once); each model contributes its distinct keys once."""
+    import csv
+    rows = catalogue_rows(src)
+    with open(r_eval) as fh:
+        ev = list(csv.DictReader(fh))
+    with open(r_eval + ".versions") as fh:
+        versions = fh.read().strip()
+    by_func = {}
+    for e in ev:
+        by_func.setdefault(e["func"], []).append(e)
+    by_model, verification = {}, {}
+    for r in rows:
+        if r["r_call"].strip():
+            ok, n, err = curve_verify(r, by_func.get(r["id"], []))
+        else:
+            ok, n, err = False, 0, None
+        key = catalogue_key(r)
+        keep = (ok or not r["r_call"].strip()) and key is not None
+        note = "" if key else "not expressible in the grammar"
+        if r["r_call"].strip() and not ok:
+            note = (note + "; " if note else "") + "failed numerical verification"
+        verification[r["id"]] = {"verified": ok, "n_points": n, "max_rel_err": err, "key": key,
+                                 "in_corpus": keep, "note": note, "formula": r["formula"],
+                                 "package": r["package"], "function": r["function"], "model": r["model"]}
+        if keep:
+            by_model.setdefault(r["model"], set()).add(key)
+    keys = Counter(k for ks in by_model.values() for k in ks)
+    res = {"stats": {"rows": len(rows), "verified": sum(v["verified"] for v in verification.values()),
+                     "expressible": sum(v["key"] is not None for v in verification.values()),
+                     "rows_in_corpus": sum(v["in_corpus"] for v in verification.values()),
+                     "models": len(by_model), "distinct_keys": len(keys),
+                     "packages": sorted({r["package"] for r in rows})},
+           "per_model": {m: sorted(ks) for m, ks in sorted(by_model.items())},
+           "freq": dict(keys.most_common()), "verification": verification, "versions": versions,
+           "source": label or f"R curve catalogue {os.path.basename(src)}; formulas transcribed and verified "
+                              "numerically against the packages; one model per original publication"}
+    _write(res, out)
+    for k, v in verification.items():
+        if not v["in_corpus"] or not v["verified"]:
+            print(f"  {k}: verified={v['verified']} (n={v['n_points']}, err={v['max_rel_err']}) "
+                  f"in_corpus={v['in_corpus']} {v['note']}")
+    return res
+
+
+# ----------------------------------------------------- overlap between sources
+def source_forms(path, gen_map):
+    """{model id: set of generalised forms} of a corpus file, as
+    ``hsr.grammar_compare.source_items`` reads it (keys mapped through
+    ``gen_map`` where known; unparseable ones dropped)."""
+    with open(path) as fh:
+        pm = json.load(fh)["per_model"]
+    return {m: {gen_map.get(k, k) for k in ks} - {None} for m, ks in pm.items()}
+
+
+def overlap_table(sources, gen_map, baseline):
+    """Markdown summary of corpora ``sources`` {name: path}: models, model-form
+    pairs, distinct forms, forms not in any other source, forms not in the
+    union of the ``baseline`` sources, and the pairwise number of shared forms."""
+    forms = {n: source_forms(p, gen_map) for n, p in sources.items()}
+    distinct = {n: set().union(*f.values()) if f else set() for n, f in forms.items()}
+    base = set().union(*(distinct[n] for n in baseline if n in distinct))
+    names = list(sources)
+    lines = ["| source | models | model-form pairs | distinct forms | not in any other source | "
+             "not in baseline union |", "|---|---|---|---|---|---|"]
+    for n in names:
+        others = set().union(*(distinct[m] for m in names if m != n))
+        lines.append(f"| {n} | {sum(1 for f in forms[n].values() if f)} | {sum(len(f) for f in forms[n].values())} | "
+                     f"{len(distinct[n])} | {len(distinct[n] - others)} | "
+                     f"{'-' if n in baseline else len(distinct[n] - base)} |")
+    allf = set().union(*distinct.values())
+    new = allf - base
+    lines += ["", f"Baseline ({', '.join(baseline)}): {len(base)} distinct forms. All sources: {len(allf)} "
+                  f"distinct forms ({len(new)} not in the baseline).", "",
+              "Shared distinct forms (row and column source):", "",
+              "| | " + " | ".join(names) + " |", "|---|" + "---|" * len(names)]
+    for a in names:
+        lines.append(f"| {a} | " + " | ".join(str(len(distinct[a] & distinct[b])) for b in names) + " |")
+    return "\n".join(lines) + "\n"
+
+
+def overlap_report(gen_path, out, baseline, *named):
+    """CLI: overlap_report <generalised.json> <out.md> <baseline names, comma-separated> name=path ..."""
+    with open(gen_path) as fh:
+        gen_map = json.load(fh)
+    sources = dict(s.split("=", 1) for s in named)
+    md = overlap_table(sources, gen_map, baseline.split(","))
+    with open(out, "w") as fh:
+        fh.write(md)
+    print(md)
+
+
+# ------------------------------------------------------- BioModels (by query)
+BIOMODELS = "https://www.biomodels.org"
+BIOMODELS_NONCURATED = 'curationstatus:"Non-curated" AND modelformat:"SBML"'
+
+
+def biomodels_search_url(query, offset=0, n=100):
+    return BIOMODELS + "/search?" + urllib.parse.urlencode(
+        {"query": query, "numResults": n, "offset": offset, "sort": "id-asc", "format": "json"})
+
+
+def biomodels_main_sbml(info):
+    """(file name, server sha256) of a model's main SBML file from its
+    ``/<id>?format=json`` record, or None if it has none."""
+    for f in (info.get("files") or {}).get("main") or []:
+        if f.get("name", "").lower().endswith((".xml", ".sbml")):
+            return f["name"], f.get("sha256sum")
+    return None
+
+
+def biomodels_fetch(raw_dir, query=BIOMODELS_NONCURATED, limit=None, client=None):
+    """Snapshot of the main SBML file of every BioModels entry matching
+    ``query`` (default: all non-curated SBML models). One search request per
+    100 models, then per model its record (file names and server checksums)
+    and its main file, at most 40 requests per minute. Files are saved as
+    ``<raw_dir>/<id>.xml``; a file already present whose sha256 matches the
+    server's is not downloaded again. Downloads whose checksum differs from
+    the server's are recorded as errors and not kept."""
+    client = client or PoliteClient(min_interval=1.5, accept="application/json")
+    dl = PoliteClient(min_interval=1.5, accept="application/xml,*/*")
+    os.makedirs(raw_dir, exist_ok=True)
+    ids, offset, total = [], 0, None
+    while total is None or offset < total:
+        data, _ = client.get(biomodels_search_url(query, offset))
+        d = json.loads(data)
+        total = int(d["matches"])
+        page = [m["id"] for m in d["models"]]
+        if not page:
+            break
+        ids += page
+        offset += len(page)
+    ids = sorted(set(ids))
+    if limit:
+        ids = ids[:int(limit)]
+    entries = []
+    for i, mid in enumerate(ids):
+        rec = {"id": mid}
+        entries.append(rec)
+        try:
+            info = json.loads(client.get(f"{BIOMODELS}/{mid}?format=json")[0])
+        except Exception as e:
+            rec["error"] = f"record: {e!r}"[:300]
+            continue
+        rec.update(name=" ".join((info.get("name") or "").split()), curation=info.get("curationStatus"))
+        main = biomodels_main_sbml(info)
+        if main is None:
+            rec["error"] = "no main SBML file"
+            continue
+        fname, server_sha = main
+        rec.update(filename=fname, sha256_server=server_sha,
+                   url=f"{BIOMODELS}/model/download/{mid}?" + urllib.parse.urlencode({"filename": fname}))
+        path = os.path.join(raw_dir, mid + ".xml")
+        if os.path.exists(path):
+            with open(path, "rb") as fh:
+                data = fh.read()
+            if not server_sha or sha256(data) == server_sha:
+                rec.update(file=mid + ".xml", sha256=sha256(data), bytes=len(data), cached=True)
+                continue
+        try:
+            data, _ = dl.get(rec["url"])
+        except Exception as e:
+            rec["error"] = f"download: {e!r}"[:300]
+            continue
+        if server_sha and sha256(data) != server_sha:
+            rec["error"] = "checksum differs from the server's"
+            continue
+        with open(path, "wb") as fh:
+            fh.write(data)
+        rec.update(file=mid + ".xml", sha256=sha256(data), bytes=len(data))
+        if (i + 1) % 50 == 0:
+            print(f"[{i + 1}/{len(ids)}] {mid}", flush=True)
+    manifest = {"source": "BioModels", "query": query, "search": biomodels_search_url(query), "date": _today(),
+                "matches": total, "entries": entries,
+                "sha256_all": sha256("".join(e.get("sha256", "") for e in entries).encode())}
+    with open(os.path.join(raw_dir, "manifest.json"), "w") as fh:
+        json.dump(manifest, fh, indent=1)
+    return manifest
+
+
+def _model_keys_star(path):
+    from .corpus import model_keys
+    try:
+        keys, n_laws, n_ok = model_keys(path)
+        return sorted(keys), n_laws, n_ok, None
+    except Exception as e:
+        return [], 0, 0, repr(e)[:200]
+
+
+def biomodels_build(raw_dir, out, processes=4, label="non-curated"):
+    """Corpus of a BioModels snapshot (``biomodels_fetch``), reduced as
+    ``hsr.corpus`` reduces the curated models (each species of each kinetic
+    law in turn is x1), with keys generalised; one model per BioModels entry."""
+    import multiprocessing as mp
+    with open(os.path.join(raw_dir, "manifest.json")) as fh:
+        man = json.load(fh)
+    stats = Counter(entries=len(man["entries"]))
+    todo = []
+    for e in man["entries"]:
+        if "file" not in e:
+            stats["not_downloaded"] += 1
+            continue
+        path = os.path.join(raw_dir, e["file"])
+        with open(path, "rb") as fh:
+            if sha256(fh.read()) != e["sha256"]:
+                raise RuntimeError(f"checksum mismatch: {path}")
+        todo.append((e["id"], path))
+    if int(processes) <= 1:
+        res = [_model_keys_star(p) for _, p in todo]
+    else:
+        with mp.get_context("fork").Pool(int(processes)) as pool:
+            res = pool.map(_model_keys_star, [p for _, p in todo], chunksize=4)
+    from .grammar_compare import generalise
+    gen_cache = {}
+
+    def gen(k):
+        if k not in gen_cache:
+            try:
+                gen_cache[k] = generalise(k)
+            except Exception:
+                gen_cache[k] = None
+        return gen_cache[k]
+
+    by_model = {}
+    for (mid, _), (keys, n_laws, n_ok, err) in zip(todo, res):
+        if err:
+            stats["unreadable"] += 1
+            continue
+        stats["models_read"] += 1
+        stats["laws"] += n_laws
+        stats["laws_reduced"] += n_ok
+        by_model[mid] = {g for g in map(gen, keys) if g}
+    res = _corpus_dict(by_model, dict(stats))
+    res.update(source=f"BioModels {label} SBML models (kinetic laws, as hsr.corpus); one model per entry; "
+                      "each species in turn is x1; literals generalised",
+               snapshot={"date": man["date"], "query": man["query"], "matches": man["matches"],
+                         "sha256_all": man["sha256_all"]})
+    _write(res, out)
+    return res
+

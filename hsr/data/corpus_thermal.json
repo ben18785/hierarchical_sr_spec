@@ -1,0 +1,1369 @@
+{
+"freq": {
+"(c0*(c1 + x1)**2 + c2)*exp(c3*x1)": 1,
+"(c0*(c1 - x1)**2 + c2)*exp(c3*x1)": 1,
+"c0*((c1 + x1)**c2*(c3 - x1)**c4)**c5": 1,
+"c0*(c1 + c2*exp(c3*x1))**2*(c4 + x1)**2": 2,
+"c0*(c1 + x1)*(c2 - x1)**c3": 1,
+"c0*(c1 + x1)*(c3 + x1)**2/(c2 + x1)": 1,
+"c0*(c1 + x1)**2": 1,
+"c0*(c1 + x1)**2 + c2": 1,
+"c0*(c1 + x1)**c2 + c3*(c1 + x1)**c4": 1,
+"c0*(c1 + x1)**c3*(c2 + c4*x1)**c5": 1,
+"c0*(c1 + x1)*sqrt(c2 - x1)": 1,
+"c0*(c1 + x1*(c2 - x1))/(c1 + x1*(c2 - x1) + (c3 + x1)**2)": 1,
+"c0*(c1 - (c2 + x1)**2)*(c2 + x1)**2": 1,
+"c0*(c1 - exp(c2*(c3 + x1)))*(c4 + x1)": 1,
+"c0*(c1 - x1)*(c2 + x1)**2": 1,
+"c0*(c1 - x1)*(c2 + x1)**c3": 1,
+"c0*(c1 - x1)**c2*(c3 + x1)**c4": 3,
+"c0*(c1 - x1)**c2*exp(c3*x1)": 1,
+"c0*(c1*x1 + c2)**(c3*x1)": 1,
+"c0*(c2 + x1)**2/(c1 + (c2 + x1)**2) + c3*exp(c4*x1)": 1,
+"c0*(c5 - exp(c1*(c2 + x1)))*(c6 - exp(c3*(c4 + x1)))": 1,
+"c0*(c5 - exp(c1*(c2 - x1)))*(c6 - exp(c3*(c4 + x1)))": 1,
+"c0*(c6 + x1)*exp(c3*(c7 - 1/(c8 + x1)))/(c4 + exp(c1*(c2 - 1/(c5 + x1))))": 2,
+"c0*exp(c1*(c2 + log(x1))**2)": 1,
+"c0*exp(c1*(c2 + x1)**2)": 4,
+"c0*exp(c1*x1)": 1,
+"c0*exp(c1*x1) + c2 + exp(c3*x1)": 1,
+"c0*exp(c1*x1) + c2*exp(c3*x1)": 2,
+"c0*exp(c1*x1) + c2*exp(c3*x1) + c4": 1,
+"c0*exp(c1*x1) + c2*exp(x1)": 1,
+"c0*exp(c1*x1) + exp(c2*x1)": 1,
+"c0*exp(c1/(c4 + c5*x1)) + c2*exp(c3/(c6 + c7*x1))": 1,
+"c0*exp(c12/(c1 + c14*x1) + c13*x1/(c3 + c4*x1) + c2*x1*log(c11 + x1)/(c10*x1 + c9) + c8*log(c7 + x1)/(c5 + c6*x1))": 1,
+"c0*exp(c3/(c5 + x1))/(c1 + exp(c2/(c4 + x1)))": 2,
+"c0*exp(c3/(c7 + c8*x1))/(c4 + exp(c1/(c5 + c6*x1) + c2*x1/(c5 + c6*x1)))": 1,
+"c0*log(c6 + x1)/x1 + c1*log(c4 + x1)**2 + c2*log(c5 + x1) + c3": 1,
+"c0*sin(c1*(c2 + x1)**c3)**c4": 1,
+"c0*sqrt(c4 + x1) + c1*log(c5 + x1)**2 + c2*x1 + c3": 1,
+"c0*x1 + c1": 1,
+"c0*x1 + c1*exp(-x1) + c2*exp(x1) + c3": 1,
+"c0*x1 + c1*exp(x1) + c2": 1,
+"c0*x1*(c1 + x1)*(c2 - x1)**c3": 1,
+"c0*x1*(c1 + x1)*sqrt(c2 - x1)": 1,
+"c0*x1*(c1 - x1)**c2*(c3 + x1)**c4": 1,
+"c0*x1**2 + c1*x1 + c2": 1,
+"c0*x1**2 + c1*x1**(3/2) + c2": 1,
+"c0*x1**2 + c1*x1**3 + c2*x1 + c3": 1,
+"c0*x1**2 + c1*x1**3 + c2*x1**4 + c3*x1 + c4": 1,
+"c0*x1**3 + c1*x1 + c2 + log(x1)": 1,
+"c0*x1**c1*(c2 - x1)": 1,
+"c0/(c1 + (c2 + x1)**2)": 1,
+"c0/(c1 + exp(c2*x1))": 2,
+"c0/(c1 + exp(c2*x1)) + c3*exp(c4*x1)": 1,
+"c0/(c1**(c2 - x1) + c1**(c3 + x1))": 1,
+"c0/(c1*exp(-x1) + c2 + exp(x1))": 1,
+"c0/(c1*exp(c2*x1) + exp(c3*x1))": 1,
+"c0/(c1*x1**2 + c2 + x1)": 2,
+"c0/(exp(c1*c2 + c1*x1) + exp(c2*c3 + c3*x1))": 1,
+"c2*(c0*c1 + c1*x1 + c3)**c4*exp(-(c0*c1 + c1*x1 + c3)**c5)": 1,
+"c2*(c8 + x1)*exp(c5/(c9 + x1))/(c1*exp(c4/(c6 + x1)) + c3 + exp(c0/(c7 + x1)))": 1,
+"c2*exp(c0*c1 + c1*x1) + c3*exp(c0*c5 + c5*x1) + c4": 1,
+"c3*exp(c4/(c8 + x1))/(c2*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))": 1,
+"c5*(c7 - exp(c3*(c2 - x1)))*(c8 - exp(c3*(c4 + x1)))/(c6 + exp(c1*(c0 + x1)))": 1,
+"c7*(c11 + x1)*exp(c6*(c2 - 1/(c3 + x1)))/(c8 + exp(c1*(c0 - 1/(c9 + x1))) + exp(c5*(c4 - 1/(c10 + x1))))": 1,
+"c7*(c2*(c1 + x1)*exp(c5*(c0 - x1)) + c4*(c0 - x1)*exp(c3*(c1 + x1)) + exp(c6*(c1 + x1)))": 1
+},
+"per_model": {
+"Analytis1977": [
+"c0*(c1 - x1)**c2*(c3 + x1)**c4"
+],
+"Ashrafi2018": [
+"c0*log(c6 + x1)/x1 + c1*log(c4 + x1)**2 + c2*log(c5 + x1) + c3",
+"c0*sqrt(c4 + x1) + c1*log(c5 + x1)**2 + c2*x1 + c3",
+"c0*x1**2 + c1*x1**(3/2) + c2",
+"c0*x1**3 + c1*x1 + c2 + log(x1)",
+"c0/(c1*exp(-x1) + c2 + exp(x1))"
+],
+"Atkin2005": [
+"c0*(c1*x1 + c2)**(c3*x1)"
+],
+"Bayoh2003": [
+"c0*x1 + c1*exp(-x1) + c2*exp(x1) + c3"
+],
+"Bieri1983": [
+"c0*x1 + c1*exp(x1) + c2"
+],
+"Boatman2017": [
+"c0*sin(c1*(c2 + x1)**c3)**c4"
+],
+"Briere1999": [
+"c0*(c1 + x1)*(c2 - x1)**c3",
+"c0*(c1 + x1)*sqrt(c2 - x1)",
+"c0*x1*(c1 + x1)*(c2 - x1)**c3",
+"c0*x1*(c1 + x1)*sqrt(c2 - x1)"
+],
+"Campbell1974": [
+"c0*x1 + c1"
+],
+"Cruz-Loya2021": [
+"c0*(c1 - x1)**c2*(c3 + x1)**c4",
+"c0*x1*(c1 - x1)**c2*(c3 + x1)**c4"
+],
+"Cruz-Loya2024": [
+"c0*((c1 + x1)**c2*(c3 - x1)**c4)**c5"
+],
+"Damos2008": [
+"c0*x1**c1*(c2 - x1)"
+],
+"Damos2011": [
+"c0/(c1*x1**2 + c2 + x1)"
+],
+"Davidson1944": [
+"c0/(c1 + exp(c2*x1))"
+],
+"DeLong2017": [
+"c0*exp(c12/(c1 + c14*x1) + c13*x1/(c3 + c4*x1) + c2*x1*log(c11 + x1)/(c10*x1 + c9) + c8*log(c7 + x1)/(c5 + c6*x1))"
+],
+"Deutsch2008": [
+"c0*(c1 + x1)**2 + c2",
+"c0*exp(c1*(c2 + x1)**2)"
+],
+"Eubank1973": [
+"c0/(c1 + (c2 + x1)**2)"
+],
+"Flinn1991": [
+"c0/(c1*x1**2 + c2 + x1)"
+],
+"HarcourtYee1982": [
+"c0*x1**2 + c1*x1**3 + c2*x1 + c3"
+],
+"HilbertLogan1983": [
+"c0*(c2 + x1)**2/(c1 + (c2 + x1)**2) + c3*exp(c4*x1)"
+],
+"Hinshelwood1947": [
+"c0*exp(c1/(c4 + c5*x1)) + c2*exp(c3/(c6 + c7*x1))"
+],
+"Janisch1925": [
+"c0/(c1**(c2 - x1) + c1**(c3 + x1))",
+"c0/(c1*exp(c2*x1) + exp(c3*x1))"
+],
+"Janisch1932": [
+"c0/(exp(c1*c2 + c1*x1) + exp(c2*c3 + c3*x1))"
+],
+"Joehnk2008": [
+"c2*exp(c0*c1 + c1*x1) + c3*exp(c0*c5 + c5*x1) + c4"
+],
+"JohnsonLewin1946": [
+"c0*exp(c3/(c7 + c8*x1))/(c4 + exp(c1/(c5 + c6*x1) + c2*x1/(c5 + c6*x1)))"
+],
+"Kamykowski1985": [
+"c0*(c5 - exp(c1*(c2 - x1)))*(c6 - exp(c3*(c4 + x1)))"
+],
+"Kontodimas2004": [
+"c0*(c1 - x1)*(c2 + x1)**2"
+],
+"Kontopoulos2018": [
+"c0*exp(c3/(c5 + x1))/(c1 + exp(c2/(c4 + x1)))"
+],
+"Lactin1995": [
+"c0*exp(c1*x1) + c2 + exp(c3*x1)",
+"c0*exp(c1*x1) + exp(c2*x1)"
+],
+"Lamb1992": [
+"c0*exp(c1*(c2 + x1)**2)"
+],
+"Lobry1991": [
+"c0*(c1 + x1*(c2 - x1))/(c1 + x1*(c2 - x1) + (c3 + x1)**2)"
+],
+"Logan1976": [
+"c0*exp(c1*x1) + c2*exp(c3*x1)",
+"c0/(c1 + exp(c2*x1)) + c3*exp(c4*x1)"
+],
+"LynchGabriel1987": [
+"c0*exp(c1*(c2 + x1)**2)"
+],
+"Niehaus2012": [
+"c0*(c1 + x1)**c3*(c2 + c4*x1)**c5"
+],
+"ONeill1972": [
+"c0*(c1 - x1)**c2*exp(c3*x1)"
+],
+"Ratkowsky1982": [
+"c0*(c1 + c2*exp(c3*x1))**2*(c4 + x1)**2",
+"c0*(c1 + x1)**2"
+],
+"Ratkowsky1983": [
+"c0*(c1 + c2*exp(c3*x1))**2*(c4 + x1)**2"
+],
+"Regniere2012": [
+"c7*(c2*(c1 + x1)*exp(c5*(c0 - x1)) + c4*(c0 - x1)*exp(c3*(c1 + x1)) + exp(c6*(c1 + x1)))"
+],
+"Rezende2019": [
+"(c0*(c1 - x1)**2 + c2)*exp(c3*x1)",
+"c0*exp(c1*x1)"
+],
+"Rosso1993": [
+"c0*(c1 + x1)*(c3 + x1)**2/(c2 + x1)"
+],
+"Schoolfield1981": [
+"c0*(c6 + x1)*exp(c3*(c7 - 1/(c8 + x1)))/(c4 + exp(c1*(c2 - 1/(c5 + x1))))",
+"c0*exp(c3/(c5 + x1))/(c1 + exp(c2/(c4 + x1)))",
+"c3*exp(c4/(c8 + x1))/(c2*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))",
+"c7*(c11 + x1)*exp(c6*(c2 - 1/(c3 + x1)))/(c8 + exp(c1*(c0 - 1/(c9 + x1))) + exp(c5*(c4 - 1/(c10 + x1))))"
+],
+"SharpeDeMichele1977": [
+"c2*(c8 + x1)*exp(c5/(c9 + x1))/(c1*exp(c4/(c6 + x1)) + c3 + exp(c0/(c7 + x1)))"
+],
+"Shi2011": [
+"c0*(c1 - exp(c2*(c3 + x1)))*(c4 + x1)",
+"c0*(c5 - exp(c1*(c2 + x1)))*(c6 - exp(c3*(c4 + x1)))"
+],
+"Shi2016": [
+"c0*(c1 - x1)*(c2 + x1)**c3"
+],
+"Spain1982": [
+"c0*exp(c1*x1) + c2*exp(c3*x1)"
+],
+"Stinner1974": [
+"c0/(c1 + exp(c2*x1))"
+],
+"Taylor1981": [
+"c0*exp(c1*(c2 + x1)**2)"
+],
+"TaylorSexton1972": [
+"c0*(c1 - (c2 + x1)**2)*(c2 + x1)**2"
+],
+"Thomas2012": [
+"(c0*(c1 + x1)**2 + c2)*exp(c3*x1)"
+],
+"Thomas2017": [
+"c0*exp(c1*x1) + c2*exp(c3*x1) + c4"
+],
+"Tomlinson2015": [
+"c0*exp(c1*x1) + c2*exp(x1)"
+],
+"Wagner1988": [
+"c0*(c6 + x1)*exp(c3*(c7 - 1/(c8 + x1)))/(c4 + exp(c1*(c2 - 1/(c5 + x1))))"
+],
+"Wang1982": [
+"c5*(c7 - exp(c3*(c2 - x1)))*(c8 - exp(c3*(c4 + x1)))/(c6 + exp(c1*(c0 + x1)))"
+],
+"WangEngel1998": [
+"c0*(c1 + x1)**c2 + c3*(c1 + x1)**c4"
+],
+"WarrenDreyer2006": [
+"c0*exp(c1*(c2 + log(x1))**2)"
+],
+"Yin1995": [
+"c0*(c1 - x1)**c2*(c3 + x1)**c4",
+"c2*(c0*c1 + c1*x1 + c3)**c4*exp(-(c0*c1 + c1*x1 + c3)**c5)"
+],
+"quadratic": [
+"c0*x1**2 + c1*x1 + c2"
+],
+"quartic": [
+"c0*x1**2 + c1*x1**3 + c2*x1**4 + c3*x1 + c4"
+]
+},
+"source": "R curve catalogue thermal_curves.csv; formulas transcribed and verified numerically against the packages; one model per original publication",
+"stats": {
+"distinct_keys": 65,
+"expressible": 89,
+"models": 57,
+"packages": [
+"devRate",
+"rTPC"
+],
+"rows": 91,
+"rows_in_corpus": 89,
+"verified": 91
+},
+"verification": {
+"devrate_analytis_77": {
+"formula": "aa*(x - Tmin)**bb*(Tmax - x)**cc",
+"function": "analytis_77",
+"in_corpus": true,
+"key": "c0*(c1 - x1)**c2*(c3 + x1)**c4",
+"max_rel_err": 6.7367415128677575e-15,
+"model": "Analytis1977",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_bayoh_03": {
+"formula": "aa + bb*x + cc*exp(x) + dd*exp(-x)",
+"function": "bayoh_03",
+"in_corpus": true,
+"key": "c0*x1 + c1*exp(-x1) + c2*exp(x1) + c3",
+"max_rel_err": 5.298365622260472e-15,
+"model": "Bayoh2003",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_beta_16": {
+"formula": "rm*(T2 - x)/(T2 - Tm)*((x - T1)/(Tm - T1))**((Tm - T1)/(T2 - Tm))",
+"function": "beta_16",
+"in_corpus": true,
+"key": "c0*(c1 - x1)*(c2 + x1)**c3",
+"max_rel_err": 5.0218313741233976e-15,
+"model": "Shi2016",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_beta_95": {
+"formula": "exp(mu)*(x - Tb)**aa*(Tc - x)**bb",
+"function": "beta_95",
+"in_corpus": true,
+"key": "c0*(c1 - x1)**c2*(c3 + x1)**c4",
+"max_rel_err": 5.2203471068277405e-15,
+"model": "Yin1995",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_bieri1_83": {
+"formula": "aa*(x - Tmin) - bb*exp(x - Tm)",
+"function": "bieri1_83",
+"in_corpus": true,
+"key": "c0*x1 + c1*exp(x1) + c2",
+"max_rel_err": 7.727295969273549e-15,
+"model": "Bieri1983",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_briere1_99": {
+"formula": "aa*x*(x - Tmin)*(Tmax - x)**(1/2)",
+"function": "briere1_99",
+"in_corpus": true,
+"key": "c0*x1*(c1 + x1)*sqrt(c2 - x1)",
+"max_rel_err": 8.293155735759491e-15,
+"model": "Briere1999",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_briere2_99": {
+"formula": "aa*x*(x - Tmin)*(Tmax - x)**(1/bb)",
+"function": "briere2_99",
+"in_corpus": true,
+"key": "c0*x1*(c1 + x1)*(c2 - x1)**c3",
+"max_rel_err": 6.684551428562707e-15,
+"model": "Briere1999",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_campbell_74": {
+"formula": "aa + bb*x",
+"function": "campbell_74",
+"in_corpus": true,
+"key": "c0*x1 + c1",
+"max_rel_err": 2.08193729816451e-15,
+"model": "Campbell1974",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_damos_08": {
+"formula": "aa*(bb - x/10)*(x/10)**cc",
+"function": "damos_08",
+"in_corpus": true,
+"key": "c0*x1**c1*(c2 - x1)",
+"max_rel_err": 5.308966356118697e-15,
+"model": "Damos2008",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_damos_11": {
+"formula": "aa/(1 + bb*x + cc*x**2)",
+"function": "damos_11",
+"in_corpus": true,
+"key": "c0/(c1*x1**2 + c2 + x1)",
+"max_rel_err": 7.246327962845342e-15,
+"model": "Damos2011",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_davidson_44": {
+"formula": "K/(1 + exp(aa + bb*x))",
+"function": "davidson_44",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*x1))",
+"max_rel_err": 5.645340177500357e-15,
+"model": "Davidson1944",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_harcourtYee_82": {
+"formula": "a0 + a1*x + a2*x**2 + a3*x**3",
+"function": "harcourtYee_82",
+"in_corpus": true,
+"key": "c0*x1**2 + c1*x1**3 + c2*x1 + c3",
+"max_rel_err": 7.516785078581098e-15,
+"model": "HarcourtYee1982",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_hilbertLogan_83": {
+"formula": "phi*((x - Tb)**2/((x - Tb)**2 + aa**2) - exp(-(Tmax - (x - Tb))/deltaT))",
+"function": "hilbertLogan_83",
+"in_corpus": true,
+"key": "c0*(c2 + x1)**2/(c1 + (c2 + x1)**2) + c3*exp(c4*x1)",
+"max_rel_err": 7.313130056627405e-14,
+"model": "HilbertLogan1983",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_janisch_32": {
+"formula": "1/(Dmin/2*(exp(aa*(x - Topt)) + exp(-bb*(x - Topt))))",
+"function": "janisch_32",
+"in_corpus": true,
+"key": "c0/(exp(c1*c2 + c1*x1) + exp(c2*c3 + c3*x1))",
+"max_rel_err": 9.042676533794217e-15,
+"model": "Janisch1932",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_kontodimas_04": {
+"formula": "aa*(x - Tmin)**2*(Tmax - x)",
+"function": "kontodimas_04",
+"in_corpus": true,
+"key": "c0*(c1 - x1)*(c2 + x1)**2",
+"max_rel_err": 1.0164046311623351e-13,
+"model": "Kontodimas2004",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_lactin1_95": {
+"formula": "exp(aa*x) - exp(aa*Tmax - (Tmax - x)/deltaT)",
+"function": "lactin1_95",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + exp(c2*x1)",
+"max_rel_err": 6.885900913727106e-15,
+"model": "Lactin1995",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_lactin2_95": {
+"formula": "exp(aa*x) - exp(aa*Tmax - (Tmax - x)/deltaT) + bb",
+"function": "lactin2_95",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2 + exp(c3*x1)",
+"max_rel_err": 5.203483962612117e-15,
+"model": "Lactin1995",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_lamb_92_high": {
+"formula": "Rm*exp(-1/2*((x - Tmax)/T1)**2)",
+"function": "lamb_92",
+"in_corpus": true,
+"key": "c0*exp(c1*(c2 + x1)**2)",
+"max_rel_err": 8.543339781108453e-15,
+"model": "Lamb1992",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_lamb_92_low": {
+"formula": "Rm*exp(-1/2*((x - Tmax)/To)**2)",
+"function": "lamb_92",
+"in_corpus": true,
+"key": "c0*exp(c1*(c2 + x1)**2)",
+"max_rel_err": 2.753800817091554e-14,
+"model": "Lamb1992",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_logan10_76": {
+"formula": "alpha*(1/(1 + cc*exp(-bb*x)) - exp(-(Tmax - x)/deltaT))",
+"function": "logan10_76",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*x1)) + c3*exp(c4*x1)",
+"max_rel_err": 4.67070842152498e-15,
+"model": "Logan1976",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_logan6_76": {
+"formula": "phi*(exp(bb*x) - exp(bb*Tmax - (Tmax - x)/deltaT))",
+"function": "logan6_76",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2*exp(c3*x1)",
+"max_rel_err": 5.2318846318461926e-15,
+"model": "Logan1976",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_perf2_11": {
+"formula": "cc*(x - T1)*(1 - exp(k*(x - T2)))",
+"function": "perf2_11",
+"in_corpus": true,
+"key": "c0*(c1 - exp(c2*(c3 + x1)))*(c4 + x1)",
+"max_rel_err": 9.182556573332527e-14,
+"model": "Shi2011",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_poly2": {
+"formula": "a0 + a1*x + a2*x**2",
+"function": "poly2",
+"in_corpus": true,
+"key": "c0*x1**2 + c1*x1 + c2",
+"max_rel_err": 5.3598095394433654e-15,
+"model": "quadratic",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_poly4": {
+"formula": "a0 + a1*x + a2*x**2 + a3*x**3 + a4*x**4",
+"function": "poly4",
+"in_corpus": true,
+"key": "c0*x1**2 + c1*x1**3 + c2*x1**4 + c3*x1 + c4",
+"max_rel_err": 8.874952073736598e-15,
+"model": "quartic",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_ratkowsky_82": {
+"formula": "(sqrt(cc)*k1*(x - T1)*(1 - exp(k2*(x - T2))))**2",
+"function": "ratkowsky_82",
+"in_corpus": true,
+"key": "c0*(c1 + c2*exp(c3*x1))**2*(c4 + x1)**2",
+"max_rel_err": 1.562623447500528e-13,
+"model": "Ratkowsky1982",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_ratkowsky_83": {
+"formula": "(cc*(x - T1)*(1 - exp(k*(x - T2))))**2",
+"function": "ratkowsky_83",
+"in_corpus": true,
+"key": "c0*(c1 + c2*exp(c3*x1))**2*(c4 + x1)**2",
+"max_rel_err": 1.0876232354897213e-13,
+"model": "Ratkowsky1983",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_regniere_12": {
+"formula": "phi*(exp(bb*(x - Tb)) - ((Tm - x)/(Tm - Tb))*exp(-bb*(x - Tb)/deltab) - ((x - Tb)/(Tm - Tb))*exp(bb*(Tm - Tb) - (Tm - x)/deltam))",
+"function": "regniere_12",
+"in_corpus": true,
+"key": "c7*(c2*(c1 + x1)*exp(c5*(c0 - x1)) + c4*(c0 - x1)*exp(c3*(c1 + x1)) + exp(c6*(c1 + x1)))",
+"max_rel_err": 1.1882735469680093e-13,
+"model": "Regniere2012",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_rootsq_82": {
+"formula": "(bb*(x - Tb))**2",
+"function": "rootsq_82",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**2",
+"max_rel_err": 1.525495619696133e-12,
+"model": "Ratkowsky1982",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_schoolfieldHigh_81": {
+"formula": "p25*(x + 273.16)/298*exp(aa/1.987*(1/298 - 1/(x + 273.16)))/(1 + exp(dd/1.987*(1/ee - 1/(x + 273.16))))",
+"function": "schoolfieldHigh_81",
+"in_corpus": true,
+"key": "c0*(c6 + x1)*exp(c3*(c7 - 1/(c8 + x1)))/(c4 + exp(c1*(c2 - 1/(c5 + x1))))",
+"max_rel_err": 1.8670648477779685e-15,
+"model": "Schoolfield1981",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_schoolfieldLow_81": {
+"formula": "p25*(x + 273.16)/298*exp(aa/1.987*(1/298 - 1/(x + 273.16)))/(1 + exp(bb/1.987*(1/cc - 1/(x + 273.16))))",
+"function": "schoolfieldLow_81",
+"in_corpus": true,
+"key": "c0*(c6 + x1)*exp(c3*(c7 - 1/(c8 + x1)))/(c4 + exp(c1*(c2 - 1/(c5 + x1))))",
+"max_rel_err": 1.7228707554205763e-15,
+"model": "Schoolfield1981",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_schoolfield_81": {
+"formula": "p25*(x + 273.16)/298*exp(aa/1.987*(1/298 - 1/(x + 273.16)))/(1 + exp(bb/1.987*(1/cc - 1/(x + 273.16))) + exp(dd/1.987*(1/ee - 1/(x + 273.16))))",
+"function": "schoolfield_81",
+"in_corpus": true,
+"key": "c7*(c11 + x1)*exp(c6*(c2 - 1/(c3 + x1)))/(c8 + exp(c1*(c0 - 1/(c9 + x1))) + exp(c5*(c4 - 1/(c10 + x1))))",
+"max_rel_err": 4.011297733659045e-15,
+"model": "Schoolfield1981",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_sharpeDeMichele_77": {
+"formula": "(x + 273.16)*exp((aa - bb/(x + 273.16))/1.987)/(1 + exp((cc - dd/(x + 273.16))/1.987) + exp((ff - gg/(x + 273.16))/1.987))",
+"function": "sharpeDeMichele_77",
+"in_corpus": true,
+"key": "c2*(c8 + x1)*exp(c5/(c9 + x1))/(c1*exp(c4/(c6 + x1)) + c3 + exp(c0/(c7 + x1)))",
+"max_rel_err": 4.601375653516964e-15,
+"model": "SharpeDeMichele1977",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_shi_11": {
+"formula": "cc*(1 - exp(-k1*(x - T1)))*(1 - exp(k2*(x - T2)))",
+"function": "shi_11",
+"in_corpus": true,
+"key": "c0*(c5 - exp(c1*(c2 + x1)))*(c6 - exp(c3*(c4 + x1)))",
+"max_rel_err": 6.673226117464965e-14,
+"model": "Shi2011",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_stinner_74_high": {
+"formula": "C/(1 + exp(k1 + k2*(2*Topt - x)))",
+"function": "stinner_74",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*x1))",
+"max_rel_err": 7.871690938899888e-15,
+"model": "Stinner1974",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_stinner_74_low": {
+"formula": "C/(1 + exp(k1 + k2*x))",
+"function": "stinner_74",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*x1))",
+"max_rel_err": 9.077157983920504e-15,
+"model": "Stinner1974",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_taylor_81": {
+"formula": "Rm*exp(-1/2*((x - Tm)/To)**2)",
+"function": "taylor_81",
+"in_corpus": true,
+"key": "c0*exp(c1*(c2 + x1)**2)",
+"max_rel_err": 3.1229096481069703e-14,
+"model": "Taylor1981",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_wagner_88": {
+"formula": "1/((1 + exp((cc/1.987)*(1/dd - 1/(x + 273.16))))/(aa*(x + 273.16)/298.15*exp((bb/1.987)*(1/298.15 - 1/(x + 273.16)))))",
+"function": "wagner_88",
+"in_corpus": true,
+"key": "c0*(c6 + x1)*exp(c3*(c7 - 1/(c8 + x1)))/(c4 + exp(c1*(c2 - 1/(c5 + x1))))",
+"max_rel_err": 3.3954395124374846e-15,
+"model": "Wagner1988",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_wang_82": {
+"formula": "K/(1 + exp(-r*(x - T0)))*(1 - exp(-(x - TL)/aa))*(1 - exp(-(TH - x)/aa))",
+"function": "wang_82",
+"in_corpus": true,
+"key": "c5*(c7 - exp(c3*(c2 - x1)))*(c8 - exp(c3*(c4 + x1)))/(c6 + exp(c1*(c0 + x1)))",
+"max_rel_err": 6.199660573236697e-15,
+"model": "Wang1982",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"devrate_wangengel_98": {
+"formula": "(2*(x - Tmin)**aa*(Topt - Tmin)**aa - (x - Tmin)**(2*aa))/(Topt - Tmin)**(2*aa)",
+"function": "wangengel_98",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**c2 + c3*(c1 + x1)**c4",
+"max_rel_err": 5.828335775409721e-13,
+"model": "WangEngel1998",
+"n_points": 75,
+"note": "",
+"package": "devRate",
+"verified": true
+},
+"rtpc_analytiskontodimas_2004": {
+"formula": "a*(x - tmin)**2*(tmax - x)",
+"function": "analytiskontodimas_2004",
+"in_corpus": true,
+"key": "c0*(c1 - x1)*(c2 + x1)**2",
+"max_rel_err": 6.4934664785587164e-15,
+"model": "Kontodimas2004",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_ashrafi1_2018": {
+"formula": "a + b*x + log(x) + c*x**3",
+"function": "ashrafi1_2018",
+"in_corpus": true,
+"key": "c0*x1**3 + c1*x1 + c2 + log(x1)",
+"max_rel_err": 6.4816709450444855e-15,
+"model": "Ashrafi2018",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_ashrafi2_2018": {
+"formula": "a + b*x**(3/2) + c*x**2",
+"function": "ashrafi2_2018",
+"in_corpus": true,
+"key": "c0*x1**2 + c1*x1**(3/2) + c2",
+"max_rel_err": 4.7821669989008634e-15,
+"model": "Ashrafi2018",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_ashrafi3_2018": {
+"formula": "1/(a + b*exp(x) + c*exp(-x))",
+"function": "ashrafi3_2018",
+"in_corpus": true,
+"key": "c0/(c1*exp(-x1) + c2 + exp(x1))",
+"max_rel_err": 6.566436866886712e-15,
+"model": "Ashrafi2018",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_ashrafi4_2018": {
+"formula": "a + b*(x + 273.15) + c*log(x + 273.15)**2 + d*sqrt(x + 273.15)",
+"function": "ashrafi4_2018",
+"in_corpus": true,
+"key": "c0*sqrt(c4 + x1) + c1*log(c5 + x1)**2 + c2*x1 + c3",
+"max_rel_err": 1.9243428200680695e-15,
+"model": "Ashrafi2018",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_ashrafi5_2018": {
+"formula": "a + b*log(x + 273.15)**2 + c*log(x + 273.15) + d*log(x + 273.15)/x + 273.15",
+"function": "ashrafi5_2018",
+"in_corpus": true,
+"key": "c0*log(c6 + x1)/x1 + c1*log(c4 + x1)**2 + c2*log(c5 + x1) + c3",
+"max_rel_err": 1.856854767798748e-15,
+"model": "Ashrafi2018",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_atkin_2005": {
+"formula": "r0*(a - b*x)**(x/10)",
+"function": "atkin_2005",
+"in_corpus": true,
+"key": "c0*(c1*x1 + c2)**(c3*x1)",
+"max_rel_err": 3.843177575493612e-15,
+"model": "Atkin2005",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_beta_2012": {
+"formula": "a*m**(d - 1)*(1 - m)**(e - 1)/(((d - 1)/(d + e - 2))**(d - 1)*((e - 1)/(d + e - 2))**(e - 1))",
+"function": "beta_2012",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**c3*(c2 + c4*x1)**c5",
+"max_rel_err": 5.3696078045114716e-15,
+"model": "Niehaus2012",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_betatypesimplified_2008": {
+"formula": "rho*(alpha - x/10)*(x/10)**beta",
+"function": "betatypesimplified_2008",
+"in_corpus": true,
+"key": "c0*x1**c1*(c2 - x1)",
+"max_rel_err": 5.0467483519105396e-15,
+"model": "Damos2008",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_boatman_2017": {
+"formula": "rmax*sin(pi*((x - tmin)/(tmax - tmin))**a)**b",
+"function": "boatman_2017",
+"in_corpus": true,
+"key": "c0*sin(c1*(c2 + x1)**c3)**c4",
+"max_rel_err": 4.954171450001402e-15,
+"model": "Boatman2017",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_briere1_1999": {
+"formula": "a*x*(x - tmin)*sqrt(tmax - x)",
+"function": "briere1_1999",
+"in_corpus": true,
+"key": "c0*x1*(c1 + x1)*sqrt(c2 - x1)",
+"max_rel_err": 6.873056374199452e-15,
+"model": "Briere1999",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_briere1simplified_1999": {
+"formula": "a*(x - tmin)*sqrt(tmax - x)",
+"function": "briere1simplified_1999",
+"in_corpus": true,
+"key": "c0*(c1 + x1)*sqrt(c2 - x1)",
+"max_rel_err": 4.1484152434460384e-15,
+"model": "Briere1999",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_briere2_1999": {
+"formula": "a*x*(x - tmin)*(tmax - x)**(1/b)",
+"function": "briere2_1999",
+"in_corpus": true,
+"key": "c0*x1*(c1 + x1)*(c2 - x1)**c3",
+"max_rel_err": 6.167236393786695e-15,
+"model": "Briere1999",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_briere2simplified_1999": {
+"formula": "a*(x - tmin)*(tmax - x)**(1/b)",
+"function": "briere2simplified_1999",
+"in_corpus": true,
+"key": "c0*(c1 + x1)*(c2 - x1)**c3",
+"max_rel_err": 5.362283591051761e-15,
+"model": "Briere1999",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_briereextended_2021": {
+"formula": "a*x*(x - tmin)**b*(tmax - x)**d",
+"function": "briereextended_2021",
+"in_corpus": true,
+"key": "c0*x1*(c1 - x1)**c2*(c3 + x1)**c4",
+"max_rel_err": 8.692991669564336e-15,
+"model": "Cruz-Loya2021",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_briereextendedsimplified_2021": {
+"formula": "a*(x - tmin)**b*(tmax - x)**d",
+"function": "briereextendedsimplified_2021",
+"in_corpus": true,
+"key": "c0*(c1 - x1)**c2*(c3 + x1)**c4",
+"max_rel_err": 4.617508005534764e-15,
+"model": "Cruz-Loya2021",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_delong_2017": {
+"formula": "c*exp(-(eb - (ef*(1 - (x + 273.15)/(tm + 273.15)) + ehc*((x + 273.15) - (tm + 273.15) - (x + 273.15)*log((x + 273.15)/(tm + 273.15)))))/(8.62e-5*(x + 273.15)))",
+"function": "delong_2017",
+"in_corpus": true,
+"key": "c0*exp(c12/(c1 + c14*x1) + c13*x1/(c3 + c4*x1) + c2*x1*log(c11 + x1)/(c10*x1 + c9) + c8*log(c7 + x1)/(c5 + c6*x1))",
+"max_rel_err": 4.497527384764683e-12,
+"model": "DeLong2017",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_deutsch_2008_high": {
+"formula": "rmax*(1 - ((x - topt)/(topt - ctmax))**2)",
+"function": "deutsch_2008",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**2 + c2",
+"max_rel_err": 1.7697734147648725e-15,
+"model": "Deutsch2008",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_deutsch_2008_low": {
+"formula": "rmax*exp(-((x - topt)/(2*a))**2)",
+"function": "deutsch_2008",
+"in_corpus": true,
+"key": "c0*exp(c1*(c2 + x1)**2)",
+"max_rel_err": 7.848809615174592e-15,
+"model": "Deutsch2008",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_eubank_1973": {
+"formula": "a/((x - topt)**2 + b)",
+"function": "eubank_1973",
+"in_corpus": true,
+"key": "c0/(c1 + (c2 + x1)**2)",
+"max_rel_err": 5.7671369068253514e-15,
+"model": "Eubank1973",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_flextpc_2024": {
+"formula": "rmax*(((x - tmin)/alpha)**alpha*((tmax - x)/(1 - alpha))**(1 - alpha)/(tmax - tmin))**(alpha*(1 - alpha)/beta**2)",
+"function": "flextpc_2024",
+"in_corpus": true,
+"key": "c0*((c1 + x1)**c2*(c3 - x1)**c4)**c5",
+"max_rel_err": 4.787028402037443e-15,
+"model": "Cruz-Loya2024",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_flinn_1991": {
+"formula": "1/(1 + a + b*x + c*x**2)",
+"function": "flinn_1991",
+"in_corpus": true,
+"key": "c0/(c1*x1**2 + c2 + x1)",
+"max_rel_err": 6.005433010593356e-15,
+"model": "Flinn1991",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_gaussian_1987": {
+"formula": "rmax*exp(-0.5*((x - topt)/a)**2)",
+"function": "gaussian_1987",
+"in_corpus": true,
+"key": "c0*exp(c1*(c2 + x1)**2)",
+"max_rel_err": 7.108005803250017e-15,
+"model": "LynchGabriel1987",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_gaussianmodified_2006": {
+"formula": "rmax*exp(-0.5*(Abs(x - topt)/a)**b)",
+"function": "gaussianmodified_2006",
+"in_corpus": false,
+"key": null,
+"max_rel_err": 4.165936021072037e-15,
+"model": "Angilletta2006",
+"n_points": 75,
+"note": "not expressible in the grammar",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_hinshelwood_1947": {
+"formula": "a*exp(-e/(8.62e-5*(x + 273.15))) - b*exp(-eh/(8.62e-5*(x + 273.15)))",
+"function": "hinshelwood_1947",
+"in_corpus": true,
+"key": "c0*exp(c1/(c4 + c5*x1)) + c2*exp(c3/(c6 + c7*x1))",
+"max_rel_err": 4.566474583458927e-15,
+"model": "Hinshelwood1947",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_janisch1_1925": {
+"formula": "1/((m/2)*(a**(x - topt) + a**(-(x - topt))))",
+"function": "janisch1_1925",
+"in_corpus": true,
+"key": "c0/(c1**(c2 - x1) + c1**(c3 + x1))",
+"max_rel_err": 4.004446406995173e-15,
+"model": "Janisch1925",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_janisch2_1925": {
+"formula": "1/((m/2)*(a**(x - topt) + b**(-(x - topt))))",
+"function": "janisch2_1925",
+"in_corpus": true,
+"key": "c0/(c1*exp(c2*x1) + exp(c3*x1))",
+"max_rel_err": 4.5184284491620426e-15,
+"model": "Janisch1925",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_joehnk_2008": {
+"formula": "rmax*(1 + a*((b**(x - topt) - 1) - (log(b)/log(c))*(c**(x - topt) - 1)))",
+"function": "joehnk_2008",
+"in_corpus": true,
+"key": "c2*exp(c0*c1 + c1*x1) + c3*exp(c0*c5 + c5*x1) + c4",
+"max_rel_err": 1.0437150904653486e-13,
+"model": "Joehnk2008",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_johnsonlewin_1946": {
+"formula": "r0*exp(-e/(8.62e-5*(x + 273.15)))/(1 + exp((-1/(8.62e-5*(x + 273.15)))*(eh - ((eh/(topt + 273.15)) + 8.62e-5*log(e/(eh - e)))*(x + 273.15))))",
+"function": "johnsonlewin_1946",
+"in_corpus": true,
+"key": "c0*exp(c3/(c7 + c8*x1))/(c4 + exp(c1/(c5 + c6*x1) + c2*x1/(c5 + c6*x1)))",
+"max_rel_err": 2.8146996283425893e-15,
+"model": "JohnsonLewin1946",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_kamykowski_1985": {
+"formula": "a*(1 - exp(-b*(x - tmin)))*(1 - exp(-c*(tmax - x)))",
+"function": "kamykowski_1985",
+"in_corpus": true,
+"key": "c0*(c5 - exp(c1*(c2 - x1)))*(c6 - exp(c3*(c4 + x1)))",
+"max_rel_err": 3.099480517145266e-15,
+"model": "Kamykowski1985",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_lactin2_1995": {
+"formula": "exp(a*x) - exp(a*tmax - (tmax - x)/delta_t) + b",
+"function": "lactin2_1995",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2 + exp(c3*x1)",
+"max_rel_err": 6.513735435172926e-15,
+"model": "Lactin1995",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_lobry_1991": {
+"formula": "rmax*(1 - (x - topt)**2/((x - topt)**2 + x*(tmax + tmin - x) - tmax*tmin))",
+"function": "lobry_1991",
+"in_corpus": true,
+"key": "c0*(c1 + x1*(c2 - x1))/(c1 + x1*(c2 - x1) + (c3 + x1)**2)",
+"max_rel_err": 4.994050789304643e-15,
+"model": "Lobry1991",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_mitchell_2009": {
+"formula": "a*(1 + cos(pi*(x - topt)/b))/(2*b)",
+"function": "mitchell_2009",
+"in_corpus": false,
+"key": null,
+"max_rel_err": 5.7506539545844586e-15,
+"model": "Mitchell2009",
+"n_points": 75,
+"note": "not expressible in the grammar",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_oneill_1972": {
+"formula": "rmax*((ctmax - x)/(ctmax - topt))**y*exp(y*(x - topt)/(ctmax - topt))",
+"function": "oneill_1972",
+"in_corpus": true,
+"key": "c0*(c1 - x1)**c2*exp(c3*x1)",
+"max_rel_err": 4.240405590693705e-15,
+"model": "ONeill1972",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_pawar_2018": {
+"formula": "r_tref*exp(e/8.62e-5*(1/(tref + 273.15) - 1/(x + 273.15)))/(1 + (e/(eh - e))*exp(eh/8.62e-5*(1/(topt + 273.15) - 1/(x + 273.15))))",
+"function": "pawar_2018",
+"in_corpus": true,
+"key": "c0*exp(c3/(c5 + x1))/(c1 + exp(c2/(c4 + x1)))",
+"max_rel_err": 4.7279761584074246e-15,
+"model": "Kontopoulos2018",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_quadratic_2008": {
+"formula": "a + b*x + c*x**2",
+"function": "quadratic_2008",
+"in_corpus": true,
+"key": "c0*x1**2 + c1*x1 + c2",
+"max_rel_err": 6.916487796667283e-15,
+"model": "quadratic",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_ratkowsky_1983": {
+"formula": "(a*(x - tmin)*(1 - exp(b*(x - tmax))))**2",
+"function": "ratkowsky_1983",
+"in_corpus": true,
+"key": "c0*(c1 + c2*exp(c3*x1))**2*(c4 + x1)**2",
+"max_rel_err": 9.02872674470911e-15,
+"model": "Ratkowsky1983",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_rezende_2019_high": {
+"formula": "a*q10**(x/10)*(1 - c*(b - x)**2)",
+"function": "rezende_2019",
+"in_corpus": true,
+"key": "(c0*(c1 - x1)**2 + c2)*exp(c3*x1)",
+"max_rel_err": 4.629628762597659e-15,
+"model": "Rezende2019",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_rezende_2019_low": {
+"formula": "a*q10**(x/10)",
+"function": "rezende_2019",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)",
+"max_rel_err": 4.288369625011268e-15,
+"model": "Rezende2019",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_rosso_1993": {
+"formula": "rmax*(x - tmax)*(x - tmin)**2/((topt - tmin)*((topt - tmin)*(x - topt) - (topt - tmax)*(topt + tmin - 2*x)))",
+"function": "rosso_1993",
+"in_corpus": true,
+"key": "c0*(c1 + x1)*(c3 + x1)**2/(c2 + x1)",
+"max_rel_err": 7.423977129580924e-15,
+"model": "Rosso1993",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_sharpeschoolfull_1981": {
+"formula": "r_tref*exp(e/8.62e-5*(1/(tref + 273.15) - 1/(x + 273.15)))/(1 + exp(-el/8.62e-5*(1/(tl + 273.15) - 1/(x + 273.15))) + exp(eh/8.62e-5*(1/(th + 273.15) - 1/(x + 273.15))))",
+"function": "sharpeschoolfull_1981",
+"in_corpus": true,
+"key": "c3*exp(c4/(c8 + x1))/(c2*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))",
+"max_rel_err": 3.4087903839914984e-15,
+"model": "Schoolfield1981",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_sharpeschoolhigh_1981": {
+"formula": "r_tref*exp(e/8.62e-5*(1/(tref + 273.15) - 1/(x + 273.15)))/(1 + exp(eh/8.62e-5*(1/(th + 273.15) - 1/(x + 273.15))))",
+"function": "sharpeschoolhigh_1981",
+"in_corpus": true,
+"key": "c0*exp(c3/(c5 + x1))/(c1 + exp(c2/(c4 + x1)))",
+"max_rel_err": 9.526158615797661e-15,
+"model": "Schoolfield1981",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_sharpeschoollow_1981": {
+"formula": "r_tref*exp(e/8.62e-5*(1/(tref + 273.15) - 1/(x + 273.15)))/(1 + exp(-el/8.62e-5*(1/(tl + 273.15) - 1/(x + 273.15))))",
+"function": "sharpeschoollow_1981",
+"in_corpus": true,
+"key": "c0*exp(c3/(c5 + x1))/(c1 + exp(c2/(c4 + x1)))",
+"max_rel_err": 9.090846287043893e-15,
+"model": "Schoolfield1981",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_spain_1982": {
+"formula": "r0*exp(a*x)*(1 - b*exp(c*x))",
+"function": "spain_1982",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2*exp(c3*x1)",
+"max_rel_err": 1.1999749387320981e-14,
+"model": "Spain1982",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_stinner_1974_high": {
+"formula": "rmax*(1 + exp(a + b*topt))/(1 + exp(a + b*(2*topt - x)))",
+"function": "stinner_1974",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*x1))",
+"max_rel_err": 4.2798878216057585e-15,
+"model": "Stinner1974",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_stinner_1974_low": {
+"formula": "rmax*(1 + exp(a + b*topt))/(1 + exp(a + b*x))",
+"function": "stinner_1974",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*x1))",
+"max_rel_err": 7.770102566079234e-15,
+"model": "Stinner1974",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_taylorsexton_1972": {
+"formula": "rmax*(-(x - tmin)**4 + 2*(x - tmin)**2*(topt - tmin)**2)/(topt - tmin)**4",
+"function": "taylorsexton_1972",
+"in_corpus": true,
+"key": "c0*(c1 - (c2 + x1)**2)*(c2 + x1)**2",
+"max_rel_err": 2.352415155091472e-13,
+"model": "TaylorSexton1972",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_thomas_2012": {
+"formula": "a*exp(b*x)*(1 - ((x - tref)/(c/2))**2)",
+"function": "thomas_2012",
+"in_corpus": true,
+"key": "(c0*(c1 + x1)**2 + c2)*exp(c3*x1)",
+"max_rel_err": 3.9432821675046316e-13,
+"model": "Thomas2012",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_thomas_2017": {
+"formula": "a*exp(b*x) - (c + d*exp(e*x))",
+"function": "thomas_2017",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2*exp(c3*x1) + c4",
+"max_rel_err": 7.402843080019192e-14,
+"model": "Thomas2017",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_tomlinsonphillips_2015": {
+"formula": "a*(exp(b*x) - exp(x - c))",
+"function": "tomlinsonphillips_2015",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2*exp(x1)",
+"max_rel_err": 8.337541899104239e-15,
+"model": "Tomlinson2015",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_warrendreyer_2006": {
+"formula": "rmax*exp(-0.5*(log(x/topt)/a)**2)",
+"function": "warrendreyer_2006",
+"in_corpus": true,
+"key": "c0*exp(c1*(c2 + log(x1))**2)",
+"max_rel_err": 5.3507570505390215e-15,
+"model": "WarrenDreyer2006",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+},
+"rtpc_weibull_1995": {
+"formula": "a*g**((1 - c)/c)*u**(c - 1)*exp(-u**c + g)",
+"function": "weibull_1995",
+"in_corpus": true,
+"key": "c2*(c0*c1 + c1*x1 + c3)**c4*exp(-(c0*c1 + c1*x1 + c3)**c5)",
+"max_rel_err": 5.632318722387658e-14,
+"model": "Yin1995",
+"n_points": 75,
+"note": "",
+"package": "rTPC",
+"verified": true
+}
+},
+"versions": "R=4.5.1;rTPC=1.1.0;devRate=0.2.6"
+}

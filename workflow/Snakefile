@@ -166,7 +166,95 @@ rule biocat_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py catalogue_build {input.src} {input.ev} {output}"
 
 
-LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat"]
+rule biomodels_nc_fetch:
+    """Snapshot of the main SBML file of every non-curated BioModels entry
+    (search API, then the model record with the server's sha256 and the file;
+    <= 40 requests per minute). EBI blocks GitHub-hosted runners: run locally.
+    Delete results/corpora/raw/biomodels_nc to refresh."""
+    output:
+        "results/corpora/raw/biomodels_nc/manifest.json",
+    params:
+        raw="results/corpora/raw/biomodels_nc",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py biomodels_fetch {params.raw}"
+
+
+rule biomodels_nc_corpus:
+    """Kinetic laws of the non-curated BioModels, reduced as the curated ones (committed)."""
+    input:
+        man="results/corpora/raw/biomodels_nc/manifest.json",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_biomodels_nc.json",
+    params:
+        raw="results/corpora/raw/biomodels_nc",
+    threads: 4
+    conda:
+        "envs/biomodels.yaml"
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py biomodels_build {params.raw} {output} {threads}"
+
+
+# R curve catalogues (hsr/data/sources/<name>_curves.csv) and the R packages
+# whose implementations verify them
+CURVE_CATALOGUES = {"thermal": "rTPC,devRate", "ecocurves": "sars,nlsMicrobio,growthrates,FSA"}
+
+
+rule rcurves_eval:
+    """Evaluate the package implementations of a curve catalogue's rows at
+    random parameters (per-row ranges); package versions are written alongside."""
+    input:
+        src="hsr/data/sources/{cat}_curves.csv",
+        code="workflow/scripts/rcurves_eval.R",
+    output:
+        csv="results/corpora/{cat}_eval.csv",
+        versions="results/corpora/{cat}_eval.csv.versions",
+    wildcard_constraints:
+        cat="|".join(CURVE_CATALOGUES),
+    params:
+        rlib=config.get("r_lib", ""),
+        pkgs=lambda wc: CURVE_CATALOGUES[wc.cat],
+    shell:
+        "Rscript workflow/scripts/rcurves_eval.R {input.src} {output.csv} '{params.rlib}' {params.pkgs}"
+
+
+rule rcurves_corpus:
+    """Verified, canonicalised corpus of a curve catalogue, one model per original publication (committed)."""
+    input:
+        src="hsr/data/sources/{cat}_curves.csv",
+        ev="results/corpora/{cat}_eval.csv",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_{cat}.json",
+    wildcard_constraints:
+        cat="|".join(CURVE_CATALOGUES),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py curves_build {input.src} {input.ev} {output}"
+
+
+LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat", "biomodels_nc", "thermal", "ecocurves"]
+NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves"]
+
+
+rule corpus_overlap:
+    """Models, forms, forms new relative to the original five sources, and pairwise shared forms."""
+    input:
+        gen="results/grammar/generalised.json",
+        corpora=expand("hsr/data/corpus_{n}.json", n=["sabiork", "cellml", "curvelib", "biocat"] + NEW_CORPORA) + ["hsr/data/corpus.json"],
+        code="hsr/corpus_sources.py",
+    output:
+        "results/corpora/overlap.md",
+    params:
+        named=" ".join(f"{n}=" + ("hsr/data/corpus.json" if n == "biomodels" else f"hsr/data/corpus_{n}.json") for n in LOSO),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py overlap_report {input.gen} {output} "
+        "biomodels,sabiork,cellml,curvelib,biocat {params.named}"
 
 
 rule loso_folds:
@@ -174,7 +262,7 @@ rule loso_folds:
     equally weighted), score the left-out source."""
     input:
         gen="results/grammar/generalised.json",
-        corpora=expand("hsr/data/corpus_{n}.json", n=["sabiork", "cellml", "curvelib", "biocat"]) + ["hsr/data/corpus.json"],
+        corpora=expand("hsr/data/corpus_{n}.json", n=["sabiork", "cellml", "curvelib", "biocat"] + NEW_CORPORA) + ["hsr/data/corpus.json"],
         code=["hsr/grammar_compare.py", "workflow/scripts/grammar_steps.py"],
     output:
         "results/grammar/loso_{test}_{weighting}/folds.json",

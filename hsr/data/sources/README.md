@@ -100,3 +100,51 @@ Verification uses three random parameter draws in [0.5, 2] on 25 points of x in 
 requires at least 5 finite points with maximum relative error below 1e-6 (as for the curve
 libraries). R packages are installed in `config.r_lib`; their versions are recorded in
 `corpus_biocat.json`. The forms are standard textbook results, not copyrightable data.
+
+## R curve catalogues (`thermal_curves.csv` -> `corpus_thermal.json`, `ecocurves_curves.csv` -> `corpus_ecocurves.json`)
+
+Model functions of R packages for ecological curve fitting, one row per function (or per branch
+of a piecewise function), transcribed into sympy syntax in x and verified against the package
+(rules `rcurves_eval`, `rcurves_corpus`; `workflow/scripts/rcurves_eval.R`,
+`hsr.corpus_sources.curves_build`). Columns: `id`, `package`, `function`, `model`, `variable`,
+`params`, `defs` (sub-expressions substituted in order), `formula`, `r_call`, `ranges`,
+`reference`, `notes`.
+
+* `thermal`: thermal performance and development-rate curves of **rTPC** 1.1.0 (all 49
+  models of `get_model_names()`) and **devRate** 0.2.6 (all 37 equations of `devRateEqList`).
+* `ecocurves`: species-area models of **sars** 2.1.1 (21 with a model expression, plus the
+  linear model, unverified); predictive-microbiology primary and secondary models of
+  **nlsMicrobio** 1.0-0 (the smooth ones: Baranyi, Geeraerd, Albert, Mafart, modified Gompertz,
+  cardinal temperature/pH/water-activity models; the piecewise Buchanan, bilinear, trilinear and
+  Jameson models are left out); the closed-form growth models of **growthrates** 0.8.5; and the
+  growth (von Bertalanffy 1-11, Gompertz 1-5, logistic 1-3, Richards 1-3, Schnute 1-4,
+  Schnute-Richards) and stock-recruitment functions (Beverton-Holt 1-4, Ricker 1-3, Shepherd,
+  Saila-Lorda) of **FSA** 0.10.1 (increment models with two variables and Pauly's piecewise
+  seasonal model are left out).
+* A "model" is the original publication (column `model`), not the package function: functions
+  of one publication (e.g. Briere-1 and Briere-2; Schoolfield full/high/low; the FSA
+  parametrisations of von Bertalanffy) and the same model in two packages (rTPC and devRate) form
+  one model, which contributes each distinct form once.
+* Verification: `r_call` is evaluated by R with x and the parameters bound; helpers evaluate
+  the package's own expression objects (`devRateEqList[[name]]$eq`, the `exp` element of the
+  model list in the body of a `sars` function, an `nlsMicrobio` formula's right-hand side). Three
+  random parameter draws on 25 points of x; defaults x in [0.3, 4] and parameters in [0.5, 2],
+  overridden per row by `ranges` where a function is only defined (or returns a penalty value)
+  on a domain, e.g. tmin < x < tmax. A row is verified if at least 5 points with non-zero
+  finite R values agree to a relative error below 1e-6, relative to |y| itself (unlike the
+  biocat/curvelib check, which divides by max(1, |y|) and so cannot detect errors in small
+  values such as Arrhenius factors). All rows with an R implementation pass; non-expressible
+  rows (absolute values, cosines, seasonal sines) are listed in `verification` with key null.
+* Packages: rTPC (GPL >= 3; Padfield D, O'Sullivan H, Pawar S (2021) Methods Ecol Evol
+  12:1138-1143), devRate (GPL-2; Rebaudo F, Struelens Q, Dangles O (2018) Methods Ecol Evol
+  9:1144-1150), sars (GPL-3; Matthews TJ et al. (2019) Ecography 42:1446-1455), nlsMicrobio
+  (GPL-3; Baty F, Delignette-Muller ML, Siberchicot A), growthrates (GPL >= 2; Petzoldt T), FSA
+  (GPL >= 2; Ogle DH, Doll JC, Wheeler AP, Dinno A). Only the formulas are used; each row cites
+  the original publication of the model. Versions are recorded in the corpus files.
+
+## Overlap between sources (`results/corpora/overlap.md`)
+
+Rule `corpus_overlap` tabulates, for every source of the leave-one-source-out comparison, its
+models, model-form pairs and distinct generalised forms, the forms found in no other source, the
+forms not in the union of the original five sources (BioModels curated, SABIO-RK, CellML,
+curvelib, biocat), and the number of forms shared by each pair of sources.

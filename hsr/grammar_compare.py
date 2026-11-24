@@ -507,7 +507,10 @@ SOURCES = {"biomodels": CORPUS,
            "sabiork": os.path.join(os.path.dirname(__file__), "data", "corpus_sabiork.json"),
            "cellml": os.path.join(os.path.dirname(__file__), "data", "corpus_cellml.json"),
            "curvelib": os.path.join(os.path.dirname(__file__), "data", "corpus_curvelib.json"),
-           "biocat": os.path.join(os.path.dirname(__file__), "data", "corpus_biocat.json")}
+           "biocat": os.path.join(os.path.dirname(__file__), "data", "corpus_biocat.json"),
+           "biomodels_nc": os.path.join(os.path.dirname(__file__), "data", "corpus_biomodels_nc.json"),
+           "thermal": os.path.join(os.path.dirname(__file__), "data", "corpus_thermal.json"),
+           "ecocurves": os.path.join(os.path.dirname(__file__), "data", "corpus_ecocurves.json")}
 
 
 def source_items(path, gen_map):
