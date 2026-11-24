@@ -14,8 +14,66 @@ Transfer tables (prior trained on all BioModels, scored on the corpus):
 
 ## BioModels (`corpus.json`)
 
-Kinetic laws of the manually curated BioModels (built on GitHub Actions, `python -m hsr.corpus build`).
+Kinetic laws of the manually curated BioModels (rule `biomodels_corpus`, `python -m hsr.corpus build`,
+run locally since EBI blocks GitHub-hosted runners; ids `config.biomodels_first`..`biomodels_last`).
 BioModels content is free to use (CC0 for the curated models).
+
+* Fixed 2026-11-24: the build downloaded `<id>?filename=<id>_url.xml` only. That file exists for
+  older entries only; for most curated models from about BIOMD0000000700 on, the main SBML file
+  carries the name of the submitted file (e.g. MODEL1712050009.xml) and the request failed
+  (HTTP 400), so 403 of BIOMD1-1100 were missing from the corpus. `hsr.corpus.download_model`
+  now falls back to the file named in the model's record (`/<id>?format=json`). Also fixed: laws
+  containing `pi` gave no key (see `hsr.corpus.project`).
+
+## BioModels non-curated (`corpus_biomodels_nc.json`)
+
+* Source: every non-curated SBML entry of BioModels (search `curationstatus:"Non-curated" AND
+  modelformat:"SBML"`, 1474 entries on 2026-11-24; path2models entries are not in this set).
+  Rule `biomodels_nc_fetch` (`hsr.corpus_sources.biomodels_fetch`) pages through the search
+  API, reads each model's record (main file name and the server's sha256) and downloads the main
+  file, rejecting files whose checksum differs from the server's (<= 40 requests per minute).
+* Parsing: rule `biomodels_nc_corpus` (`biomodels_build`) reduces kinetic laws exactly as the
+  curated corpus (`hsr.corpus.model_keys`), keys generalised; one model per entry. Non-curated
+  entries include genome-scale and constraint-based models without kinetic laws (no keys) and
+  some models that also exist, curated, under a BIOMD id.
+* Terms of use: BioModels states that all models are available under CC0 (public domain).
+  Cite: Malik-Sheriff RS et al. (2020) BioModels - 15 years of sharing computational models in
+  life science. Nucleic Acids Res 48:D407-D415.
+
+## ModelDB NMODL (`corpus_modeldb.json`)
+
+* Source: ModelDB (https://modeldb.science): the models whose modelling application is NEURON
+  (`/api/v1/models?modeling_application=NEURON`), each downloaded as its zip (`/download/<id>`;
+  rule `modeldb_fetch`, <= 40 requests per minute), keeping only the `.mod` (NMODL) files; the
+  manifest records each zip's URL, size and sha256.
+* Parsing (rule `modeldb_equations`, `hsr.nmodl`): a light NMODL parser reads the FUNCTION,
+  PROCEDURE, BREAKPOINT, DERIVATIVE and INITIAL blocks; every assignment (`x = e`, `x' = e`) is an
+  equation, with LOCAL variables substituted and calls of the file's own FUNCTIONs inlined (a
+  function's value is its last assignment to its name, i.e. the `else` branch of guards such as
+  `vtrap`); unit annotations after numbers (`1 (mV)`) are dropped; both branches of `if`/`else`
+  appear as equations. Variables: `v`, `t`, STATE variables, ion concentrations READ, and the
+  arguments of the enclosing FUNCTION/PROCEDURE; PARAMETERs, ASSIGNED variables and `celsius`
+  are constants. Assignments with comparisons, arrays or unknown functions are skipped (counted
+  in `stats.assignments_not_parsed`); identical files are parsed once. Rule `modeldb_corpus`
+  reduces each equation as for CellML; a model is one ModelDB entry.
+* Terms of use: ModelDB asks users of its models, or of information derived from them, to cite
+  ModelDB (McDougal RA et al. (2017) Twenty years of ModelDB and beyond. J Comput Neurosci
+  42:1-10) and the papers describing the models (accession numbers are the model ids in
+  `per_model`). The model code is the authors'; only derived skeletons and accession numbers are
+  committed.
+
+## JWS Online (`corpus_jws.json`)
+
+* Source: JWS Online model database (https://jjj.bio.vu.nl): the model list
+  (`/rest/models/`) and the SBML export of each kinetic model (`/models/<slug>/sbml/`;
+  constraint-based models are skipped). Rule `jws_fetch`, <= 40 requests per minute; manifest of
+  URLs and sha256; rule `jws_corpus` reduces as BioModels. A model is one JWS entry.
+* Many JWS models are also in BioModels (JWS curates models for BioModels), so this source
+  overlaps the BioModels corpora; the overlap is reported in `results/corpora/overlap.md`.
+* Terms of use: the JWS Online site states no licence for the model files; they are published
+  for reuse in research. Only derived skeletons and model slugs are committed. Cite: Peters M
+  et al. (2017) JWS Online: a reproducible database of kinetic models. Bioinformatics
+  33:1589-1590 (or Olivier BG, Snoep JL (2004) Bioinformatics 20:2143).
 
 ## R curve libraries (`curve_libraries.csv` -> `corpus_curvelib.json`)
 
@@ -100,3 +158,123 @@ Verification uses three random parameter draws in [0.5, 2] on 25 points of x in 
 requires at least 5 finite points with maximum relative error below 1e-6 (as for the curve
 libraries). R packages are installed in `config.r_lib`; their versions are recorded in
 `corpus_biocat.json`. The forms are standard textbook results, not copyrightable data.
+
+## R curve catalogues (`thermal_curves.csv` -> `corpus_thermal.json`, `ecocurves_curves.csv` -> `corpus_ecocurves.json`)
+
+Model functions of R packages for ecological curve fitting, one row per function (or per branch
+of a piecewise function), transcribed into sympy syntax in x and verified against the package
+(rules `rcurves_eval`, `rcurves_corpus`; `workflow/scripts/rcurves_eval.R`,
+`hsr.corpus_sources.curves_build`). Columns: `id`, `package`, `function`, `model`, `variable`,
+`params`, `defs` (sub-expressions substituted in order), `formula`, `r_call`, `ranges`,
+`reference`, `notes`.
+
+* `thermal`: thermal performance and development-rate curves of **rTPC** 1.1.0 (all 49
+  models of `get_model_names()`), **devRate** 0.2.6 (all 37 equations of `devRateEqList`) and the
+  leaf temperature-response functions of **photosynthesis** 2.1.5 (Arrhenius, peaked Arrhenius
+  (Medlyn) in two parametrisations, Heskel, Kruse, MMRT).
+* `ecocurves`: species-area models of **sars** 2.1.1 (21 with a model expression, plus the
+  linear model, unverified); predictive-microbiology primary and secondary models of
+  **nlsMicrobio** 1.0-0 (the smooth ones: Baranyi, Geeraerd, Albert, Mafart, modified Gompertz,
+  cardinal temperature/pH/water-activity models; the piecewise Buchanan, bilinear, trilinear and
+  Jameson models are left out); the closed-form growth models of **growthrates** 0.8.5; and the
+  growth (von Bertalanffy 1-11, Gompertz 1-5, logistic 1-3, Richards 1-3, Schnute 1-4,
+  Schnute-Richards) and stock-recruitment functions (Beverton-Holt 1-4, Ricker 1-3, Shepherd,
+  Saila-Lorda) of **FSA** 0.10.1 (increment models with two variables and Pauly's piecewise
+  seasonal model are left out); the 19 growth functions of **growthmodels** 1.3.1 (Blumberg,
+  Brody, Chapman-Richards, generalised logistic and Richards, Gompertz, Janoschek, logistic,
+  log-logistic, Mitscherlich, MMF, monomolecular, negative exponential, Richards, Schnute,
+  Stannard, von Bertalanffy, Weibull); the xylem vulnerability curves of **fitplc** 1.2-3.1
+  (sigmoidal, Weibull); the non-rectangular hyperbola light response of **photosynthesis**; and
+  the 23 concentration-response (ecotoxicology) equations of **bayesnec** 2.1.3.1 (NEC models
+  as their branch above the no-effect concentration, ECx models, hormesis models). bayesnec is
+  not installed (it needs brms/Stan): its `R/pred_equations.R` is sourced from the CRAN source
+  tarball (rule `cran_source_fetch`, version in `config.cran_sources`, sha256 in the manifest);
+  and the dose-response models of **DoseFinding** 1.4-2 (Emax, sigmoid Emax, exponential,
+  quadratic, linear-in-log, logistic, beta).
+* A "model" is the original publication (column `model`), not the package function: functions
+  of one publication (e.g. Briere-1 and Briere-2; Schoolfield full/high/low; the FSA
+  parametrisations of von Bertalanffy) and the same model in two packages (rTPC and devRate) form
+  one model, which contributes each distinct form once.
+* Verification: `r_call` is evaluated by R with x and the parameters bound; helpers evaluate
+  the package's own expression objects (`devRateEqList[[name]]$eq`, the `exp` element of the
+  model list in the body of a `sars` function, an `nlsMicrobio` formula's right-hand side). Three
+  random parameter draws on 25 points of x; defaults x in [0.3, 4] and parameters in [0.5, 2],
+  overridden per row by `ranges` where a function is only defined (or returns a penalty value)
+  on a domain, e.g. tmin < x < tmax. A row is verified if at least 5 points with non-zero
+  finite R values agree to a relative error below 1e-6, relative to |y| itself (unlike the
+  biocat/curvelib check, which divides by max(1, |y|) and so cannot detect errors in small
+  values such as Arrhenius factors). All rows with an R implementation pass; non-expressible
+  rows (absolute values, cosines, seasonal sines) are listed in `verification` with key null.
+* Packages: rTPC (GPL >= 3; Padfield D, O'Sullivan H, Pawar S (2021) Methods Ecol Evol
+  12:1138-1143), devRate (GPL-2; Rebaudo F, Struelens Q, Dangles O (2018) Methods Ecol Evol
+  9:1144-1150), sars (GPL-3; Matthews TJ et al. (2019) Ecography 42:1446-1455), nlsMicrobio
+  (GPL-3; Baty F, Delignette-Muller ML, Siberchicot A), growthrates (GPL >= 2; Petzoldt T), FSA
+  (GPL >= 2; Ogle DH, Doll JC, Wheeler AP, Dinno A). Only the formulas are used; each row cites
+  the original publication of the model. growthmodels (GPL-3; Oliveira D), fitplc (GPL; Duursma
+  R, Choat B (2017) J Plant Hydraul 4:e002), photosynthesis (MIT; Stinziano JR et al. (2021)
+  Methods Ecol Evol 12:1094-1102), bayesnec (GPL-2; Fisher R, Barneche DR, Ricardo GF, Fox DR
+  (2024) J Stat Softw 110(5)), DoseFinding (GPL-3; Bornkamp B, Pinheiro J, Bretz F). Versions are
+  recorded in the corpus files.
+
+## nlmixr2lib model library (`corpus_nlmixr2lib.json`)
+
+* Source: the CRAN source tarball of nlmixr2lib (version `config.nlmixr2lib_version`, 0.3.2;
+  rule `nlmixr2lib_fetch`, one request; sha256 in the manifest): 59 pharmacometric models
+  (one- to three-compartment PK with linear, Michaelis-Menten and time-dependent clearance, transit
+  absorption, target-mediated disposition; indirect-response, precursor and circadian PD models;
+  tumour-growth inhibition (exponential, linear, power-law, logistic, Gompertz, von Bertalanffy,
+  Simeoni, Koch); drug-specific published models; endogenous IgG and phenylalanine models).
+* Parsing: rule `nlmixr2lib_statements` reads the `model({...})` block of every model file with
+  R's parser (`workflow/scripts/nlmixr2lib_extract.R`; nothing is evaluated, so rxode2 is not
+  needed); rule `nlmixr2lib_corpus` (`hsr.corpus_sources.nlmixr2lib_build`) substitutes each
+  assignment into the later statements and reduces every assignment and `d/dt()` right-hand side.
+  Variables: the states, time and the covariates (identifiers neither assigned in `model()` nor
+  defined in `ini()`, e.g. WT, AGE); parameters, random effects and derived quantities are
+  constants. Statements with conditionals, `linCmt()` or rxode2-specific functions are skipped
+  (13 of 835). A model is one file.
+* Terms of use: nlmixr2lib is GPL (>= 2) (Fidler M et al., nlmixr2lib: a model library for
+  nlmixr2, https://CRAN.R-project.org/package=nlmixr2lib). Each model file cites its source
+  publication. Only derived skeletons and file names are committed.
+
+## allodb tree allometries (`corpus_allodb.json`)
+
+* Source: the allodb repository (rOpenSci; Gonzalez-Akre E et al. (2022) allodb: An R package for
+  biomass estimation at globally distributed extratropical forest plots. Methods Ecol Evol
+  13:330-338), downloaded as a tarball at the commit in `config.allodb_commit` (rule
+  `allodb_fetch`, `codeload.github.com`, no authentication; sha256 in the manifest). Its
+  `equations` table holds 570 published allometric equations (biomass, height, bark, foliage, ...)
+  as R expression strings, 562 with DBH as the only independent variable.
+* Parsing: rule `allodb_equations` (`workflow/scripts/allodb_extract.R`) loads the table and
+  evaluates every DBH-only equation with R at DBH = 5, 10, 20, 40, 80 cm; rule `allodb_corpus`
+  (`hsr.corpus_sources.allodb_build`) transcribes each string into sympy (`r_infix`) and keeps it
+  only if it agrees with R's values (relative error 1e-9; all 562 do), then reduces it with DBH as
+  x1. A model is one reference (`ref_id`, 54 publications), contributing each distinct form once.
+* Terms of use: allodb is GPL-3. Only derived skeletons and reference ids are committed; cite
+  Gonzalez-Akre et al. (2022) and the original references listed in allodb.
+
+## Overlap between sources (`results/corpora/overlap.md`)
+
+Rule `corpus_overlap` tabulates, for every source of the leave-one-source-out comparison, its
+models, model-form pairs and distinct generalised forms, the forms found in no other source, the
+forms not in the union of the original five sources (BioModels curated, SABIO-RK, CellML,
+curvelib, biocat), and the number of forms shared by each pair of sources.
+
+Snapshot of 2026-11-24 (forms are generalised keys; ModelDB forms are long because called
+FUNCTIONs are inlined, median 8 constants against 4 for CellML; many are singletons):
+
+| source | models | model-form pairs | distinct forms | not in any other source | not in baseline union |
+|---|---|---|---|---|---|
+| biomodels | 947 | 3526 | 341 | 104 | - |
+| sabiork | 5057 | 7976 | 175 | 104 | - |
+| cellml | 347 | 4571 | 493 | 275 | - |
+| curvelib | 38 | 38 | 30 | 8 | - |
+| biocat | 54 | 54 | 30 | 3 | - |
+| biomodels_nc | 531 | 2480 | 223 | 76 | 87 |
+| thermal | 62 | 82 | 69 | 49 | 53 |
+| ecocurves | 83 | 99 | 67 | 30 | 33 |
+| modeldb | 778 | 19848 | 1256 | 1051 | 1063 |
+| nlmixr2lib | 56 | 225 | 41 | 19 | 21 |
+| allodb | 54 | 80 | 23 | 8 | 9 |
+| jws | 673 | 3004 | 255 | 58 | 66 |
+
+Baseline: 874 distinct forms; all twelve sources: 2185 (1311 not in the baseline).

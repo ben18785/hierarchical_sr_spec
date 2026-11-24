@@ -43,3 +43,39 @@ def test_constant_products_collapse_to_standard_forms():
         assert project(e, ["S"], m) == {hill}
     e, m = _to_sympy("Vm*S/(Km*(1 + I/Ki) + S)")
     assert project(e, ["S"], m) == {"c0*x1/(c1 + x1)"}
+
+
+def test_download_model_falls_back_to_the_records_main_file():
+    """Curated models above about BIOMD0000000700 have no <id>_url.xml file
+    (BioModels answers 400); their main SBML file is named in the record."""
+    import json
+    from hsr import corpus
+
+    calls = []
+
+    def fake(url):
+        calls.append(url)
+        if "_url.xml" in url:
+            return (b"<sbml old/>", None) if "BIOMD0000000001" in url else (None, "HTTP 400 Bad Request")
+        if "format=json" in url:
+            main = [] if "BIOMD0000000002" in url else [{"name": "notes.pdf"}, {"name": "MODEL17 12.xml"}]
+            return json.dumps({"files": {"main": main}}).encode(), None
+        return b"<sbml new/>", None
+
+    assert corpus.download_model("BIOMD0000000001", fake) == (b"<sbml old/>", None)
+    assert len(calls) == 1
+    assert corpus.download_model("BIOMD0000001000", fake) == (b"<sbml new/>", None)
+    assert calls[-1] == "https://www.biomodels.org/model/download/BIOMD0000001000?filename=MODEL17%2012.xml"
+    data, err = corpus.download_model("BIOMD0000000002", fake)
+    assert data is None and "no main SBML file" in err
+
+
+def test_laws_with_pi_reduce():
+    """pi is a numeric literal; canonicalise rejects sympy's pi, so before the
+    fix in project() these laws gave no key and were silently dropped."""
+    from hsr.grammar_compare import generalise
+    for f, key in [("4*pi*r^2", "c0*x1**2"), ("exp(a + b*log(pi*r))", "c0*x1**c1"), ("k*sin(2*pi*r/T)", "c0*sin(c1*x1)")]:
+        e, m = _to_sympy(f)
+        ks = project(e, ["r"], m)
+        assert len(ks) == 1, f
+        assert generalise(next(iter(ks))) == key

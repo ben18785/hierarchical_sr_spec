@@ -6,6 +6,7 @@ import io
 import json
 import os
 import urllib.error
+import urllib.parse
 
 import pytest
 import sympy as sp
@@ -211,3 +212,264 @@ def test_polite_client_does_not_retry_404(monkeypatch):
     with pytest.raises(RuntimeError, match="404"):
         cs.PoliteClient(min_interval=0).get("https://example.org/x")
     assert len(calls) == 1
+
+
+# ------------------------------------------------------------ R curve catalogues
+def _curve_row(id_, model, formula, params="a,b", defs="", r_call="f(x)"):
+    return {"id": id_, "package": "pkg", "function": id_, "model": model, "params": params, "defs": defs,
+            "formula": formula, "r_call": r_call}
+
+
+def _evals(id_, f, params=(1.3, 0.7), xs=None):
+    xs = xs if xs is not None else [0.3 + 0.15 * i for i in range(25)]
+    return [{"func": id_, "x": repr(x), "params": ",".join(map(str, params)), "y": repr(f(x, *params))} for x in xs]
+
+
+def test_curve_verify_relative_to_y_not_one():
+    import math
+    row = _curve_row("r", "m", "a*exp(-b/(8.62e-5*(x + 273.15)))")
+    good = _evals("r", lambda x, a, b: a * math.exp(-b / (8.62e-5 * (x + 273.15))))
+    assert cs.curve_verify(row, good)[0]
+    # a 1% error in values ~1e-20 passes catalogue_verify's max(1, |y|) scale but not curve_verify
+    bad = [dict(e, y=repr(1.01 * float(e["y"]))) for e in good]
+    assert cs.catalogue_verify(row, bad)[0]
+    assert not cs.curve_verify(row, bad)[0]
+    # zeros and NA from R are skipped; too few points is a failure
+    few = [dict(e, y="NA") for e in good[:22]] + good[22:]
+    assert cs.curve_verify(row, few) == (False, 3, cs.curve_verify(row, few)[2])
+
+
+def test_curves_build_groups_rows_by_model(tmp_path):
+    import csv
+    import math
+    rows = [_curve_row("p1", "Briere1999", "a*x*(x - b)*sqrt(3 - x)"),
+            _curve_row("p2", "Briere1999", "a*x*(x - b)*sqrt(3 - x)"),       # same model, same form: counted once
+            _curve_row("p3", "Arrhenius", "a*exp(-b/x)"),
+            _curve_row("p4", "Wrong", "a*exp(-b*x)"),                         # disagrees with R: excluded
+            _curve_row("p5", "NoRef", "a + b*x", r_call="")]                 # no implementation: kept, unverified
+    src = tmp_path / "t_curves.csv"
+    with open(src, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0]), delimiter="|")
+        w.writeheader()
+        w.writerows(rows)
+    br = lambda x, a, b: a * x * (x - b) * math.sqrt(3 - x)
+    ev = (_evals("p1", br, xs=[0.3 + 0.1 * i for i in range(25)]) + _evals("p2", br, xs=[0.3 + 0.1 * i for i in range(25)])
+          + _evals("p3", lambda x, a, b: a * math.exp(-b / x)) + _evals("p4", lambda x, a, b: a * math.exp(-b * x * 1.1)))
+    evp = tmp_path / "ev.csv"
+    with open(evp, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=["func", "x", "params", "y"])
+        w.writeheader()
+        w.writerows(ev)
+    (tmp_path / "ev.csv.versions").write_text("R=4.5.1;pkg=1.0")
+    res = cs.curves_build(str(src), str(evp), str(tmp_path / "c.json"))
+    assert set(res["per_model"]) == {"Briere1999", "Arrhenius", "NoRef"}
+    assert len(res["per_model"]["Briere1999"]) == 1
+    assert res["per_model"]["Arrhenius"] == ["c0*exp(c1/x1)"]
+    v = res["verification"]
+    assert v["p1"]["verified"] and not v["p4"]["verified"] and not v["p4"]["in_corpus"]
+    assert v["p5"]["in_corpus"] and not v["p5"]["verified"]
+    assert res["stats"]["models"] == 3 and res["versions"] == "R=4.5.1;pkg=1.0"
+
+
+@pytest.mark.parametrize("name", ["thermal", "ecocurves"])
+def test_committed_curve_catalogues_are_verified(name):
+    """Every row of the committed curve catalogues with an R implementation
+    agreed with it (rows without one are marked unverified)."""
+    rows = cs.catalogue_rows(os.path.join(ROOT, "hsr", "data", "sources", f"{name}_curves.csv"))
+    with open(os.path.join(ROOT, "hsr", "data", f"corpus_{name}.json")) as fh:
+        d = json.load(fh)
+    assert {r["id"] for r in rows} == set(d["verification"])
+    for r in rows:
+        v = d["verification"][r["id"]]
+        assert v["formula"] == r["formula"]
+        assert v["verified"] == bool(r["r_call"].strip()), r["id"]
+    keys = {k for ks in d["per_model"].values() for k in ks}
+    assert keys == set(d["freq"]) and all(cs._expressible(k) for k in keys)
+
+
+# -------------------------------------------------------------------- overlap
+def test_overlap_table(tmp_path):
+    a = tmp_path / "a.json"
+    b = tmp_path / "b.json"
+    a.write_text(json.dumps({"per_model": {"m1": ["raw1", "f2"], "m2": ["f2"], "m3": ["bad"]}}))
+    b.write_text(json.dumps({"per_model": {"n1": ["f2", "f3"]}}))
+    gen = {"raw1": "f1", "bad": None}
+    md = cs.overlap_table({"A": str(a), "B": str(b)}, gen, ["A"])
+    assert "| A | 2 | 3 | 2 | 1 | - |" in md            # m3 has no parseable form
+    assert "| B | 1 | 2 | 2 | 1 | 1 |" in md            # f3 is new relative to the baseline A
+    assert "| A | 2 | 1 |" in md and "| B | 1 | 2 |" in md
+
+
+# ------------------------------------------------------- BioModels by query
+_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+ <model id="m">
+  <listOfCompartments><compartment id="c" size="1" constant="true"/></listOfCompartments>
+  <listOfSpecies>
+   <species id="S" compartment="c" initialConcentration="1" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+   <species id="P" compartment="c" initialConcentration="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+  </listOfSpecies>
+  <listOfParameters>
+   <parameter id="V" value="1" constant="true"/><parameter id="K" value="0.5" constant="true"/>
+  </listOfParameters>
+  <listOfReactions>
+   <reaction id="r" reversible="false">
+    <listOfReactants><speciesReference species="S" stoichiometry="1" constant="true"/></listOfReactants>
+    <listOfProducts><speciesReference species="P" stoichiometry="1" constant="true"/></listOfProducts>
+    <kineticLaw><math xmlns="http://www.w3.org/1998/Math/MathML">
+     <apply><divide/><apply><times/><ci>V</ci><ci>S</ci></apply><apply><plus/><ci>K</ci><ci>S</ci></apply></apply>
+    </math></kineticLaw>
+   </reaction>
+  </listOfReactions>
+ </model>
+</sbml>
+""".encode()
+
+
+class _FakeBioModels:
+    """Stands in for PoliteClient: search pages, model records and files."""
+
+    def __init__(self, models):
+        self.models = models          # {id: bytes or None (no SBML)}
+        self.urls = []
+
+    def get(self, url):
+        self.urls.append(url)
+        if "/search?" in url:
+            q = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+            off, n = int(q["offset"][0]), int(q["numResults"][0])
+            ids = sorted(self.models)
+            return json.dumps({"matches": len(ids), "models": [{"id": i} for i in ids[off:off + n]]}).encode(), {}
+        if "/model/download/" in url:
+            mid = urllib.parse.urlparse(url).path.rsplit("/", 1)[1]
+            return self.models[mid], {}
+        mid = urllib.parse.urlparse(url).path.rsplit("/", 1)[1]
+        data = self.models[mid]
+        main = [] if data is None else [{"name": f"{mid}_file.xml", "sha256sum": hashlib.sha256(data).hexdigest()}]
+        return json.dumps({"name": f"model {mid}", "curationStatus": "NON_CURATED",
+                           "files": {"main": main, "additional": [{"name": "x.cps"}]}}).encode(), {}
+
+
+def test_biomodels_main_sbml():
+    info = {"files": {"main": [{"name": "a.cps"}, {"name": "M.xml", "sha256sum": "ab"}]}}
+    assert cs.biomodels_main_sbml(info) == ("M.xml", "ab")
+    assert cs.biomodels_main_sbml({"files": {"main": [{"name": "m.m"}]}}) is None
+
+
+def test_biomodels_fetch_and_build(tmp_path, monkeypatch):
+    pytest.importorskip("libsbml")
+    import urllib.parse  # noqa: F401  (used by the fake client)
+    fake = _FakeBioModels({"MODEL1": _SBML, "MODEL2": None, "MODEL3": _SBML})
+    monkeypatch.setattr(cs, "PoliteClient", lambda **kw: fake)
+    man = cs.biomodels_fetch(str(tmp_path), query="q")
+    ent = {e["id"]: e for e in man["entries"]}
+    assert ent["MODEL2"]["error"] == "no main SBML file"
+    assert ent["MODEL1"]["sha256"] == ent["MODEL1"]["sha256_server"]
+    assert "filename=MODEL1_file.xml" in ent["MODEL1"]["url"]
+    # second run: files present with the server's checksum are not downloaded again
+    n = sum("/model/download/" in u for u in fake.urls)
+    cs.biomodels_fetch(str(tmp_path), query="q")
+    assert sum("/model/download/" in u for u in fake.urls) == n
+    res = cs.biomodels_build(str(tmp_path), str(tmp_path / "c.json"), processes=1)
+    assert res["per_model"] == {"MODEL1": ["c0*x1/(c1 + x1)"], "MODEL3": ["c0*x1/(c1 + x1)"]}
+    assert res["stats"]["not_downloaded"] == 1 and res["stats"]["models_read"] == 2
+
+
+def test_biomodels_fetch_rejects_checksum_mismatch(tmp_path, monkeypatch):
+    fake = _FakeBioModels({"MODEL1": _SBML})
+    orig = fake.get
+    fake.get = lambda url: (b"corrupt", {}) if "/model/download/" in url else orig(url)
+    monkeypatch.setattr(cs, "PoliteClient", lambda **kw: fake)
+    man = cs.biomodels_fetch(str(tmp_path), query="q")
+    assert man["entries"][0]["error"] == "checksum differs from the server's"
+    assert not (tmp_path / "MODEL1.xml").exists()
+
+
+# ---------------------------------------------------------------- nlmixr2lib
+def test_r_infix():
+    x = sp.Symbol("r_x", positive=True)
+    assert cs.r_infix("2 * x^2 + exp(-x)", {}) == 2 * x**2 + sp.exp(-x)
+    assert cs.r_infix("expit(a.b)", {}) == 1 / (1 + sp.exp(-sp.Symbol("r_a_dot_b", positive=True)))
+    assert cs.r_infix("1e+06 * k", {"k": x}).equals(1000000 * x)
+    for bad in ("if (x > 1) 2", "linCmt()", "podo(depot)", "x[1]", "ifelse(x, 1, 2)"):
+        with pytest.raises(ValueError):
+            cs.r_infix(bad, {})
+    assert cs.r_infix("log(pi*x)", {}) == sp.log(sp.pi * x)          # R's pi is a number
+    # positive symbols: (D^2)^b is D^(2b), not Abs(D)^(2b) (which has no key)
+    assert cs.law_keys(str(cs.r_infix("3.2*(dbh^2)^1.19", {})), ["r_dbh"]) == {"c0*x1**c1"}
+
+
+def test_allodb_check_and_build(tmp_path):
+    import math
+    rows = [("e1", "ref1", "DBH", "exp(-2+2.5*log(dbh))"), ("e2", "ref1", "DBH", "10^(1+2*log10(dbh))"),
+            ("e3", "ref2", "DBH", "exp(-5+2.49*(log(pi*dbh)))"), ("e4", "ref2", "DBH, H", "0.1*dbh^2*h"),
+            ("e5", "ref3", "DBH", "1.5*dbh/(20+dbh)")]
+    grid = [5, 10, 20, 40, 80]
+    f = {"e1": lambda d: math.exp(-2 + 2.5 * math.log(d)), "e2": lambda d: 10 ** (1 + 2 * math.log10(d)),
+         "e3": lambda d: math.exp(-5 + 2.49 * math.log(math.pi * d)), "e5": lambda d: 1.5 * d / (21 + d)}
+    lines = ["equation_id\tref_id\tindependent_variable\tdependent_variable\tequation_allometry\tdbh_grid\ty"]
+    for eid, ref, iv, eq in rows:
+        y = ";".join(repr(f[eid](d)) for d in grid) if eid in f else ""
+        lines.append(f"{eid}\t{ref}\t{iv}\tTotal aboveground biomass\t{eq}\t5;10;20;40;80\t{y}")
+    (tmp_path / "eq.tsv").write_text("\n".join(lines) + "\n")
+    (tmp_path / "a.tar.gz").write_bytes(b"tar")
+    (tmp_path / "manifest.json").write_text(json.dumps({"file": "a.tar.gz", "sha256": hashlib.sha256(b"tar").hexdigest(),
+                                                        "date": "d", "url": "u", "commit": "c"}))
+    res = cs.allodb_build(str(tmp_path), str(tmp_path / "eq.tsv"), str(tmp_path / "c.json"), processes=1)
+    # e5's R values (denominator 21 + dbh) disagree with its string: excluded
+    assert res["failures"] == {"e5": "differs from R's evaluation"}
+    assert res["stats"]["not_univariate"] == 1 and res["stats"]["verified"] == 3
+    assert res["per_model"] == {"allodb:ref1": ["c0*x1**(5/2)", "c0*x1**2"], "allodb:ref2": ["c0*x1**c1"]}
+
+
+def _nlmx_rows(stmts, ini=()):
+    return [{"file": "m.R", "kind": "ini", "lhs": p, "rhs": ""} for p in ini] + \
+        [{"file": "m.R", "kind": k, "lhs": l, "rhs": r} for k, l, r in stmts]
+
+
+def test_nlmixr2lib_model_equations():
+    rows = _nlmx_rows([("assign", "cl", "exp(lcl) * (WT/70)^0.75"),
+                       ("assign", "vc", "exp(lvc)"),
+                       ("assign", "kel", "cl/vc"),
+                       ("ddt", "central", "-kel * central"),
+                       ("assign", "Cc", "central/vc"),
+                       ("assign", "eff", "E0 + Emax * Cc/(EC50 + Cc)"),
+                       ("assign", "bad", "linCmt()")],
+                      ini=["lcl", "lvc", "E0", "Emax", "EC50", "eta.cl"])
+    eqs, failed = cs.nlmixr2lib_model_equations(rows)
+    assert failed == 1
+    keys = set()
+    for e, v in eqs:
+        keys |= cs.law_keys(e, list(v))
+    # WT is a covariate (a variable; allometric exponent 0.75 is a free constant); central a state;
+    # Cc is substituted, so eff is an Emax model of central
+    assert {"c0*x1**c1", "c0*x1", "c0*x1/(c1 + x1) + c2"} <= keys
+    assert all("r_Cc" not in v and "r_E0" not in v for _, v in eqs)
+
+
+def test_nlmixr2lib_build_checks_tarball(tmp_path):
+    (tmp_path / "p.tar.gz").write_bytes(b"tar")
+    (tmp_path / "manifest.json").write_text(json.dumps({"file": "p.tar.gz", "sha256": "0", "date": "d", "url": "u"}))
+    (tmp_path / "s.tsv").write_text("file\tkind\tlhs\trhs\n")
+    with pytest.raises(RuntimeError, match="checksum"):
+        cs.nlmixr2lib_build(str(tmp_path), str(tmp_path / "s.tsv"), str(tmp_path / "c.json"), processes=1)
+
+
+def test_jws_fetch_and_build(tmp_path, monkeypatch):
+    pytest.importorskip("libsbml")
+
+    class Fake:
+        def get(self, url):
+            if "/rest/models/" in url:
+                return json.dumps([{"slug": "b1", "cbm": False}, {"slug": "a1", "cbm": False},
+                                   {"slug": "fba", "cbm": True}, {"slug": "../x", "cbm": False}]).encode(), {}
+            return (_SBML if "/a1/" in url else b"<html>not found</html>"), {}
+
+    monkeypatch.setattr(cs, "PoliteClient", lambda **kw: Fake())
+    man = cs.jws_fetch(str(tmp_path))
+    ent = {e["id"]: e for e in man["entries"]}
+    assert set(ent) == {"../x", "a1", "b1"}                  # constraint-based models skipped
+    assert ent["../x"]["error"] == "unsafe slug" and ent["b1"]["error"] == "not SBML"
+    res = cs.biomodels_build(str(tmp_path), str(tmp_path / "c.json"), processes=1)
+    assert res["per_model"] == {"a1": ["c0*x1/(c1 + x1)"]}
+    assert res["source"].startswith("JWS Online")

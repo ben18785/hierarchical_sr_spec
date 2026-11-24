@@ -166,7 +166,277 @@ rule biocat_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py catalogue_build {input.src} {input.ev} {output}"
 
 
-LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat"]
+rule biomodels_nc_fetch:
+    """Snapshot of the main SBML file of every non-curated BioModels entry
+    (search API, then the model record with the server's sha256 and the file;
+    <= 40 requests per minute). EBI blocks GitHub-hosted runners: run locally.
+    Delete results/corpora/raw/biomodels_nc to refresh."""
+    output:
+        "results/corpora/raw/biomodels_nc/manifest.json",
+    params:
+        raw="results/corpora/raw/biomodels_nc",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py biomodels_fetch {params.raw}"
+
+
+rule biomodels_nc_corpus:
+    """Kinetic laws of the non-curated BioModels, reduced as the curated ones (committed)."""
+    input:
+        man="results/corpora/raw/biomodels_nc/manifest.json",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_biomodels_nc.json",
+    params:
+        raw="results/corpora/raw/biomodels_nc",
+    threads: 4
+    conda:
+        "envs/biomodels.yaml"
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py biomodels_build {params.raw} {output} {threads}"
+
+
+rule jws_fetch:
+    """Snapshot of the SBML export of every JWS Online model (<= 40 requests
+    per minute). Delete results/corpora/raw/jws to refresh."""
+    output:
+        "results/corpora/raw/jws/manifest.json",
+    params:
+        raw="results/corpora/raw/jws",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py jws_fetch {params.raw}"
+
+
+rule jws_corpus:
+    """Kinetic laws of the JWS Online models, reduced as BioModels (committed)."""
+    input:
+        man="results/corpora/raw/jws/manifest.json",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_jws.json",
+    params:
+        raw="results/corpora/raw/jws",
+    threads: 4
+    conda:
+        "envs/biomodels.yaml"
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py biomodels_build {params.raw} {output} {threads}"
+
+
+rule modeldb_fetch:
+    """Snapshot of the NMODL files of every NEURON model in ModelDB (one zip
+    per model, <= 40 requests per minute). Delete results/corpora/raw/modeldb to refresh."""
+    output:
+        "results/corpora/raw/modeldb/manifest.json",
+    params:
+        raw="results/corpora/raw/modeldb",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py modeldb_fetch {params.raw}"
+
+
+rule modeldb_equations:
+    """Equations of every NMODL file of the ModelDB snapshot (hsr.nmodl)."""
+    input:
+        man="results/corpora/raw/modeldb/manifest.json",
+        code=["hsr/nmodl.py", "hsr/corpus_sources.py"],
+    output:
+        "results/corpora/modeldb_equations.json",
+    params:
+        raw="results/corpora/raw/modeldb",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py modeldb_equations {params.raw} {output} {threads}"
+
+
+rule modeldb_corpus:
+    """NMODL equations reduced to generalised one-variable skeletons, one model per ModelDB entry (committed)."""
+    input:
+        eq="results/corpora/modeldb_equations.json",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_modeldb.json",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py modeldb_build {input.eq} {output} {threads}"
+
+
+rule nlmixr2lib_fetch:
+    """The nlmixr2lib source tarball from CRAN (version in config), with its sha256."""
+    output:
+        "results/corpora/raw/nlmixr2lib/manifest.json",
+    params:
+        raw="results/corpora/raw/nlmixr2lib",
+        version=config.get("nlmixr2lib_version", "0.3.2"),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py cran_fetch {params.raw} nlmixr2lib {params.version}"
+
+
+rule nlmixr2lib_statements:
+    """Statements of the model() blocks of every nlmixr2lib model (R parser, no evaluation)."""
+    input:
+        man="results/corpora/raw/nlmixr2lib/manifest.json",
+        code="workflow/scripts/nlmixr2lib_extract.R",
+    output:
+        "results/corpora/nlmixr2lib_statements.tsv",
+    params:
+        tarball=lambda wc: "results/corpora/raw/nlmixr2lib/nlmixr2lib_{}.tar.gz".format(
+            config.get("nlmixr2lib_version", "0.3.2")),
+    shell:
+        "Rscript workflow/scripts/nlmixr2lib_extract.R {params.tarball} {output}"
+
+
+rule nlmixr2lib_corpus:
+    """nlmixr2lib model equations reduced to generalised one-variable skeletons, one model per file (committed)."""
+    input:
+        man="results/corpora/raw/nlmixr2lib/manifest.json",
+        tsv="results/corpora/nlmixr2lib_statements.tsv",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_nlmixr2lib.json",
+    params:
+        raw="results/corpora/raw/nlmixr2lib",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py nlmixr2lib_build {params.raw} {input.tsv} {output} {threads}"
+
+
+rule allodb_fetch:
+    """The allodb repository (ropensci/allodb) at the commit in config, as a tarball with its sha256."""
+    output:
+        "results/corpora/raw/allodb/manifest.json",
+    params:
+        raw="results/corpora/raw/allodb",
+        commit=config.get("allodb_commit", ""),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py github_fetch {params.raw} ropensci/allodb {params.commit}"
+
+
+rule allodb_equations:
+    """The allodb equation table, each univariate equation evaluated by R on a DBH grid."""
+    input:
+        man="results/corpora/raw/allodb/manifest.json",
+        code="workflow/scripts/allodb_extract.R",
+    output:
+        "results/corpora/allodb_equations.tsv",
+    params:
+        tarball=lambda wc: "results/corpora/raw/allodb/ropensci_allodb_{}.tar.gz".format(config["allodb_commit"][:12]),
+    shell:
+        "Rscript workflow/scripts/allodb_extract.R {params.tarball} {output}"
+
+
+rule allodb_corpus:
+    """allodb equations (checked against R) reduced to generalised forms, one model per reference (committed)."""
+    input:
+        man="results/corpora/raw/allodb/manifest.json",
+        tsv="results/corpora/allodb_equations.tsv",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_allodb.json",
+    params:
+        raw="results/corpora/raw/allodb",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py allodb_build {params.raw} {input.tsv} {output} {threads}"
+
+
+# R curve catalogues (hsr/data/sources/<name>_curves.csv) and the R packages
+# whose implementations verify them
+CURVE_CATALOGUES = {"thermal": "rTPC,devRate,photosynthesis",
+                    "ecocurves": "sars,nlsMicrobio,growthrates,FSA,growthmodels,fitplc,photosynthesis,DoseFinding"}
+# R files sourced from CRAN source tarballs (packages not installed; versions in config.cran_sources)
+CURVE_SOURCED = {"thermal": [], "ecocurves": [("bayesnec", "bayesnec/R/pred_equations.R")]}
+
+
+def _cran_tarball(pkg):
+    return f"results/corpora/raw/cran_{pkg}/{pkg}_{config['cran_sources'][pkg]}.tar.gz"
+
+
+rule cran_source_fetch:
+    """A CRAN source tarball (version in config.cran_sources), with its sha256."""
+    output:
+        "results/corpora/raw/cran_{pkg}/manifest.json",
+    params:
+        raw="results/corpora/raw/cran_{pkg}",
+        version=lambda wc: config["cran_sources"][wc.pkg],
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py cran_fetch {params.raw} {wildcards.pkg} {params.version}"
+
+
+rule rcurves_eval:
+    """Evaluate the package implementations of a curve catalogue's rows at
+    random parameters (per-row ranges); package versions are written alongside."""
+    input:
+        src="hsr/data/sources/{cat}_curves.csv",
+        code="workflow/scripts/rcurves_eval.R",
+        sourced=lambda wc: [f"results/corpora/raw/cran_{p}/manifest.json" for p, _ in CURVE_SOURCED[wc.cat]],
+    output:
+        csv="results/corpora/{cat}_eval.csv",
+        versions="results/corpora/{cat}_eval.csv.versions",
+    wildcard_constraints:
+        cat="|".join(CURVE_CATALOGUES),
+    params:
+        rlib=config.get("r_lib", ""),
+        pkgs=lambda wc: CURVE_CATALOGUES[wc.cat],
+        sourced=lambda wc: ",".join(f"{_cran_tarball(p)}::{m}" for p, m in CURVE_SOURCED[wc.cat]),
+    shell:
+        "Rscript workflow/scripts/rcurves_eval.R {input.src} {output.csv} '{params.rlib}' {params.pkgs} '{params.sourced}'"
+
+
+rule rcurves_corpus:
+    """Verified, canonicalised corpus of a curve catalogue, one model per original publication (committed)."""
+    input:
+        src="hsr/data/sources/{cat}_curves.csv",
+        ev="results/corpora/{cat}_eval.csv",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_{cat}.json",
+    wildcard_constraints:
+        cat="|".join(CURVE_CATALOGUES),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py curves_build {input.src} {input.ev} {output}"
+
+
+LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat", "biomodels_nc", "thermal", "ecocurves", "modeldb",
+        "nlmixr2lib", "allodb", "jws"]
+NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves", "modeldb", "nlmixr2lib", "allodb", "jws"]
+
+
+rule corpus_overlap:
+    """Models, forms, forms new relative to the original five sources, and pairwise shared forms."""
+    input:
+        gen="results/grammar/generalised.json",
+        corpora=expand("hsr/data/corpus_{n}.json", n=["sabiork", "cellml", "curvelib", "biocat"] + NEW_CORPORA) + ["hsr/data/corpus.json"],
+        code="hsr/corpus_sources.py",
+    output:
+        "results/corpora/overlap.md",
+    params:
+        named=" ".join(f"{n}=" + ("hsr/data/corpus.json" if n == "biomodels" else f"hsr/data/corpus_{n}.json") for n in LOSO),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py overlap_report {input.gen} {output} "
+        "biomodels,sabiork,cellml,curvelib,biocat {params.named}"
 
 
 rule loso_folds:
@@ -174,7 +444,7 @@ rule loso_folds:
     equally weighted), score the left-out source."""
     input:
         gen="results/grammar/generalised.json",
-        corpora=expand("hsr/data/corpus_{n}.json", n=["sabiork", "cellml", "curvelib", "biocat"]) + ["hsr/data/corpus.json"],
+        corpora=expand("hsr/data/corpus_{n}.json", n=["sabiork", "cellml", "curvelib", "biocat"] + NEW_CORPORA) + ["hsr/data/corpus.json"],
         code=["hsr/grammar_compare.py", "workflow/scripts/grammar_steps.py"],
     output:
         "results/grammar/loso_{test}_{weighting}/folds.json",

@@ -147,8 +147,12 @@ def collapse_constants(expr, x, prefix="k"):
 
 def project(expr, variables, sym_map):
     """One-variable canonical keys of ``expr``: for each name in ``variables``
-    that occurs in it, that symbol -> x1 and every other symbol -> a constant."""
+    that occurs in it, that symbol -> x1 and every other symbol -> a constant.
+    The number pi becomes a float literal first: ``canonicalise`` rejects
+    expressions containing sympy's pi (e.g. pi*x1**2 has no key), so laws such
+    as 4*pi*r^2 or exp(a + b*log(pi*D)) were silently dropped."""
     x1 = make_vars(1)[0]
+    expr = expr.xreplace({sp.pi: sp.Float(sp.pi.evalf(17))})
     present = [n for n in variables if n in sym_map and expr.has(sym_map[n])]
     keys = set()
     for name in present:
@@ -242,7 +246,8 @@ def model_keys(path, law_timeout=10):
 
 # ------------------------------------------------------------------- corpus
 def _fetch(url, tries=3):
-    """GET url -> (bytes, None) or (None, error string). A 404 is not retried."""
+    """GET url -> (bytes, None) or (None, error string). A 400 or 404 is not
+    retried (BioModels answers 400 for a file name the model does not have)."""
     import urllib.error
     import urllib.request
     req = urllib.request.Request(url, headers={"User-Agent": "hsr-corpus/0.1 (python urllib)",
@@ -259,7 +264,7 @@ def _fetch(url, tries=3):
             err = "download took over 120 s"
         except urllib.error.HTTPError as e:
             err = f"HTTP {e.code} {e.reason}"
-            if e.code == 404:
+            if e.code in (400, 404):
                 break
         except Exception as e:  # network, TLS, timeout
             err = repr(e)
@@ -268,6 +273,44 @@ def _fetch(url, tries=3):
             signal.signal(signal.SIGALRM, old)
         time.sleep(2 * (k + 1))
     return None, err
+
+
+BIOMODELS_RECORD = "https://www.biomodels.org/{id}?format=json"
+BIOMODELS_FILE = "https://www.biomodels.org/model/download/{id}?filename={name}"
+
+
+def main_file_url(mid, fetch=None):
+    """Download URL of a model's main SBML file, from its BioModels record.
+    Only older entries have a main file named ``<id>_url.xml`` (BIOMODELS_URL);
+    for later ones (e.g. most curated models above BIOMD0000000700) the main
+    file has the name of the submitted file (e.g. MODEL1712050009.xml), so the
+    name is read from the record. Returns None if the record has no SBML file."""
+    import urllib.parse
+    data, err = (fetch or _fetch)(BIOMODELS_RECORD.format(id=mid))
+    if data is None:
+        return None
+    try:
+        main = json.loads(data)["files"]["main"]
+    except (ValueError, KeyError, TypeError):
+        return None
+    for f in main:
+        name = f.get("name", "")
+        if name.lower().endswith((".xml", ".sbml")):
+            return BIOMODELS_FILE.format(id=mid, name=urllib.parse.quote(name))
+    return None
+
+
+def download_model(mid, fetch=None):
+    """(SBML bytes, None) or (None, error): the ``<id>_url.xml`` file if it
+    exists, else the main SBML file named in the model's record."""
+    fetch = fetch or _fetch
+    data, err = fetch(BIOMODELS_URL.format(id=mid))
+    if data is not None:
+        return data, None
+    url = main_file_url(mid, fetch)
+    if url is None:
+        return None, f"{err}; no main SBML file in the record"
+    return fetch(url)
 
 
 def build(out, first, last, cache_dir, sleep=0.2):
@@ -279,7 +322,7 @@ def build(out, first, last, cache_dir, sleep=0.2):
         mid = f"BIOMD{i:010d}"
         path = os.path.join(cache_dir, mid + ".xml")
         if not os.path.exists(path):
-            data, err = _fetch(BIOMODELS_URL.format(id=mid))
+            data, err = download_model(mid)
             if data is None:
                 stats["missing"] += 1
                 if stats["missing"] <= 5:
