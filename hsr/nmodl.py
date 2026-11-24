@@ -83,7 +83,10 @@ def blocks(text):
         if brace < 0:
             break
         head = text[m.end():brace]
-        end = _match_brace(text, brace)
+        try:
+            end = _match_brace(text, brace)
+        except NmodlError:
+            break                     # keep the blocks read so far
         body = text[brace + 1:end - 1]
         kind = m.group(1)
         if kind in ("FUNCTION", "PROCEDURE"):
@@ -116,7 +119,7 @@ def statements(body):
     ``else`` prefixes are dropped, so both branches of a conditional appear."""
     out = []
     flat = body.replace("{", "\n").replace("}", "\n")
-    for line in flat.splitlines():
+    for line in _join_continued(flat.splitlines()):
         s = line.strip()
         while True:
             m = re.match(r"(else\b\s*)?if\s*\(", s)
@@ -139,6 +142,22 @@ def statements(body):
             m = re.match(r"([A-Za-z_]\w*)\s*('*)\s*=(?!=)\s*(.+)$", part)
             if m:
                 out.append((m.group(1) + m.group(2), m.group(3).strip()))
+    return out
+
+
+def _join_continued(lines):
+    """Join an expression continued over several lines: a line whose
+    parentheses are not balanced, or that ends with an operator, continues
+    on the next line."""
+    out, cur = [], ""
+    for line in lines:
+        cur = (cur + " " + line.strip()) if cur else line.strip()
+        if cur.count("(") > cur.count(")") or re.search(r"[-+*/^=,]\s*$", cur):
+            continue
+        out.append(cur)
+        cur = ""
+    if cur:
+        out.append(cur)
     return out
 
 

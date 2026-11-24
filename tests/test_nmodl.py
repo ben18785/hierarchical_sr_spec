@@ -56,6 +56,8 @@ def test_strip_comments_and_statements():
     assert st == [("y", "2"), ("y", "3"), ("a", "f(v)"), ("b", "g(v)")]
     assert _split_assignments("tau = 1/(a + b) minf = a*tau") == ["tau = 1/(a + b)", "minf = a*tau"]
     assert _split_assignments("x = (a == b)") == ["x = (a == b)"]
+    # an expression continued over lines (open parenthesis or trailing operator)
+    assert statements("a = (1 + v +\n   2*v)\n b = v +\n 1") == [("a", "(1 + v + 2*v)"), ("b", "v + 1")]
 
 
 def test_module_equations_inline_functions_and_locals():
