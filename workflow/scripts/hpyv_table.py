@@ -44,8 +44,11 @@ def main(folds_path, trees_path, out_json, out_md, *score_files):
     rows = [{"prior": "uniform over support", "family": "-", "renorm": -float(np.log(len(sup))), "raw": None,
              "renorm_folds": [-float(np.log(len(sup)))] * len(F["folds"]), "raw_folds": [], "n_zero": 0}]
     for name, per_fold in lp.items():
-        rn, rw, zeros, rnf, rwf = [], [], 0, [], []
+        rn, rw, zeros, rnf, rwf, rws, rwn = [], [], 0, [], [], [], []
         for fold, v in zip(F["folds"], per_fold):
+            # a test form is "seen" if its tree is the tree of some training form
+            seen_trees = {json.dumps(trees.get(k)) for k in fold["train"]}
+            seen = np.array([json.dumps(trees.get(k)) in seen_trees for k in fold["test"]])
             v = np.array([-np.inf if x is None else x for x in v], float)
             z = v - np.logaddexp.reduce(v[np.isfinite(v)])
             a = np.array([z[idx[k]] for k in fold["test"]])
@@ -54,10 +57,15 @@ def main(folds_path, trees_path, out_json, out_md, *score_files):
             zeros += int((~ok).sum())
             rn += a[ok].tolist()
             rw += b[ok].tolist()
+            rws += b[ok & seen].tolist()
+            rwn += b[ok & ~seen].tolist()
             rnf.append(float(a[ok].mean()) if ok.any() else float("nan"))
             rwf.append(float(b[ok].mean()) if ok.any() else float("nan"))
         rows.append({"prior": name, "family": fam[name], "renorm": float(np.mean(rn)), "raw": float(np.mean(rw)),
-                     "renorm_folds": rnf, "raw_folds": rwf, "n_zero": zeros})
+                     "renorm_folds": rnf, "raw_folds": rwf, "n_zero": zeros,
+                     "raw_seen": float(np.mean(rws)) if rws else None,
+                     "raw_novel": float(np.mean(rwn)) if rwn else None,
+                     "frac_novel": len(rwn) / max(1, len(rw))})
     rows.sort(key=lambda r: -(r["raw"] if r["raw"] is not None and r["family"] == "tree" and
                               r["prior"] != "uniform symbols" else -1e9 + r["renorm"]))
     with open(out_json, "w") as fh:

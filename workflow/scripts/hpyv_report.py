@@ -69,6 +69,25 @@ def main():
         row += [fmt(T[t][p]["raw"]) if p in T[t] else "" for t in transfers]
         row += [fmt(T[t][p]["renorm"]) if p in T[t] else "" for t in transfers]
         L.append("| " + " | ".join(row) + " |")
+    L.append("\n## Seen and novel held-out forms (raw log P)\n")
+    L.append("A held-out form is seen if its tree is the tree of some training form, novel otherwise "
+             "(fraction novel in brackets). The adaptors' gain is mostly on seen forms; a DP base measure is "
+             "evaluated mostly on forms the corpus has already seen, but novel forms show how well the prior "
+             "generalises.\n")
+    runs = [("CV", seeds)] + [(t[9:], [t]) for t in transfers] + [(f"LOSO {s} eq", [f"loso_{s}_equal"]) for s in loso_src]
+    L += ["| prior | " + " | ".join(f"{n} seen / novel" for n, _ in runs) + " |", "|" + "---|" * (len(runs) + 1)]
+    for p in order:
+        cells = []
+        for n, rs in runs:
+            rr = [T[r][p] for r in rs if p in T.get(r, {})]
+            if not rr:
+                cells.append("")
+                continue
+            sv = np.mean([x["raw_seen"] for x in rr if x["raw_seen"] is not None])
+            nv = np.mean([x["raw_novel"] for x in rr if x["raw_novel"] is not None])
+            fn = np.mean([x["frac_novel"] for x in rr])
+            cells.append(f"{sv:.2f} / {nv:.2f} ({fn:.2f})")
+        L.append(f"| {p} | " + " | ".join(cells) + " |")
     for col, title in (("raw", "raw log P"), ("renorm", "renormalised log P")):
         L.append(f"\n## Leave one source out: {title} (equal / pooled source weights)\n")
         L += ["| prior | " + " | ".join(loso_src) + " | mean |", "|" + "---|" * (len(loso_src) + 2)]
