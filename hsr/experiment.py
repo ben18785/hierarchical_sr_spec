@@ -25,7 +25,7 @@ from .families import family_metrics, family_population, theme_metrics
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .equivalence import Equivalence, class_summary
-from .fixed_prior import FixedPrior, fnprior_log_prior, with_log_prior
+from .fixed_prior import FIXED_PRIORS, FixedPrior, corpus_log_prior, with_log_prior
 from .likelihood import (CompiledSkeleton, LikelihoodTable, compute_likelihoods, predictive_logpdf,
                          scale_population)
 from .constraints import Spec, apply_truncation, check_grid, constrained_candidates_path, prepare, satisfied, unscale_y
@@ -234,11 +234,11 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         table = table.extend(extra)
         skeletons += sks
         counts = np.vstack([counts, np.array([counts_array(s.expr, grammar) for s in sks])])
-    if prior == "fnprior":
+    if prior in FIXED_PRIORS:
         # fixed corpus-derived base measure (hsr.fixed_prior); candidate growth above used the grammar
-        lp = fnprior_log_prior([s.key for s in skeletons], exclude=prior_exclude)
+        lp = corpus_log_prior(prior, [s.key for s in skeletons], exclude=prior_exclude)
         counts = with_log_prior(counts, lp)
-        grammar = FixedPrior(grammar, "fnprior")
+        grammar = FixedPrior(grammar, prior)
     key_to_idx = {s.key: i for i, s in enumerate(skeletons)}
     true_idx_all = np.array([key_to_idx[k] for k in pop.true_keys])
     # columns outside C may only be used by the oracle
@@ -398,9 +398,10 @@ def main(argv=None):
     ap.add_argument("--kappa", type=float, default=50.0, help="prior sample size of the corpus prior")
     ap.add_argument("--corpus-heldout", action="store_true",
                     help="drop every benchmark-family key (parents, variants, specialisations) from the corpus")
-    ap.add_argument("--prior", default="grammar", choices=["grammar", "fnprior"],
-                    help="DP base measure: the learned grammar (default) or fnprior trained on the BioModels "
-                         "corpus with every benchmark-family key held out (hsr.fixed_prior)")
+    ap.add_argument("--prior", default="grammar", choices=["grammar", "fnprior", "adaptor", "hpy"],
+                    help="DP base measure: the learned grammar (default), or a fixed prior trained on all "
+                         "biology corpora with every benchmark-family key held out (hsr.fixed_prior): "
+                         "fnprior, adaptor (Pitman-Yor adaptor over forms on an HPY base), hpy")
     args = ap.parse_args(argv)
 
     grammar, prior_label = None, "default"
@@ -412,10 +413,10 @@ def main(argv=None):
         prior_label = f"corpus{'_heldout' if args.corpus_heldout else ''}_k{args.kappa:g}"
         print("grammar prior", prior_label, {k: np.round(v, 2).tolist() for k, v in grammar.alpha.items()}, flush=True)
     prior_exclude = ()
-    if args.prior == "fnprior":
+    if args.prior != "grammar":
         from .families import FAMILIES, family_keys
         prior_exclude = tuple(k for fam in FAMILIES for k in family_keys(fam))
-        prior_label = "fnprior_biomodels_heldout"
+        prior_label = f"{args.prior}_allcorpora_heldout"
     spec = Spec.parse(args.constrain)
     if spec is not None and spec.exact and args.candidates == ap.get_default("candidates"):
         args.candidates = constrained_candidates_path(spec)

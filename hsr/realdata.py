@@ -36,7 +36,7 @@ from .candidates import CandidateSet, default_n_jobs, edit_graph, expand_candida
 from .canonical import canonicalise
 from .experiment import _COMPILED, gibbs_summary
 from .equivalence import Equivalence, class_summary
-from .fixed_prior import FixedPrior, fnprior_log_prior, with_log_prior
+from .fixed_prior import FIXED_PRIORS, FixedPrior, corpus_log_prior, with_log_prior
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .likelihood import LikelihoodTable, compute_likelihoods, predictive_logpdf, scale_population
@@ -285,10 +285,10 @@ def infer(prep, cfg: GibbsConfig, prior=None, classes=True):
                                                prep["spec"], prep["seed"])
     trunc_logq = prep["trunc_logq"]
     J, n_C = len(names), len(sks)
-    if prior == "fnprior":
+    if prior in FIXED_PRIORS:
         # fixed corpus-derived base measure (hsr.fixed_prior); candidate growth used the grammar
-        cnt = with_log_prior(cnt, fnprior_log_prior([s.key for s in sks]))
-        grammar = FixedPrior(grammar, "fnprior")
+        cnt = with_log_prior(cnt, corpus_log_prior(prior, [s.key for s in sks]))
+        grammar = FixedPrior(grammar, prior)
     _ACCEPT = None
     if spec is not None:
         grids = [check_grid(X[j][M[j] > 0, 0]) for j in range(J)]
@@ -371,16 +371,17 @@ def main(argv=None):
                     help='known properties of f, e.g. "range=0,1;limit_inf=1;monotone=increasing" (hsr.constraints)')
     ap.add_argument("--corpus", default=None, help="corpus JSON: corpus-informed grammar prior")
     ap.add_argument("--kappa", type=float, default=50.0)
-    ap.add_argument("--prior", default="grammar", choices=["grammar", "fnprior"],
-                    help="DP base measure: the learned grammar (default) or fnprior trained on the BioModels corpus")
+    ap.add_argument("--prior", default="grammar", choices=["grammar", "fnprior", "adaptor", "hpy"],
+                    help="DP base measure: the learned grammar (default) or a fixed prior trained on all biology "
+                         "corpora (hsr.fixed_prior): fnprior, adaptor, hpy")
     args = ap.parse_args(argv)
     grammar, prior_label = None, "default"
     if args.corpus:
         from .corpus import corpus_alpha, load as load_corpus
         grammar = Grammar(alpha=corpus_alpha(load_corpus(args.corpus), Grammar(), kappa=args.kappa))
         prior_label = f"corpus_k{args.kappa:g}"
-    if args.prior == "fnprior":
-        prior_label = "fnprior_biomodels"
+    if args.prior != "grammar":
+        prior_label = f"{args.prior}_allcorpora"
     spec = Spec.parse(args.constrain)
     if spec is not None and spec.exact and args.candidates == ap.get_default("candidates"):
         args.candidates = constrained_candidates_path(spec)

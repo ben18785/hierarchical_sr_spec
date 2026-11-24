@@ -103,6 +103,20 @@ def prior_grid(ns=(10, 20), kappa=50):
     return out
 
 
+def treeprior_grid(ns=(10, 20)):
+    """The Pitman-Yor tree priors (hsr.fixed_prior: 'adaptor' = adaptor over
+    forms on a depth-3 HPY base, 'hpy' = that HPY alone), trained on all
+    biology corpora with benchmark families held out, on the families cells
+    and the real data (compare with the 'prior' grid)."""
+    base = "--grow 1 --pooled --themes --scale-invariant"
+    out = []
+    for pr in ("adaptor", "hpy"):
+        for job in families_grid(ns):
+            out.append(job | {"name": job["name"] + f"_si_{pr}", "extra": base + f" --prior {pr}"})
+        out += realdata_grid(f"--grow 1 --themes --scale-invariant --prior {pr}", f"_si_{pr}")
+    return out
+
+
 def sampler_grid():
     """Sampler checks on the hardest cells (units filter): split-merge alone and
     with non-reversible parallel tempering (8 replicas, 600 sweeps after tuning;
@@ -159,7 +173,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full",
                                                         "families_corpus", "realdata", "realdata_si", "families_si", "constraints", "pysr",
-                                                        "prior", "sampler"])
+                                                        "prior", "sampler", "treeprior"])
     ap.add_argument("--only", default="", help="regex; keep only jobs whose name matches")
     a = ap.parse_args()
     jobs = []
@@ -187,6 +201,8 @@ if __name__ == "__main__":
         jobs += prior_grid()
     if a.grid == "sampler":
         jobs += sampler_grid()
+    if a.grid == "treeprior":
+        jobs += treeprior_grid()
     if a.only:
         import re
         jobs = [j for j in jobs if re.search(a.only, j["name"])]

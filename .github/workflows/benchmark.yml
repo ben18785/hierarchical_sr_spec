@@ -17,7 +17,7 @@ on:
         description: "burn-in sweeps"
         default: "500"
       grid:
-        description: "main | sensitivity | all | families | families_full | families_corpus | families_si | constraints | realdata | realdata_si | pysr | prior | sampler"
+        description: "main | sensitivity | all | families | families_full | families_corpus | families_si | constraints | realdata | realdata_si | pysr | prior | sampler | treeprior"
         default: "all"
       only:
         description: "optional regex: run only matrix jobs whose name matches"
@@ -93,7 +93,7 @@ jobs:
 
   summarise:
     needs: run
-    if: always() && inputs.task != 'corpus' && !startsWith(inputs.grid, 'realdata') && inputs.grid != 'pysr' && inputs.grid != 'constraints' && inputs.grid != 'prior' && inputs.grid != 'sampler'
+    if: always() && inputs.task != 'corpus' && !startsWith(inputs.grid, 'realdata') && inputs.grid != 'pysr' && inputs.grid != 'constraints' && inputs.grid != 'prior' && inputs.grid != 'sampler' && inputs.grid != 'treeprior'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

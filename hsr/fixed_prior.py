@@ -156,3 +156,79 @@ def fnprior_log_prior(skeleton_keys, corpus="combined", exclude=(), weighting="e
         floor = np.nanmin(arr[np.isfinite(arr)]) - 10.0 if np.any(np.isfinite(arr)) else -50.0
         arr = np.where(np.isfinite(arr), arr, floor)
     return arr
+
+
+# ------------------------------------------------------------ tree priors
+# Variants of the Pitman-Yor tree priors of hsr.pyp / hsr.adaptor compared in
+# results/grammar/hpy_variants.md (workflow rule ``hpyv``).
+#   adaptor: Pitman-Yor adaptor over whole forms on a depth-3, depth-conditioned
+#            HPY base (form_ad3_depth; best in CV and leave-one-source-out)
+#   hpy:     the depth-3, depth-conditioned HPY alone (hpy3_depth; better on
+#            forms never seen in the corpus)
+TREE_VARIANTS = {"adaptor": {"model": "adaptor", "mode": "root", "n": 3, "depth_cap": 6},
+                 "hpy": {"model": "hpy", "n": 3, "depth_cap": 6}}
+_TREE_MODELS = {}
+_CODER = {}
+
+
+def key_to_tree(key):
+    """Expression tree (hsr.treecode) of a key in fnprior's coding, or None."""
+    from . import treecode as tc
+    if not _CODER:
+        import tempfile
+        import sympy
+        from . import fnprior_tools as mod
+        with tempfile.TemporaryDirectory() as tmp:
+            _CODER["kp"] = mod.train(["c0*x1/(c1 + x1)"], False, 2, tmp, "coder")
+        nsym = 40
+        x = sympy.symbols([f"x{i}" for i in range(nsym)], real=True)
+        a = sympy.symbols([f"a{i}" for i in range(nsym)], real=True)
+        _CODER["locs"] = {**{f"x{i}": x[i] for i in range(nsym)}, **{f"a{i}": a[i] for i in range(nsym)}}
+        _CODER["cache"] = {}
+    c = _CODER["cache"]
+    if key not in c:
+        from .fnprior_tools import to_fn
+        try:
+            c[key] = tc.from_labels(_CODER["kp"].coder.equation2labels(to_fn(key), _CODER["locs"]))
+        except Exception:
+            c[key] = None
+    return c[key]
+
+
+def tree_prior_model(variant="adaptor", exclude=(), weighting="equal", sweeps=20, keep=10, seed=0):
+    """Fitted tree prior on all biology corpora (memoised)."""
+    key = (variant, weighting, tuple(sorted(exclude)), sweeps, keep, seed)
+    if key not in _TREE_MODELS:
+        from .adaptor import TreeAdaptor
+        from .pyp import ContextSpec, TreeHPY
+        var = TREE_VARIANTS[variant]
+        spec = ContextSpec(**{k: v for k, v in var.items() if k in ("n", "depth_cap")})
+        trees = [t for t in (key_to_tree(k) for k in _combined_training_keys(exclude, weighting)) if t is not None]
+        if var["model"] == "adaptor":
+            m = TreeAdaptor(spec, mode=var["mode"], seed=seed).fit(trees, None, sweeps, keep)
+        else:
+            m = TreeHPY(spec, seed=seed).fit(trees, None, sweeps, keep)
+        _TREE_MODELS[key] = m
+    return _TREE_MODELS[key]
+
+
+def tree_log_prior(skeleton_keys, variant="adaptor", exclude=(), weighting="equal"):
+    """log P(e) under a tree prior (posterior predictive, averaged over the
+    retained samples); floor for keys that cannot be coded: the smallest
+    finite value minus 10 nats."""
+    m = tree_prior_model(variant, exclude, weighting)
+    arr = np.array([np.nan if (t := key_to_tree(k)) is None else m.logp(t) for k in skeleton_keys], float)
+    if np.any(~np.isfinite(arr)):
+        floor = np.nanmin(arr[np.isfinite(arr)]) - 10.0 if np.any(np.isfinite(arr)) else -50.0
+        arr = np.where(np.isfinite(arr), arr, floor)
+    return arr
+
+
+def corpus_log_prior(prior, skeleton_keys, exclude=()):
+    """Dispatch for --prior: 'fnprior', 'adaptor' or 'hpy'."""
+    if prior == "fnprior":
+        return fnprior_log_prior(skeleton_keys, exclude=exclude)
+    return tree_log_prior(skeleton_keys, prior, exclude=exclude)
+
+
+FIXED_PRIORS = ("fnprior", "adaptor", "hpy")
