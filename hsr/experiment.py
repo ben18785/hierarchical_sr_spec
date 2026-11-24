@@ -148,7 +148,8 @@ def gibbs_summary(res, keys=None):
     out.update({"max_rhat": d["max_rhat"], "min_ess_bulk": d["min_ess_bulk"], "chain_tv_mean": d["chain_tv_mean"],
                 "converged": d["converged"], "diagnostics": {"rhat": d["rhat"], "ess_bulk": d["ess_bulk"]},
                 "chains": chain_report(res, keys), "seconds_sampler": getattr(res, "seconds", None),
-                "tempering": getattr(res, "pt", None)})
+                "tempering": getattr(res, "pt", None), "sweeps": getattr(res, "sweeps", None),
+                "stopped": getattr(res, "stopped", None)})
     return out
 
 
@@ -374,6 +375,11 @@ def main(argv=None):
     ap.add_argument("--chains", type=int, default=4)
     ap.add_argument("--temps", type=int, default=1, help="> 1: non-reversible parallel tempering replicas per chain")
     ap.add_argument("--split-merge", type=int, default=3, help="split-merge proposals per sweep")
+    ap.add_argument("--until-converged", action="store_true",
+                    help="extend chains in blocks of --extend-by sweeps until converged (R-hat < 1.05, ESS >= 100) "
+                         "or --max-sweeps (hier and pooled samplers; not yet themes or tempering)")
+    ap.add_argument("--extend-by", type=int, default=1000)
+    ap.add_argument("--max-sweeps", type=int, default=20000)
     ap.add_argument("--starts", type=int, default=10)
     ap.add_argument("--scaling", default="pooled", choices=["pooled", "per_dataset", "none"])
     ap.add_argument("--tau", type=float, default=3.0, help="prior sd of every constant")
@@ -415,7 +421,8 @@ def main(argv=None):
         args.candidates = constrained_candidates_path(spec)
     cands = CandidateSet.from_json(args.candidates, grammar)
     cfg = GibbsConfig(n_sweeps=args.sweeps, burn_in=args.burn, n_chains=args.chains, n_temps=args.temps,
-                      split_merge=args.split_merge)
+                      split_merge=args.split_merge, until_converged=args.until_converged,
+                      extend_by=args.extend_by, max_sweeps=args.max_sweeps)
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "a") as fh:
         for rep in parse_reps(args.reps):

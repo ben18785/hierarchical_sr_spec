@@ -36,6 +36,9 @@ class GibbsConfig:
     single_site: bool = True      # single-dataset Gibbs updates (off only for testing other moves)
     n_temps: int = 1              # > 1: non-reversible parallel tempering with this many replicas (hsr.tempering)
     pt_tune_rounds: int = 6       # schedule-tuning rounds of 1, 2, 4, ... iterations (discarded)
+    until_converged: bool = False  # extend all chains in blocks until the convergence criterion passes
+    extend_by: int = 1000          # sweeps per extension block
+    max_sweeps: int = 20000        # cap on sweeps per chain when extending
     thin: int = 1
     seed: int = 0
 
@@ -53,6 +56,8 @@ class GibbsResult:
     log_post: np.ndarray = None   # (n_chains, n_kept) log_lik + log P(partition, labels | gamma, theta)
     seconds: float = None         # wall time of the sampler
     pt: list = None               # per chain: parallel-tempering diagnostics (betas, barrier, swaps, round trips)
+    sweeps: int = None            # sweeps per chain actually run
+    stopped: str = None           # "fixed", "converged" or "cap" (with until_converged)
 
     @property
     def top(self) -> np.ndarray:
@@ -462,16 +467,44 @@ def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
         raise ValueError("burn_in must be smaller than n_sweeps")
     import time
     t0 = time.time()
-    chains = []
-    for c in range(cfg.n_chains):
-        init = "argmax" if c == 0 else cfg.init
-        if cfg.n_temps > 1:
-            from .tempering import run_pt_chain
-            chains.append(run_pt_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c, init=init, model=model,
-                                       z_init=z_init))
-        else:
-            chains.append(run_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c, init=init, z_init=z_init,
-                                    model=model))
+    if cfg.n_temps > 1:
+        from .tempering import run_pt_chain
+        chains = [run_pt_chain(L, counts, grammar, cfg, seed=cfg.seed * 1000 + c,
+                               init="argmax" if c == 0 else cfg.init, model=model, z_init=z_init)
+                  for c in range(cfg.n_chains)]
+        return _pool(chains, grammar, time.time() - t0, cfg.n_sweeps, "fixed")
+    states = [ChainState(L, counts, grammar, cfg, cfg.seed * 1000 + c, "argmax" if c == 0 else cfg.init,
+                         z_init=z_init, model=model) for c in range(cfg.n_chains)]
+    recs = [_Recorder(st.J, st.C, grammar.nonterminals) for st in states]
+
+    def advance(n):
+        for st, rec in zip(states, recs):
+            for _ in range(n):
+                sweep = st.n_sweeps_done
+                st.sweep()
+                if sweep >= cfg.burn_in and (sweep - cfg.burn_in) % cfg.thin == 0:
+                    rec.record(st, sum(st.Mc.values()))
+
+    advance(cfg.n_sweeps)
+    res = _pool([r.result() for r in recs], grammar, time.time() - t0, cfg.n_sweeps, "fixed")
+    if cfg.until_converged:
+        from .diagnostics import summary as diag_summary
+        done = cfg.n_sweeps
+        while True:
+            if diag_summary(res)["converged"]:
+                res.stopped = "converged"
+                break
+            if done >= cfg.max_sweeps:
+                res.stopped = "cap"
+                break
+            n = min(cfg.extend_by, cfg.max_sweeps - done)
+            advance(n)
+            done += n
+            res = _pool([r.result() for r in recs], grammar, time.time() - t0, done, None)
+    return res
+
+
+def _pool(chains, grammar, seconds, sweeps, stopped) -> GibbsResult:
     cap = np.stack([ch["assign_probs"] for ch in chains])
     return GibbsResult(
         assign_probs=cap.mean(axis=0),
@@ -483,6 +516,8 @@ def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
         z_samples=np.stack([ch["z"] for ch in chains]),
         log_lik=np.stack([ch["log_lik"] for ch in chains]),
         log_post=np.stack([ch["log_post"] for ch in chains]),
-        seconds=time.time() - t0,
-        pt=[ch["pt"] for ch in chains] if cfg.n_temps > 1 else None,
+        seconds=seconds,
+        pt=[ch["pt"] for ch in chains] if "pt" in chains[0] else None,
+        sweeps=sweeps,
+        stopped=stopped,
     )

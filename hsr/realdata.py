@@ -174,7 +174,7 @@ def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=No
 # ------------------------------------------------------------------- run
 def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scaling="pooled", n_starts=10, tau=3.0,
         grow_rounds=0, themes=False, theme_top_k=10, theme_min_mass=0.02, seed=0, scale_invariant=False, spec=None,
-        classes=True, prior=None):
+        classes=True, prior=None, checkpoint=None):
     global _ACCEPT, _EQUIV
     t0 = time.time()
     groups = load_groups(data)
@@ -236,24 +236,65 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
     sks = list(cset.skeletons)
     cnt = cset.counts
     n_C = len(sks)
-    if prior == "fnprior":
-        # fixed corpus-derived base measure (hsr.fixed_prior); candidate growth above used the grammar
-        cnt = with_log_prior(cnt, fnprior_log_prior([s.key for s in sks]))
-        grammar = FixedPrior(grammar, "fnprior")
-    _ACCEPT = None
     trunc_logq = None
     if spec is not None:
         trunc_logq = apply_truncation(table, sks, X, M, spec, tau, sy, _compiled, seed=seed)
-        grids = [check_grid(X[j][M[j] > 0, 0]) for j in range(J)]
-        _ACCEPT = lambda cs, j, ph: satisfied(cs, ph, grids[j], spec, sy[j])
     # single-curve baseline: all points as one dataset (one form, one set of constants)
     X1 = X[M > 0][None]
     Y1 = Y[M > 0][None]
     table1 = compute_likelihoods(sks, X1, Y1, n_starts=n_starts, tau=tau, seed=seed + 97, compiled_cache=_COMPILED)
     if spec is not None:
         apply_truncation(table1, sks, X1, np.ones(Y1.shape), spec, tau, [sy[0]], _compiled, seed=seed)
+    prep = {"sks": sks, "cnt": cnt, "grammar": grammar, "table": table, "table1": table1, "trunc_logq": trunc_logq,
+            "held": held, "sx": sx, "sy": sy, "names": names, "X": X, "Y": Y, "M": M, "ref_idx": ref_idx,
+            "edges": edges, "themes": themes, "tau": tau, "spec": spec, "seed": seed,
+            "meta": {"data": os.path.basename(data), "split": split, "J": J, "n_fit": int(M.sum()),
+                     "n_heldout": int(sum(len(h[0]) for h in held)), "scaling": scaling, "tau": tau,
+                     "grow_rounds": grow_rounds, "n_added_by_edits": n_added, "themes": themes, "n_candidates": n_C,
+                     "scale_invariant": scale_invariant, "constraints": None if spec is None else spec.label,
+                     "reference_keys": [sks[i].key for i in ref_idx]},
+            "seconds_likelihood": time.time() - t0}
+    if checkpoint:
+        save_checkpoint(prep, checkpoint)
+    return infer(prep, cfg, prior=prior, classes=classes)
+
+
+def save_checkpoint(prep, path):
+    """Everything the inference stage needs (candidates, likelihood tables,
+    data and splits), so that sampling can be rerun or extended without
+    refitting (hsr.realdata --resume)."""
+    import pickle
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, "wb") as fh:
+        pickle.dump(prep, fh, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def load_checkpoint(path):
+    import pickle
+    with open(path, "rb") as fh:
+        return pickle.load(fh)
+
+
+def infer(prep, cfg: GibbsConfig, prior=None, classes=True):
+    """Inference stage: every method on a prepared (or checkpointed) problem."""
+    global _ACCEPT, _EQUIV
+    t0 = time.time()
+    sks, cnt, grammar, table, table1 = prep["sks"], prep["cnt"], prep["grammar"], prep["table"], prep["table1"]
+    held, sx, sy, names, X, M = prep["held"], prep["sx"], prep["sy"], prep["names"], prep["X"], prep["M"]
+    ref_idx, edges, themes, tau, spec, seed = (prep["ref_idx"], prep["edges"], prep["themes"], prep["tau"],
+                                               prep["spec"], prep["seed"])
+    trunc_logq = prep["trunc_logq"]
+    J, n_C = len(names), len(sks)
+    if prior == "fnprior":
+        # fixed corpus-derived base measure (hsr.fixed_prior); candidate growth used the grammar
+        cnt = with_log_prior(cnt, fnprior_log_prior([s.key for s in sks]))
+        grammar = FixedPrior(grammar, "fnprior")
+    _ACCEPT = None
+    if spec is not None:
+        grids = [check_grid(X[j][M[j] > 0, 0]) for j in range(J)]
+        _ACCEPT = lambda cs, j, ph: satisfied(cs, ph, grids[j], spec, sy[j])
     tab1 = baselines.broadcast_table(table1, J)
-    t_lik = time.time() - t0
+    t_lik = prep["seconds_likelihood"]
     _EQUIV = Equivalence(sks, table, X, M > 0, compiled=_compiled, seed=seed) if classes else None
 
     rows = []
@@ -290,12 +331,8 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
                                              "rho_mean": float(rest.rho.mean())}
                 rows.append(summarise("hier_themes", rest.assign_probs, sks, table, held, sx, sy, names,
                                       rest.pop_weight, ext, res=rest) | {"kind": kind})
-    meta = {"data": os.path.basename(data), "split": split, "J": J, "n_fit": int(M.sum()),
-            "n_heldout": int(sum(len(h[0]) for h in held)), "scaling": scaling, "tau": tau,
-            "grow_rounds": grow_rounds, "n_added_by_edits": n_added, "themes": themes, "n_candidates": n_C,
-            "scale_invariant": scale_invariant, "constraints": None if spec is None else spec.label,
-            "reference_keys": [sks[i].key for i in ref_idx],
-            "seconds_likelihood": t_lik, "seconds_total": time.time() - t0}
+    meta = dict(prep["meta"], seconds_likelihood=t_lik, seconds_inference=time.time() - t0,
+                seconds_total=t_lik + time.time() - t0)
     for r in rows:
         r.update(meta)
     return rows
@@ -303,7 +340,11 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--data", required=True)
+    ap.add_argument("--data", default=None, help="group,x,y CSV (not needed with --resume)")
+    ap.add_argument("--checkpoint", default=None,
+                    help="save the prepared problem (candidates, likelihood tables, data) to this file")
+    ap.add_argument("--resume", default=None,
+                    help="skip candidate building and fitting: run inference on a saved --checkpoint")
     ap.add_argument("--split", default="full")
     ap.add_argument("--out", required=True)
     ap.add_argument("--reference", nargs="*", default=None,
@@ -315,6 +356,11 @@ def main(argv=None):
     ap.add_argument("--chains", type=int, default=4)
     ap.add_argument("--temps", type=int, default=1, help="> 1: non-reversible parallel tempering replicas per chain")
     ap.add_argument("--split-merge", type=int, default=3, help="split-merge proposals per sweep")
+    ap.add_argument("--until-converged", action="store_true",
+                    help="extend chains in blocks of --extend-by sweeps until converged (R-hat < 1.05, ESS >= 100) "
+                         "or --max-sweeps (hier and pooled samplers; not yet themes or tempering)")
+    ap.add_argument("--extend-by", type=int, default=1000)
+    ap.add_argument("--max-sweeps", type=int, default=20000)
     ap.add_argument("--starts", type=int, default=10)
     ap.add_argument("--tau", type=float, default=3.0)
     ap.add_argument("--grow", type=int, default=0)
@@ -338,14 +384,24 @@ def main(argv=None):
     spec = Spec.parse(args.constrain)
     if spec is not None and spec.exact and args.candidates == ap.get_default("candidates"):
         args.candidates = constrained_candidates_path(spec)
-    cands = CandidateSet.from_json(args.candidates, grammar)
+    if args.resume is None and args.data is None:
+        ap.error("--data is required unless --resume is given")
     cfg = GibbsConfig(n_sweeps=args.sweeps, burn_in=args.burn, n_chains=args.chains, n_temps=args.temps,
-                      split_merge=args.split_merge)
-    name = os.path.splitext(os.path.basename(args.data))[0]
-    reference = args.reference if args.reference is not None else REFERENCE.get(name, [])
-    rows = run(args.data, args.split, cands, cfg, reference, args.scaling, args.starts, args.tau, args.grow,
+                      split_merge=args.split_merge, until_converged=args.until_converged,
+                      extend_by=args.extend_by, max_sweeps=args.max_sweeps)
+    if args.resume:
+        prep = load_checkpoint(args.resume)
+        name = os.path.splitext(prep["meta"]["data"])[0]
+        rows = infer(prep, cfg, prior=None if args.prior == "grammar" else args.prior)
+        for r in rows:
+            r["resumed_from"] = os.path.basename(args.resume)
+    else:
+        cands = CandidateSet.from_json(args.candidates, grammar)
+        name = os.path.splitext(os.path.basename(args.data))[0]
+        reference = args.reference if args.reference is not None else REFERENCE.get(name, [])
+        rows = run(args.data, args.split, cands, cfg, reference, args.scaling, args.starts, args.tau, args.grow,
                args.themes, scale_invariant=args.scale_invariant, spec=spec,
-               prior=None if args.prior == "grammar" else args.prior)
+                   prior=None if args.prior == "grammar" else args.prior, checkpoint=args.checkpoint)
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "a") as fh:
         for r in rows:
@@ -353,7 +409,7 @@ def main(argv=None):
             fh.write(json.dumps(r) + "\n")
     for r in rows:
         lp = r["lpd_heldout"]
-        print(f"[{name} {args.split}] {r['method']:12s} {r['kind']:7s} lpd={'-' if lp is None else f'{lp:.3f}'} "
+        print(f"[{name} {r.get('split', args.split)}] {r['method']:12s} {r['kind']:7s} lpd={'-' if lp is None else f'{lp:.3f}'} "
               f"top={sorted(r['pop_weight'].items(), key=lambda kv: -kv[1])[:3]}", flush=True)
 
 

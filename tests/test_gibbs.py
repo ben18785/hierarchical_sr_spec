@@ -271,3 +271,17 @@ def test_tempered_model_keeps_failed_fits_impossible():
     tm = TemperedModel(IndependentModel(L), 0.0)
     assert tm.singletons()[0, 1] == -np.inf and tm.singletons()[1, 0] == 0.0
     assert TemperedModel(IndependentModel(L), 0.5).marginal(0, [0, 1]) == 1.5
+
+
+def test_until_converged_extends_chains_and_reports_why_it_stopped():
+    rng = np.random.default_rng(2)
+    g, counts = one_var_grammar(3)
+    L = rng.normal(0, 1.0, (6, 3))
+    cfg = GibbsConfig(n_sweeps=40, burn_in=10, n_chains=2, until_converged=True, extend_by=50, max_sweeps=140,
+                      seed=4)
+    res = run_gibbs(L, counts, g, cfg)
+    assert res.stopped in ("converged", "cap") and 40 <= res.sweeps <= 140
+    assert res.z_samples.shape[1] == res.sweeps - 10
+    capped = run_gibbs(L, counts, g, GibbsConfig(n_sweeps=20, burn_in=10, n_chains=2, until_converged=True,
+                                                 extend_by=5, max_sweeps=30, seed=4))
+    assert capped.sweeps <= 30 and capped.stopped in ("converged", "cap")
