@@ -8,6 +8,7 @@
 "c0*(c1 + x1)*(c3 + x1)**2/(c2 + x1)": 1,
 "c0*(c1 + x1)**2": 1,
 "c0*(c1 + x1)**2 + c2": 1,
+"c0*(c1 + x1)**2 + c2*x1 + c3": 2,
 "c0*(c1 + x1)**c2 + c3*(c1 + x1)**c4": 1,
 "c0*(c1 + x1)**c3*(c2 + c4*x1)**c5": 1,
 "c0*(c1 + x1)*sqrt(c2 - x1)": 1,
@@ -32,9 +33,12 @@
 "c0*exp(c1*x1) + c2*exp(x1)": 1,
 "c0*exp(c1*x1) + exp(c2*x1)": 1,
 "c0*exp(c1/(c4 + c5*x1)) + c2*exp(c3/(c6 + c7*x1))": 1,
+"c0*exp(c1/x1)": 1,
 "c0*exp(c12/(c1 + c14*x1) + c13*x1/(c3 + c4*x1) + c2*x1*log(c11 + x1)/(c10*x1 + c9) + c8*log(c7 + x1)/(c5 + c6*x1))": 1,
+"c0*exp(c3*c4/x1 + c4)/(c0 - c1*exp(c2*c3/x1 + c2) + c1)": 1,
 "c0*exp(c3/(c5 + x1))/(c1 + exp(c2/(c4 + x1)))": 2,
 "c0*exp(c3/(c7 + c8*x1))/(c4 + exp(c1/(c5 + c6*x1) + c2*x1/(c5 + c6*x1)))": 1,
+"c0*exp(c3/x1)/(c1 + exp(c2/x1))": 1,
 "c0*log(c6 + x1)/x1 + c1*log(c4 + x1)**2 + c2*log(c5 + x1) + c3": 1,
 "c0*sin(c1*(c2 + x1)**c3)**c4": 1,
 "c0*sqrt(c4 + x1) + c1*log(c5 + x1)**2 + c2*x1 + c3": 1,
@@ -44,7 +48,7 @@
 "c0*x1*(c1 + x1)*(c2 - x1)**c3": 1,
 "c0*x1*(c1 + x1)*sqrt(c2 - x1)": 1,
 "c0*x1*(c1 - x1)**c2*(c3 + x1)**c4": 1,
-"c0*x1**2 + c1*x1 + c2": 1,
+"c0*x1**2 + c1*x1 + c2": 2,
 "c0*x1**2 + c1*x1**(3/2) + c2": 1,
 "c0*x1**2 + c1*x1**3 + c2*x1 + c3": 1,
 "c0*x1**2 + c1*x1**3 + c2*x1**4 + c3*x1 + c4": 1,
@@ -69,6 +73,9 @@
 "per_model": {
 "Analytis1977": [
 "c0*(c1 - x1)**c2*(c3 + x1)**c4"
+],
+"Arrhenius": [
+"c0*exp(c1/x1)"
 ],
 "Ashrafi2018": [
 "c0*log(c6 + x1)/x1 + c1*log(c4 + x1)**2 + c2*log(c5 + x1) + c3",
@@ -130,11 +137,17 @@
 "HarcourtYee1982": [
 "c0*x1**2 + c1*x1**3 + c2*x1 + c3"
 ],
+"Heskel2016": [
+"c0*(c1 + x1)**2 + c2*x1 + c3"
+],
 "HilbertLogan1983": [
 "c0*(c2 + x1)**2/(c1 + (c2 + x1)**2) + c3*exp(c4*x1)"
 ],
 "Hinshelwood1947": [
 "c0*exp(c1/(c4 + c5*x1)) + c2*exp(c3/(c6 + c7*x1))"
+],
+"Hobbs2013": [
+"c0*(c1 + x1)**2 + c2*x1 + c3"
 ],
 "Janisch1925": [
 "c0/(c1**(c2 - x1) + c1**(c3 + x1))",
@@ -158,6 +171,9 @@
 "Kontopoulos2018": [
 "c0*exp(c3/(c5 + x1))/(c1 + exp(c2/(c4 + x1)))"
 ],
+"Kruse2008": [
+"c0*x1**2 + c1*x1 + c2"
+],
 "Lactin1995": [
 "c0*exp(c1*x1) + c2 + exp(c3*x1)",
 "c0*exp(c1*x1) + exp(c2*x1)"
@@ -174,6 +190,10 @@
 ],
 "LynchGabriel1987": [
 "c0*exp(c1*(c2 + x1)**2)"
+],
+"Medlyn2002": [
+"c0*exp(c3*c4/x1 + c4)/(c0 - c1*exp(c2*c3/x1 + c2) + c1)",
+"c0*exp(c3/x1)/(c1 + exp(c2/x1))"
 ],
 "Niehaus2012": [
 "c0*(c1 + x1)**c3*(c2 + c4*x1)**c5"
@@ -260,16 +280,17 @@
 },
 "source": "R curve catalogue thermal_curves.csv; formulas transcribed and verified numerically against the packages; one model per original publication",
 "stats": {
-"distinct_keys": 65,
-"expressible": 89,
-"models": 57,
+"distinct_keys": 69,
+"expressible": 95,
+"models": 62,
 "packages": [
 "devRate",
+"photosynthesis",
 "rTPC"
 ],
-"rows": 91,
-"rows_in_corpus": 89,
-"verified": 91
+"rows": 97,
+"rows_in_corpus": 95,
+"verified": 97
 },
 "verification": {
 "devrate_analytis_77": {
@@ -589,7 +610,7 @@
 "function": "regniere_12",
 "in_corpus": true,
 "key": "c7*(c2*(c1 + x1)*exp(c5*(c0 - x1)) + c4*(c0 - x1)*exp(c3*(c1 + x1)) + exp(c6*(c1 + x1)))",
-"max_rel_err": 1.1882735469680093e-13,
+"max_rel_err": 9.373387284902436e-15,
 "model": "Regniere2012",
 "n_points": 75,
 "note": "",
@@ -738,6 +759,78 @@
 "n_points": 75,
 "note": "",
 "package": "devRate",
+"verified": true
+},
+"ps_t_arrhenius": {
+"formula": "exp(Ea*(x - 298.15)/(298.15*8.314*x))",
+"function": "t_response_arrhenius",
+"in_corpus": true,
+"key": "c0*exp(c1/x1)",
+"max_rel_err": 4.884949069843679e-15,
+"model": "Arrhenius",
+"n_points": 75,
+"note": "",
+"package": "photosynthesis",
+"verified": true
+},
+"ps_t_arrhenius_medlyn": {
+"formula": "exp(Ea*(x - 298.15)/(298.15*8.314*x))*(1 + exp((298.15*dS - Hd)/(298.15*8.314)))/(1 + exp((x*dS - Hd)/(x*8.314)))",
+"function": "t_response_arrhenius_medlyn",
+"in_corpus": true,
+"key": "c0*exp(c3/x1)/(c1 + exp(c2/x1))",
+"max_rel_err": 5.107023524695588e-15,
+"model": "Medlyn2002",
+"n_points": 75,
+"note": "",
+"package": "photosynthesis",
+"verified": true
+},
+"ps_t_arrhenius_topt": {
+"formula": "Hd*exp(Ea*(x - Topt)/(x*Topt*8.314))/(Hd - Ea*(1 - exp(Hd*(x - Topt)/(x*Topt*8.314))))",
+"function": "t_response_arrhenius_topt",
+"in_corpus": true,
+"key": "c0*exp(c3*c4/x1 + c4)/(c0 - c1*exp(c2*c3/x1 + c2) + c1)",
+"max_rel_err": 4.440892103045258e-16,
+"model": "Medlyn2002",
+"n_points": 75,
+"note": "",
+"package": "photosynthesis",
+"verified": true
+},
+"ps_t_heskel": {
+"formula": "a + b*(x - 273.15) + c*(x - 273.15)**2",
+"function": "t_response_heskel",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**2 + c2*x1 + c3",
+"max_rel_err": 3.481530067386651e-15,
+"model": "Heskel2016",
+"n_points": 75,
+"note": "",
+"package": "photosynthesis",
+"verified": true
+},
+"ps_t_kruse": {
+"formula": "log(Par_ref) + (Ea_ref/8.314)*x + dEa*x**2",
+"function": "t_response_arrhenius_kruse",
+"in_corpus": true,
+"key": "c0*x1**2 + c1*x1 + c2",
+"max_rel_err": 1.4032744727448623e-14,
+"model": "Kruse2008",
+"n_points": 75,
+"note": "",
+"package": "photosynthesis",
+"verified": true
+},
+"ps_t_mmrt": {
+"formula": "log(1.380649e-23*298.15/6.62607e-34) - dG/(8.314*298.15) + (1/298.15 + dH/(8.314*298.15**2))*(x - 298.15) + (dCp/(2*8.314*298.15**2))*(x - 298.15)**2",
+"function": "t_response_mmrt",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**2 + c2*x1 + c3",
+"max_rel_err": 2.1729413134272763e-15,
+"model": "Hobbs2013",
+"n_points": 75,
+"note": "",
+"package": "photosynthesis",
 "verified": true
 },
 "rtpc_analytiskontodimas_2004": {
@@ -1365,5 +1458,5 @@
 "verified": true
 }
 },
-"versions": "R=4.5.1;rTPC=1.1.0;devRate=0.2.6"
+"versions": "R=4.5.1;rTPC=1.1.0;devRate=0.2.6;photosynthesis=2.1.5"
 }

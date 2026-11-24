@@ -78,3 +78,24 @@ fsa_ricker2|FSA|srFuns(Ricker, 2)|Ricker1954|stock|a,b||x*exp(a - b*x)|srFuns("R
 fsa_ricker3|FSA|srFuns(Ricker, 3)|Ricker1954|stock|a,Rp||a*x*exp(-a/E*x/Rp)|srFuns("Ricker", param = 3)(x, a, Rp)||Ricker WE (1954)|
 fsa_shepherd|FSA|srFuns(Shepherd)|Shepherd1982|stock|a,b,c||a*x/(1 + (b*x)**c)|srFuns("Shepherd")(x, a, b, c)||Shepherd JG (1982) J Cons Int Explor Mer 40:67|
 fsa_sailalorda|FSA|srFuns(SailaLorda)|SailaLorda1977|stock|a,b,c||a*x**c*exp(-b*x)|srFuns("SailaLorda")(x, a, b, c)||Saila SB et al. (1988); Iles TC (1994) ICES J Mar Sci 51:291|
+gm_blumberg|growthmodels|blumberg|Blumberg1968|time|alpha,w0,m,t0||alpha*(x + t0)**m/(w0 + (x + t0)**m)|blumberg(x, alpha, w0, m, t0)||Blumberg AA (1968) Nature 216:611; Tjorve E, Tjorve KMC (2010)|
+gm_brody|growthmodels|brody|Brody1945|time|alpha,w0,k||alpha - (alpha - w0)*exp(-k*x)|brody(x, alpha, w0, k)||Brody S (1945) Bioenergetics and Growth|
+gm_chapmanRichards|growthmodels|chapmanRichards|Richards1959|time|alpha,beta,k,m||alpha*(1 - beta*exp(-k*x))**(1/(1 - m))|chapmanRichards(x, alpha, beta, k, m)|beta=0.1:0.5;m=2:3|Richards FJ (1959); Chapman DG (1961)|
+gm_generalisedLogistic|growthmodels|generalisedLogistic|Verhulst1838|time|A,U,k,beta,t0||A + (U - A)/(1 + beta*exp(-k*(x - t0)))|generalisedLogistic(x, A, U, k, beta, t0)||Richards FJ (1959); Panik MJ (2014) Growth Curve Modeling|
+gm_generalisedRichard|growthmodels|generalisedRichard|Richards1959|time|A,U,k,m,beta,t0||A + (U - A)/(1 + beta*exp(-k*(x - t0)))**(1/m)|generalisedRichard(x, A, U, k, m, beta, t0)||Richards FJ (1959)|
+gm_gompertz|growthmodels|gompertz|Gompertz1825|time|alpha,beta,k||alpha*exp(-beta*exp(-k*x))|gompertz(x, alpha, beta, k)||Gompertz B (1825) Phil Trans R Soc 115:513|
+gm_janoschek|growthmodels|janoschek|Janoschek1957|time|alpha,beta,b,c||alpha - (alpha - beta)*exp(-b*x**c)|janoschek(x, alpha, beta, b, c)||Janoschek A (1957) Stat Vjschr 10:25|
+gm_logistic|growthmodels|logistic|Verhulst1838|time|alpha,beta,k||alpha/(1 + beta*exp(-k*x))|logistic(x, alpha, beta, k)||Verhulst PF (1838)|
+gm_loglogistic|growthmodels|loglogistic|loglogistic|time|alpha,beta,k||alpha/(1 + beta*exp(-k*log(x)))|loglogistic(x, alpha, beta, k)||Panik MJ (2014)|
+gm_mitcherlich|growthmodels|mitcherlich|Mitscherlich1909|time|alpha,beta,k||alpha - beta*k**x|mitcherlich(x, alpha, beta, k)||Mitscherlich EA (1909) Landw Jahrb 38:537|
+gm_mmf|growthmodels|mmf|MMF1975|time|alpha,w0,gamma,m||(w0*gamma + alpha*x**m)/(gamma + x**m)|mmf(x, alpha, w0, gamma, m)||Morgan PH, Mercer LP, Flodin NW (1975) PNAS 72:4327|
+gm_monomolecular|growthmodels|monomolecular|Mitscherlich1909|time|alpha,beta,k||alpha*(1 - beta*exp(-k*x))|monomolecular(x, alpha, beta, k)||Panik MJ (2014)|
+gm_negativeExponential|growthmodels|negativeExponential|negativeExponential|time|alpha,k||alpha*(1 - exp(-k*x))|negativeExponential(x, alpha, k)||Panik MJ (2014)|
+gm_richard|growthmodels|richard|Richards1959|time|alpha,beta,k,m||alpha/(1 + beta*exp(-k*x))**(1/m)|richard(x, alpha, beta, k, m)||Richards FJ (1959) J Exp Bot 10:290|
+gm_schnute|growthmodels|schnute|Schnute1981|time|r0,beta,k,m||(r0 + beta*exp(k*x))**m|schnute(x, r0, beta, k, m)||Schnute J (1981)|
+gm_stannard|growthmodels|stannard|Stannard1985|time|alpha,beta,k,m||alpha*(1 + exp(-(beta + k*x)/m))**(-m)|stannard(x, alpha, beta, k, m)||Stannard CJ et al. (1985) Food Microbiol 2:115|
+gm_vonBertalanffy|growthmodels|vonBertalanffy|vonBertalanffy1938|time|alpha,beta,k,m||(alpha**(1 - m) - beta*exp(-k*x))**(1/(1 - m))|vonBertalanffy(x, alpha, beta, k, m)|m=0.2:0.6;beta=0.1:0.3|von Bertalanffy L (1938) Hum Biol 10:181|generalised (exponent m)
+gm_weibull|growthmodels|weibull|Weibull1951|time|alpha,beta,k,m||alpha - beta*exp(-k*x**m)|weibull(x, alpha, beta, k, m)||Ratkowsky DA (1983) Nonlinear Regression Modeling|
+plc_fsigmoidal|fitplc|fsigmoidal|Pammenter1998|xylem water potential (-MPa)|PX,a,X||1 - 1/(1 + exp(a*(-x + PX + (50/X - 1)/a)))|fsigmoidal(x, PX, a, X)|X=20:80|Pammenter NW, Vander Willigen C (1998) Tree Physiol 18:589; Duursma R, Choat B (2017) J Plant Hydraul 4:e002|relative conductivity
+plc_fweibull|fitplc|fweibull|Ogle2009|xylem water potential (-MPa)|SX,PX,X|V=(X - 100)*log(1 - X/100)|(1 - X/100)**((x/PX)**(PX*SX/V))|fweibull(x, SX, PX, X)|X=20:80;SX=10:50;PX=1:3|Ogle K et al. (2009) New Phytol 182:541; Duursma R, Choat B (2017)|relative conductivity, Weibull
+ps_marshall_biscoe|photosynthesis|marshall_biscoe_1980|MarshallBiscoe1980|absorbed light|k_sat,phi_J,theta_J||((k_sat + phi_J*x) - sqrt((k_sat + phi_J*x)**2 - 4*k_sat*phi_J*x*theta_J))/(2*theta_J)|marshall_biscoe_1980(x, k_sat, phi_J, theta_J)|theta_J=0.5:0.9|Marshall B, Biscoe PV (1980) J Exp Bot 31:29|non-rectangular hyperbola

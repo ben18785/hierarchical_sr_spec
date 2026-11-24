@@ -111,7 +111,9 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
 `reference`, `notes`.
 
 * `thermal`: thermal performance and development-rate curves of **rTPC** 1.1.0 (all 49
-  models of `get_model_names()`) and **devRate** 0.2.6 (all 37 equations of `devRateEqList`).
+  models of `get_model_names()`), **devRate** 0.2.6 (all 37 equations of `devRateEqList`) and the
+  leaf temperature-response functions of **photosynthesis** 2.1.5 (Arrhenius, peaked Arrhenius
+  (Medlyn) in two parametrisations, Heskel, Kruse, MMRT).
 * `ecocurves`: species-area models of **sars** 2.1.1 (21 with a model expression, plus the
   linear model, unverified); predictive-microbiology primary and secondary models of
   **nlsMicrobio** 1.0-0 (the smooth ones: Baranyi, Geeraerd, Albert, Mafart, modified Gompertz,
@@ -120,7 +122,11 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
   growth (von Bertalanffy 1-11, Gompertz 1-5, logistic 1-3, Richards 1-3, Schnute 1-4,
   Schnute-Richards) and stock-recruitment functions (Beverton-Holt 1-4, Ricker 1-3, Shepherd,
   Saila-Lorda) of **FSA** 0.10.1 (increment models with two variables and Pauly's piecewise
-  seasonal model are left out).
+  seasonal model are left out); the 19 growth functions of **growthmodels** 1.3.1 (Blumberg,
+  Brody, Chapman-Richards, generalised logistic and Richards, Gompertz, Janoschek, logistic,
+  log-logistic, Mitscherlich, MMF, monomolecular, negative exponential, Richards, Schnute,
+  Stannard, von Bertalanffy, Weibull); the xylem vulnerability curves of **fitplc** 1.2-3.1
+  (sigmoidal, Weibull); and the non-rectangular hyperbola light response of **photosynthesis**.
 * A "model" is the original publication (column `model`), not the package function: functions
   of one publication (e.g. Briere-1 and Briere-2; Schoolfield full/high/low; the FSA
   parametrisations of von Bertalanffy) and the same model in two packages (rTPC and devRate) form
@@ -140,7 +146,9 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
   9:1144-1150), sars (GPL-3; Matthews TJ et al. (2019) Ecography 42:1446-1455), nlsMicrobio
   (GPL-3; Baty F, Delignette-Muller ML, Siberchicot A), growthrates (GPL >= 2; Petzoldt T), FSA
   (GPL >= 2; Ogle DH, Doll JC, Wheeler AP, Dinno A). Only the formulas are used; each row cites
-  the original publication of the model. Versions are recorded in the corpus files.
+  the original publication of the model. growthmodels (GPL-3; Oliveira D), fitplc (GPL; Duursma
+  R, Choat B (2017) J Plant Hydraul 4:e002), photosynthesis (MIT; Stinziano JR et al. (2021)
+  Methods Ecol Evol 12:1094-1102). Versions are recorded in the corpus files.
 
 ## nlmixr2lib model library (`corpus_nlmixr2lib.json`)
 
