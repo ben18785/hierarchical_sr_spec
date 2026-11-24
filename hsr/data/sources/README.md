@@ -126,7 +126,11 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
   Brody, Chapman-Richards, generalised logistic and Richards, Gompertz, Janoschek, logistic,
   log-logistic, Mitscherlich, MMF, monomolecular, negative exponential, Richards, Schnute,
   Stannard, von Bertalanffy, Weibull); the xylem vulnerability curves of **fitplc** 1.2-3.1
-  (sigmoidal, Weibull); and the non-rectangular hyperbola light response of **photosynthesis**.
+  (sigmoidal, Weibull); the non-rectangular hyperbola light response of **photosynthesis**; and
+  the 23 concentration-response (ecotoxicology) equations of **bayesnec** 2.1.3.1 (NEC models
+  as their branch above the no-effect concentration, ECx models, hormesis models). bayesnec is
+  not installed (it needs brms/Stan): its `R/pred_equations.R` is sourced from the CRAN source
+  tarball (rule `cran_source_fetch`, version in `config.cran_sources`, sha256 in the manifest).
 * A "model" is the original publication (column `model`), not the package function: functions
   of one publication (e.g. Briere-1 and Briere-2; Schoolfield full/high/low; the FSA
   parametrisations of von Bertalanffy) and the same model in two packages (rTPC and devRate) form
@@ -148,7 +152,8 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
   (GPL >= 2; Ogle DH, Doll JC, Wheeler AP, Dinno A). Only the formulas are used; each row cites
   the original publication of the model. growthmodels (GPL-3; Oliveira D), fitplc (GPL; Duursma
   R, Choat B (2017) J Plant Hydraul 4:e002), photosynthesis (MIT; Stinziano JR et al. (2021)
-  Methods Ecol Evol 12:1094-1102). Versions are recorded in the corpus files.
+  Methods Ecol Evol 12:1094-1102), bayesnec (GPL-2; Fisher R, Barneche DR, Ricardo GF, Fox DR
+  (2024) J Stat Softw 110(5)). Versions are recorded in the corpus files.
 
 ## nlmixr2lib model library (`corpus_nlmixr2lib.json`)
 

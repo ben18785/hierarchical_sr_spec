@@ -12,10 +12,24 @@
 #                   sars::<name>, with A = x
 #     nlsm(name, v) right-hand side of the nlsMicrobio formula <name>, with v = x
 # Usage: Rscript rcurves_eval.R <csv> <out.csv> <rlib> <pkg1,pkg2,...>
+#   An optional 5th argument "tarball::member.R,..." sources R files from
+#   package source tarballs (for internal functions of packages that are not
+#   installed, e.g. bayesnec's pred_* equations); "tarball" is recorded with
+#   its sha256 in the versions file.
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) >= 3 && nzchar(args[3])) .libPaths(c(path.expand(args[3]), .libPaths()))
 pkgs <- strsplit(args[4], ",")[[1]]
 for (p in pkgs) suppressMessages(suppressWarnings(library(p, character.only = TRUE)))
+sourced <- character(0)
+if (length(args) >= 5 && nzchar(args[5])) {
+  for (spec in strsplit(args[5], ",")[[1]]) {
+    parts <- strsplit(spec, "::", fixed = TRUE)[[1]]
+    td <- tempfile("src")
+    untar(parts[1], files = parts[2], exdir = td)
+    sys.source(file.path(td, parts[2]), envir = globalenv())
+    sourced <- c(sourced, paste0(basename(parts[1]), "::", parts[2]))
+  }
+}
 
 drv <- function(name, i = 1, env = parent.frame()) {
   eq <- devRate::devRateEqList[[name]]$eq
@@ -88,5 +102,6 @@ for (i in seq_len(nrow(tab))) {
 res <- do.call(rbind, out)
 write.csv(res, args[2], row.names = FALSE)
 versions <- sapply(pkgs, function(p) as.character(packageVersion(p)))
+versions <- c(versions, setNames(rep("sourced", length(sourced)), sourced))
 writeLines(paste(c("R", names(versions)), c(paste(R.version$major, R.version$minor, sep = "."), versions),
                  sep = "=", collapse = ";"), paste0(args[2], ".versions"))

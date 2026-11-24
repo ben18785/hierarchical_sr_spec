@@ -331,6 +331,25 @@ rule allodb_corpus:
 # whose implementations verify them
 CURVE_CATALOGUES = {"thermal": "rTPC,devRate,photosynthesis",
                     "ecocurves": "sars,nlsMicrobio,growthrates,FSA,growthmodels,fitplc,photosynthesis"}
+# R files sourced from CRAN source tarballs (packages not installed; versions in config.cran_sources)
+CURVE_SOURCED = {"thermal": [], "ecocurves": [("bayesnec", "bayesnec/R/pred_equations.R")]}
+
+
+def _cran_tarball(pkg):
+    return f"results/corpora/raw/cran_{pkg}/{pkg}_{config['cran_sources'][pkg]}.tar.gz"
+
+
+rule cran_source_fetch:
+    """A CRAN source tarball (version in config.cran_sources), with its sha256."""
+    output:
+        "results/corpora/raw/cran_{pkg}/manifest.json",
+    params:
+        raw="results/corpora/raw/cran_{pkg}",
+        version=lambda wc: config["cran_sources"][wc.pkg],
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py cran_fetch {params.raw} {wildcards.pkg} {params.version}"
 
 
 rule rcurves_eval:
@@ -339,6 +358,7 @@ rule rcurves_eval:
     input:
         src="hsr/data/sources/{cat}_curves.csv",
         code="workflow/scripts/rcurves_eval.R",
+        sourced=lambda wc: [f"results/corpora/raw/cran_{p}/manifest.json" for p, _ in CURVE_SOURCED[wc.cat]],
     output:
         csv="results/corpora/{cat}_eval.csv",
         versions="results/corpora/{cat}_eval.csv.versions",
@@ -347,8 +367,9 @@ rule rcurves_eval:
     params:
         rlib=config.get("r_lib", ""),
         pkgs=lambda wc: CURVE_CATALOGUES[wc.cat],
+        sourced=lambda wc: ",".join(f"{_cran_tarball(p)}::{m}" for p, m in CURVE_SOURCED[wc.cat]),
     shell:
-        "Rscript workflow/scripts/rcurves_eval.R {input.src} {output.csv} '{params.rlib}' {params.pkgs}"
+        "Rscript workflow/scripts/rcurves_eval.R {input.src} {output.csv} '{params.rlib}' {params.pkgs} '{params.sourced}'"
 
 
 rule rcurves_corpus:
