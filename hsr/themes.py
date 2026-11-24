@@ -43,7 +43,9 @@ import numpy as np
 import scipy.sparse as sps
 from scipy.special import logsumexp
 
-from .gibbs import GibbsConfig, GibbsResult, escobar_west_gamma
+from scipy.special import gammaln
+
+from .gibbs import GibbsConfig, GibbsResult, _log_similarity, escobar_west_gamma
 from .grammar import Grammar
 
 
@@ -111,6 +113,25 @@ class EditKernel:
         """Q_unnorm(e) = sum_t w_t K(e | t) for a weight vector w over themes."""
         return w * self.self_weight(rho) + (1 - rho) * (self.At @ w)
 
+    def push2(self, w, rho):
+        """sum_t w_t K(e | t)^2."""
+        if not hasattr(self, "_A2t"):
+            self._A2t = self.A.multiply(self.A).T.tocsr()
+        return w * self.self_weight(rho) ** 2 + (1 - rho) ** 2 * (self._A2t @ w)
+
+    def pull(self, a, rho):
+        """sum_e K(e | t) a(e) for every theme t."""
+        return a * self.self_weight(rho) + (1 - rho) * (self.A @ a)
+
+    def pairs(self, rho):
+        """(themes, skeletons, K(e | t)) for every pair with K > 0."""
+        if not hasattr(self, "_pairs"):
+            coo = self.A.tocoo()
+            self._pairs = (np.r_[np.arange(self.C), coo.row], np.r_[np.arange(self.C), coo.col],
+                           np.r_[np.zeros(self.C), coo.data], np.r_[np.ones(self.C), np.zeros(len(coo.data))])
+        t, e, aval, diag = self._pairs
+        return t, e, np.where(diag > 0, self.self_weight(rho)[t], (1 - rho) * aval)
+
 
 @dataclass
 class ThemeResult(GibbsResult):
@@ -122,6 +143,115 @@ class ThemeResult(GibbsResult):
     @property
     def theme_top(self):
         return np.argmax(self.theme_probs, axis=1)
+
+
+def _split_merge_themes(rng, z, n_e, members, Mc, theme, m, model, kernel, rho, gamma, gamma0, P0, logsim, n_prop):
+    """Split-merge moves for the themes model, with the skeletons and themes of
+    the clusters involved summed out. Allocation as in hsr.gibbs._split_merge.
+
+    With w(t) = m_t + gamma0 P0(t) counting the B0 other clusters' themes, and
+    a_S(e) = exp M_e(S) over the skeletons not used by other clusters, the
+    weight of one cluster S (CRP(gamma) term, theme and skeleton summed) is
+        gamma (|S|-1)! sum_e push(w)(e) a_S(e) / (B0 + gamma0)
+    and of two clusters S1, S2 with distinct skeletons
+        gamma^2 (|S1|-1)! (|S2|-1)! T / ((B0 + gamma0)(B0 + 1 + gamma0)),
+        T = sum_{t1,t2,e1!=e2} w(t1) (w(t2) + [t2 = t1]) K(e1|t1) K(e2|t2) a1(e1) a2(e2)
+          = (w.u1)(w.u2) + sum_t w u1 u2 - sum_e a1 a2 (push(w)^2 + push2(w)),
+    with u = pull(a). After an accepted move the new skeletons and themes are
+    drawn from their exact conditional."""
+    J = len(z)
+    C = len(n_e)
+    for _ in range(n_prop):
+        i, j = rng.choice(J, size=2, replace=False)
+        ci, cj = int(z[i]), int(z[j])
+        involved = [ci] if ci == cj else [ci, cj]
+        old_themes = {c: theme[c] for c in involved}
+        for c in involved:
+            m[old_themes[c]] -= 1
+        B0 = len(members) - len(involved)
+        w = m + gamma0 * P0
+        pw = kernel.push(w, rho)
+        allowed = n_e == 0
+        for c in involved:
+            allowed[c] = True
+
+        def scaled(T):
+            M = np.where(allowed, model.marginal_all(sorted(T)), -np.inf)
+            c0 = M.max()
+            return np.exp(M - c0) if np.isfinite(c0) else np.zeros(C), c0
+
+        if ci == cj:
+            S = members[ci]
+            Si, Sj, logq = {int(i)}, {int(j)}, 0.0
+            for k in rng.permutation(sorted(S - {i, j})):
+                p_i = 1.0 / (1.0 + np.exp(logsim[k, j] - logsim[k, i]))
+                if rng.random() < p_i:
+                    Si.add(int(k))
+                    logq += np.log(p_i)
+                else:
+                    Sj.add(int(k))
+                    logq += np.log1p(-p_i)
+        else:
+            Si, Sj = members[ci], members[cj]
+            S = Si | Sj
+            logq = 0.0
+            for k in S - {i, j}:
+                p_i = 1.0 / (1.0 + np.exp(logsim[k, j] - logsim[k, i]))
+                logq += np.log(p_i) if k in Si else np.log1p(-p_i)
+        a, ca = scaled(S)
+        a1, c1 = scaled(Si)
+        a2, c2 = scaled(Sj)
+        W1 = float(pw @ a)
+        u1, u2 = kernel.pull(a1, rho), kernel.pull(a2, rho)
+        T = float((w @ u1) * (w @ u2) + np.sum(w * u1 * u2) - np.sum(a1 * a2 * (pw ** 2 + kernel.push2(w, rho))))
+        with np.errstate(divide="ignore", invalid="ignore"):
+            log_split = (np.log(gamma) + gammaln(len(Si)) + gammaln(len(Sj)) + np.log(max(T, 0.0)) + c1 + c2
+                         - np.log(B0 + 1 + gamma0))
+            log_merge = gammaln(len(S)) + np.log(W1) + ca
+        log_a = (log_split - log_merge - logq) if ci == cj else (log_merge - log_split + logq)
+        if np.isnan(log_a) or np.log(rng.random()) >= log_a:
+            for c in involved:
+                m[old_themes[c]] += 1
+            continue
+        for c in involved:
+            del members[c]
+            Mc.pop(c, None)
+            n_e[c] = 0
+            theme.pop(c)
+        if ci == cj:
+            # (e1, t1) from its marginal, then (e2, t2) given it
+            tt, ee, kv = kernel.pairs(rho)
+            R = (w @ u2 + u2[tt]) - a2[ee] * (pw[ee] + kv)
+            lw = np.log(np.maximum(w[tt] * kv * a1[ee] * np.maximum(R, 0.0), 1e-300))
+            lw[(kv <= 0) | (a1[ee] <= 0) | (R <= 0)] = -np.inf
+            k1 = int(rng.choice(len(lw), p=np.exp(lw - logsumexp(lw))))
+            e1, t1 = int(ee[k1]), int(tt[k1])
+            m[t1] += 1
+            w2 = m + gamma0 * P0
+            lw2 = np.log(np.maximum(kernel.push(w2, rho) * a2, 1e-300))
+            lw2[(a2 <= 0)] = -np.inf
+            lw2[e1] = -np.inf
+            e2 = int(rng.choice(C, p=np.exp(lw2 - logsumexp(lw2))))
+            idx, kv2 = kernel.parents(e2, rho)
+            lt = np.log(w2[idx]) + np.log(kv2)
+            t2 = int(idx[rng.choice(len(idx), p=np.exp(lt - logsumexp(lt)))])
+            m[t2] += 1
+            new = ((e1, t1, Si), (e2, t2, Sj))
+        else:
+            lwm = np.log(np.maximum(pw * a, 1e-300))
+            lwm[a <= 0] = -np.inf
+            e = int(rng.choice(C, p=np.exp(lwm - logsumexp(lwm))))
+            idx, kv = kernel.parents(e, rho)
+            lt = np.log(w[idx]) + np.log(kv)
+            t = int(idx[rng.choice(len(idx), p=np.exp(lt - logsumexp(lt)))])
+            m[t] += 1
+            new = ((e, t, S),)
+        for e, t, T_ in new:
+            members[e] = set(T_)
+            n_e[e] = len(T_)
+            z[sorted(T_)] = e
+            Mc[e] = model.marginal(e, sorted(T_))
+            theme[e] = t
 
 
 def _p0(log_p):
@@ -175,7 +305,7 @@ def run_chain_themes(L, counts, grammar: Grammar, kernel: EditKernel, cfg: Gibbs
     thetas = {nt: [] for nt in grammar.nonterminals}
     for sweep in range(cfg.n_sweeps):
         # ---- 1. single-dataset moves
-        for j in rng.permutation(J):
+        for j in (rng.permutation(J) if cfg.single_site else ()):
             e0 = int(z[j])
             members[e0].discard(j)
             n_e[e0] -= 1
@@ -210,6 +340,10 @@ def run_chain_themes(L, counts, grammar: Grammar, kernel: EditKernel, cfg: Gibbs
                 t = draw_theme(e1)
                 theme[e1] = t
                 add_theme(t, +1)
+        # ---- 1b. split-merge (hsr.gibbs._split_merge, with themes)
+        if cfg.split_merge and J > 1:
+            _split_merge_themes(rng, z, n_e, members, Mc, theme, m, model, kernel, rho, gamma, gamma0, P0,
+                                _log_similarity(S1, np.log(np.maximum(P0, 1e-300))), cfg.split_merge)
         # ---- 2. block move: (skeleton, theme) of each cluster
         if cfg.relabel and sweep % cfg.relabel_every == 0:
             for e in rng.permutation(list(members)):

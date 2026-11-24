@@ -1,3 +1,4 @@
+import pytest
 """Themes-and-variations sampler against exact enumeration."""
 import itertools
 import math
@@ -157,6 +158,29 @@ def test_themes_weighted_kernel_matches_enumeration():
     cfg = GibbsConfig(n_sweeps=40000, burn_in=1000, n_chains=1, gamma_init=0.9, update_gamma=False,
                       update_theta=False, seed=7)
     tcfg = ThemeConfig(rho_init=0.5, update_rho=False, gamma0_init=1.1, update_gamma0=False)
+    res = run_gibbs_themes(L, counts, g, kernel, cfg, tcfg)
+    assert np.abs(res.assign_probs - Pz).max() < 0.02
+    assert np.abs(res.theme_probs - Pt).max() < 0.02
+
+
+@pytest.mark.parametrize("single_site", [False, True])
+def test_themes_split_merge_matches_enumeration(single_site):
+    """Split-merge with themes (and the block move; with or without single-site
+    updates) leaves the exact posterior over skeletons and themes invariant."""
+    rng = np.random.default_rng(21)
+    J, C = 4, 4
+    L = rng.normal(0, 1.0, size=(J, C))
+    L[:2, 0] += 1.5
+    L[2:, 2] += 1.5
+    g = Grammar()
+    counts = np.abs(rng.normal(2, 1, size=(C, g.n_rules))).round()
+    log_p = g.log_prob(counts, g.prior_mean())
+    kernel = EditKernel(C, [(0, 1), (0, 2), (1, 2), (3, 0)])
+    gamma, gamma0, rho = 1.2, 0.9, 0.55
+    Pz, Pt = _exact(L, log_p, kernel, gamma, gamma0, rho)
+    cfg = GibbsConfig(n_sweeps=30000, burn_in=1000, n_chains=1, gamma_init=gamma, update_gamma=False,
+                      update_theta=False, seed=7, split_merge=4, single_site=single_site)
+    tcfg = ThemeConfig(rho_init=rho, update_rho=False, gamma0_init=gamma0, update_gamma0=False)
     res = run_gibbs_themes(L, counts, g, kernel, cfg, tcfg)
     assert np.abs(res.assign_probs - Pz).max() < 0.02
     assert np.abs(res.theme_probs - Pt).max() < 0.02
