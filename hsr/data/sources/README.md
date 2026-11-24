@@ -64,9 +64,11 @@ Self-start models of R `stats`, `nlraa` and `drc`, transcribed and verified nume
   component libraries, models that do not validate in libcellml (e.g. a variable of integration
   with an initial value, units used but not imported), and equations with piecewise definitions
   or functions outside `hsr.corpus._FUNCS` (which give no key).
-* Terms of use: the PMR software is GPL/LGPL/MPL; model files carry their own licences, most of
-  the curated CellML models under Creative Commons Attribution 3.0. The committed corpus contains
-  only derived skeletons and workspace ids. Cite: Yu T et al. (2011) The Physiome Model Repository 2.
+* Terms of use: the PMR software is GPL/LGPL/MPL. Licences of the models are set per workspace
+  or exposure in PMR (the curated CellML models are generally distributed under Creative Commons
+  Attribution); none of the downloaded .cellml files states a licence itself, and the licence of
+  each model has not been checked one by one. The committed corpus contains only derived,
+  abstracted skeletons and workspace ids, no model files. Cite: Yu T et al. (2011) The Physiome Model Repository 2.
   Bioinformatics 27:743-744; Clerx M et al. (2020) CellML 2.0. J Integr Bioinform 17:20200021;
   libCellML, https://libcellml.org.
 
