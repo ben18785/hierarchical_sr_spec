@@ -27,6 +27,7 @@ rule all:
 
 rule grammar:
     input:
+        "results/grammar/loso.md",
         "results/grammar/table.md",
         expand("results/grammar/transfer_{name}/table.md", name=TRANSFER),
 
@@ -165,6 +166,36 @@ rule biocat_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py catalogue_build {input.src} {input.ev} {output}"
 
 
+LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat"]
+
+
+rule loso_folds:
+    """Leave one corpus out: train priors on the other sources (pooled or
+    equally weighted), score the left-out source."""
+    input:
+        gen="results/grammar/generalised.json",
+        corpora=expand("hsr/data/corpus_{n}.json", n=["sabiork", "cellml", "curvelib", "biocat"]) + ["hsr/data/corpus.json"],
+        code=["hsr/grammar_compare.py", "workflow/scripts/grammar_steps.py"],
+    output:
+        "results/grammar/loso_{test}_{weighting}/folds.json",
+    wildcard_constraints:
+        weighting="pooled|equal",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py loso {input.gen} {wildcards.test} "
+        "{wildcards.weighting} {output}"
+
+
+rule loso_table:
+    input:
+        expand("results/grammar/loso_{test}_{weighting}/table.md", test=LOSO, weighting=["pooled", "equal"]),
+    output:
+        "results/grammar/loso.md",
+    shell:
+        "for f in {input}; do echo \"## $(dirname $f | xargs basename)\"; cat $f; echo; done > {output}"
+
+
 rule transfer_folds:
     input:
         gen="results/grammar/generalised.json",
@@ -176,6 +207,25 @@ rule transfer_folds:
         HSR_ENV
     shell:
         "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py transfer {input.gen} {input.test} {output}"
+
+
+rule biomodels_corpus:
+    """BioModels kinetic-law corpus (hsr.corpus). EBI blocks GitHub-hosted
+    runners, so this runs locally; downloads are cached under
+    results/corpora/raw/biomodels and a manifest (sha256 per model) is written."""
+    output:
+        corpus="hsr/data/corpus.json",
+        manifest="results/corpora/raw/biomodels/MANIFEST.json",
+    params:
+        cache="results/corpora/raw/biomodels",
+        first=config.get("biomodels_first", 1),
+        last=config.get("biomodels_last", 1100),
+    conda:
+        "envs/biomodels.yaml"
+    shell:
+        "PYTHONPATH={ROOT} python -m hsr.corpus build --out {output.corpus} --first {params.first} "
+        "--last {params.last} --cache {params.cache} && "
+        "PYTHONPATH={ROOT} python workflow/scripts/manifest.py {params.cache} {output.manifest}"
 
 
 rule corpus_generalised:
@@ -243,11 +293,28 @@ rule fnprior_scores:
         "python workflow/scripts/fnprior_score.py {input.folds} {output}"
 
 
+rule hpy_scores:
+    """Hierarchical Pitman-Yor model (hsr.hpy) on fnprior's tree events."""
+    input:
+        folds="results/grammar/{run}/folds.json",
+        code=["workflow/scripts/hpy_score.py", "hsr/hpy.py", "hsr/fnprior_tools.py"],
+    output:
+        "results/grammar/{run}/hpy.json",
+    params:
+        sweeps=config.get("hpy_sweeps", 20),
+        keep=config.get("hpy_keep", 10),
+    conda:
+        "envs/fnprior.yaml"
+    shell:
+        "python workflow/scripts/hpy_score.py {input.folds} {output} {params.sweeps} {params.keep}"
+
+
 rule grammar_table_run:
     input:
         folds="results/grammar/{run}/folds.json",
         ours="results/grammar/{run}/ours.json",
         fnp="results/grammar/{run}/fnprior.json",
+        hpy="results/grammar/{run}/hpy.json",
     output:
         json="results/grammar/{run}/table.json",
         md="results/grammar/{run}/table.md",
@@ -255,7 +322,7 @@ rule grammar_table_run:
         HSR_ENV
     shell:
         "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py table {input.folds} {output.json} {output.md} "
-        "{input.ours} {input.fnp}"
+        "{input.ours} {input.fnp} {input.hpy}"
 
 
 rule grammar_table:

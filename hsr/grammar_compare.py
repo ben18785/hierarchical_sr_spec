@@ -501,3 +501,45 @@ def make_transfer(gen_map: dict, test_corpus, corpus=CORPUS, candidates=CANDIDAT
     support = sorted(set(base["support"]) | set(test))
     return {"support": support, "folds": [{"train": train, "test": test, "test_models": list(T["per_model"])}],
             "k": 1, "seed": 0, "generalise_literals": True, "test_corpus": os.path.basename(test_corpus)}
+
+
+SOURCES = {"biomodels": CORPUS,
+           "sabiork": os.path.join(os.path.dirname(__file__), "data", "corpus_sabiork.json"),
+           "cellml": os.path.join(os.path.dirname(__file__), "data", "corpus_cellml.json"),
+           "curvelib": os.path.join(os.path.dirname(__file__), "data", "corpus_curvelib.json"),
+           "biocat": os.path.join(os.path.dirname(__file__), "data", "corpus_biocat.json")}
+
+
+def source_items(path, gen_map):
+    """Model-form pairs of a corpus (each model's distinct forms once), keys
+    mapped to their literal-free generalisation where known."""
+    with open(path) as fh:
+        pm = json.load(fh)["per_model"]
+    out = []
+    for ks in pm.values():
+        forms = sorted({gen_map.get(k, k) for k in ks} - {None})
+        out += forms
+    return out
+
+
+def make_loso(gen_map: dict, test: str, weighting="pooled", sources=None, candidates=CANDIDATES) -> dict:
+    """Leave one source out: train on every other source, test on ``test``.
+    weighting: 'pooled' (every model-form pair counts once) or 'equal' (each
+    training source is replicated to the size of the largest, so every source
+    carries the same total weight)."""
+    sources = sources or SOURCES
+    items = {name: source_items(p, gen_map) for name, p in sources.items()}
+    train_parts = {n: v for n, v in items.items() if n != test}
+    if weighting == "equal":
+        big = max(len(v) for v in train_parts.values())
+        train = [k for v in train_parts.values() for k in v * max(1, round(big / len(v)))]
+    elif weighting == "pooled":
+        train = [k for v in train_parts.values() for k in v]
+    else:
+        raise ValueError(weighting)
+    with open(candidates) as fh:
+        cand = json.load(fh)["keys"]
+    support = sorted({gen_map.get(c, c) for c in cand} - {None} | {k for v in items.values() for k in v})
+    return {"support": support, "folds": [{"train": train, "test": items[test], "test_models": []}],
+            "k": 1, "seed": 0, "generalise_literals": True, "test_corpus": f"{test} (left out; {weighting})",
+            "train_sizes": {n: len(v) for n, v in train_parts.items()}}

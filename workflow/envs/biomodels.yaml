@@ -1,0 +1,11 @@
+# BioModels corpus build (hsr.corpus): libsbml plus the hsr dependencies.
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - numpy==2.5.5
+      - scipy==1.18.1
+      - sympy==1.14.0
+      - python-libsbml==5.21.2

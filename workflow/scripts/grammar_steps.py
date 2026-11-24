@@ -24,6 +24,13 @@ def transfer(gen_path, test_corpus, out):
         json.dump(gc.make_transfer(gen, test_corpus), fh)
 
 
+def loso(gen_path, test, weighting, out):
+    with open(gen_path) as fh:
+        gen = json.load(fh)
+    with open(out, "w") as fh:
+        json.dump(gc.make_loso(gen, test, weighting), fh)
+
+
 def ours(folds_path, out):
     with open(folds_path) as fh:
         F = json.load(fh)
@@ -57,4 +64,4 @@ def table(folds_path, out_json, out_md, *score_files):
 
 
 if __name__ == "__main__":
-    {"generalised": generalised, "folds": folds, "transfer": transfer, "ours": ours, "table": table}[sys.argv[1]](*sys.argv[2:])
+    {"generalised": generalised, "folds": folds, "transfer": transfer, "loso": loso, "ours": ours, "table": table}[sys.argv[1]](*sys.argv[2:])
