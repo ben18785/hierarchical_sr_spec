@@ -284,6 +284,49 @@ rule nlmixr2lib_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py nlmixr2lib_build {params.raw} {input.tsv} {output} {threads}"
 
 
+rule allodb_fetch:
+    """The allodb repository (ropensci/allodb) at the commit in config, as a tarball with its sha256."""
+    output:
+        "results/corpora/raw/allodb/manifest.json",
+    params:
+        raw="results/corpora/raw/allodb",
+        commit=config.get("allodb_commit", ""),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py github_fetch {params.raw} ropensci/allodb {params.commit}"
+
+
+rule allodb_equations:
+    """The allodb equation table, each univariate equation evaluated by R on a DBH grid."""
+    input:
+        man="results/corpora/raw/allodb/manifest.json",
+        code="workflow/scripts/allodb_extract.R",
+    output:
+        "results/corpora/allodb_equations.tsv",
+    params:
+        tarball=lambda wc: "results/corpora/raw/allodb/ropensci_allodb_{}.tar.gz".format(config["allodb_commit"][:12]),
+    shell:
+        "Rscript workflow/scripts/allodb_extract.R {params.tarball} {output}"
+
+
+rule allodb_corpus:
+    """allodb equations (checked against R) reduced to generalised forms, one model per reference (committed)."""
+    input:
+        man="results/corpora/raw/allodb/manifest.json",
+        tsv="results/corpora/allodb_equations.tsv",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_allodb.json",
+    params:
+        raw="results/corpora/raw/allodb",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py allodb_build {params.raw} {input.tsv} {output} {threads}"
+
+
 # R curve catalogues (hsr/data/sources/<name>_curves.csv) and the R packages
 # whose implementations verify them
 CURVE_CATALOGUES = {"thermal": "rTPC,devRate", "ecocurves": "sars,nlsMicrobio,growthrates,FSA"}
@@ -324,8 +367,8 @@ rule rcurves_corpus:
 
 
 LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat", "biomodels_nc", "thermal", "ecocurves", "modeldb",
-        "nlmixr2lib"]
-NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves", "modeldb", "nlmixr2lib"]
+        "nlmixr2lib", "allodb"]
+NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves", "modeldb", "nlmixr2lib", "allodb"]
 
 
 rule corpus_overlap:

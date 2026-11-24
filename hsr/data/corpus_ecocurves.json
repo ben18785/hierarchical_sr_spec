@@ -18,6 +18,7 @@
 "c0*exp(c1*exp(c2*exp(c3*x1)))": 1,
 "c0*exp(c1*exp(c2*x1))": 3,
 "c0*exp(c1*exp(c2*x1)) + c3": 1,
+"c0*exp(c1*x1 + c2*sin(c3 + c5*x1)) + c4": 1,
 "c0*exp(c1*x1)": 2,
 "c0*exp(c1*x1) + c2": 2,
 "c0*log((c1 + exp(c2*x1))/(c3 + exp(c2*x1))) + c4": 1,
@@ -177,14 +178,15 @@
 "c0*(c1 - exp(c2*x1**c3))**c4"
 ],
 "vonBertalanffy1938": [
+"c0*exp(c1*x1 + c2*sin(c3 + c5*x1)) + c4",
 "c0*exp(c1*x1) + c2",
 "c1*(c0*exp(c2*x1) + c6)**c3*exp(c4*x1) + c5"
 ]
 },
 "source": "R curve catalogue ecocurves_curves.csv; formulas transcribed and verified numerically against the packages; one model per original publication",
 "stats": {
-"distinct_keys": 43,
-"expressible": 77,
+"distinct_keys": 44,
+"expressible": 79,
 "models": 41,
 "packages": [
 "FSA",
@@ -193,7 +195,7 @@
 "sars"
 ],
 "rows": 79,
-"rows_in_corpus": 77,
+"rows_in_corpus": 79,
 "verified": 78
 },
 "verification": {
@@ -512,24 +514,24 @@
 "fsa_vb10": {
 "formula": "Linf*(1 - exp(-K*(x - t0) - C*K/(2*pi)*sin(2*pi*(x - ts)) + C*K/(2*pi)*sin(2*pi*(t0 - ts))))",
 "function": "makeGrowthFun(von Bertalanffy, 10)",
-"in_corpus": false,
-"key": null,
+"in_corpus": true,
+"key": "c0*exp(c1*x1 + c2*sin(c3 + c5*x1)) + c4",
 "max_rel_err": 8.83775851549253e-14,
 "model": "vonBertalanffy1938",
 "n_points": 75,
-"note": "not expressible in the grammar",
+"note": "",
 "package": "FSA",
 "verified": true
 },
 "fsa_vb11": {
 "formula": "Linf*(1 - exp(-K*(x - t0) - C*K/(2*pi)*sin(2*pi*(x - WP + 1/2)) + C*K/(2*pi)*sin(2*pi*(t0 - WP + 1/2))))",
 "function": "makeGrowthFun(von Bertalanffy, 11)",
-"in_corpus": false,
-"key": null,
+"in_corpus": true,
+"key": "c0*exp(c1*x1 + c2*sin(c3 + c5*x1)) + c4",
 "max_rel_err": 5.4615599057635164e-14,
 "model": "vonBertalanffy1938",
 "n_points": 75,
-"note": "not expressible in the grammar",
+"note": "",
 "package": "FSA",
 "verified": true
 },

@@ -1,0 +1,239 @@
+{
+"failures": {},
+"freq": {
+"c0*(c1 + x1)**c2": 2,
+"c0*(c1*x1 + c2)**c3": 8,
+"c0*exp(c1*x1**c2) + c3": 1,
+"c0*exp(c1*x1/(c2 + x1))": 1,
+"c0*x1 + c1": 3,
+"c0*x1**(5/2)": 1,
+"c0*x1**(5/2) + c1*x1**c2 + c3*x1**c4": 1,
+"c0*x1**2": 2,
+"c0*x1**2 + c1": 3,
+"c0*x1**2 + c1*x1 + c2": 2,
+"c0*x1**2 + c1*x1**3 + c2": 1,
+"c0*x1**2 + c1*x1**3 + c2*x1 + c3": 1,
+"c0*x1**2 + c1*x1**3 + c2*x1**c3 + c4": 1,
+"c0*x1**2 + c1*x1**c2 + c3": 1,
+"c0*x1**c1": 38,
+"c0*x1**c1 + c2": 1,
+"c0*x1**c1 + c2*x1**c3": 1,
+"c0*x1**c1 + c2*x1**c3 + c4*x1**c5": 4,
+"c0*x1**c1 + c2*x1**c3 + c4*x1**c5 + c6*x1**c7": 3,
+"c0*x1**c1*exp(c2*x1)": 1,
+"c0*x1*exp(c1*x1)": 1,
+"c0*x1/(c1 + x1)": 2,
+"exp((c0 + c1*log(x1))*(c2 + log(x1))/(c3 + log(x1)))": 1
+},
+"not_expressible": {},
+"per_model": {
+"allodb:barney_1977_bdac": [
+"c0*x1**c1"
+],
+"allodb:baskerville_1966_dmpi": [
+"c0*x1**c1"
+],
+"allodb:bohn_2014_ocai": [
+"c0*x1/(c1 + x1)",
+"exp((c0 + c1*log(x1))*(c2 + log(x1))/(c3 + log(x1)))"
+],
+"allodb:bond-lamberty_2002_aabb": [
+"c0*x1**c1"
+],
+"allodb:bridge_1979_fpom": [
+"c0*x1**c1"
+],
+"allodb:brown_1976_esbf": [
+"c0*x1**c1"
+],
+"allodb:brown_1978_wado": [
+"c0*x1**2 + c1",
+"c0*x1**2 + c1*x1**3 + c2",
+"c0*x1**2 + c1*x1**3 + c2*x1**c3 + c4",
+"c0*x1**2 + c1*x1**c2 + c3",
+"c0*x1**c1"
+],
+"allodb:chapman_1991_apac": [
+"c0*x1**c1*exp(c2*x1)"
+],
+"allodb:chojnacky_1984_vabf": [
+"c0*x1**c1"
+],
+"allodb:chojnacky_1993_cwvt": [
+"c0*x1**c1"
+],
+"allodb:chojnacky_2014_ugbe": [
+"c0*(c1 + x1)**c2",
+"c0*x1**c1"
+],
+"allodb:clark_1985_wvap": [
+"c0*x1**c1"
+],
+"allodb:clark_1986a_wvap": [
+"c0*x1**c1"
+],
+"allodb:clark_1986b_wvap": [
+"c0*x1**c1"
+],
+"allodb:coltrin_2010_bqol": [
+"c0*x1**c1"
+],
+"allodb:conti_2019_damt": [
+"c0*(c1*x1 + c2)**c3"
+],
+"allodb:fenn_2014_tcco": [
+"c0*x1**c1"
+],
+"allodb:forrester_2017_gbal": [
+"c0*x1**c1"
+],
+"allodb:gonzalez-beneck_2018_loga": [
+"c0*x1**c1 + c2*x1**c3 + c4*x1**c5"
+],
+"allodb:gower_1992_cdor": [
+"c0*x1**c1",
+"c0*x1**c1 + c2*x1**c3 + c4*x1**c5 + c6*x1**c7"
+],
+"allodb:grier_1992_bdap": [
+"c0*(c1*x1 + c2)**c3"
+],
+"allodb:grigal_1984_befb": [
+"c0*x1**c1"
+],
+"allodb:halpern_1996_efpa": [
+"c0*(c1*x1 + c2)**c3"
+],
+"allodb:he_2018_abfe": [
+"c0*x1**c1 + c2*x1**c3 + c4*x1**c5"
+],
+"allodb:he_2018_daef": [
+"c0*(c1*x1 + c2)**c3"
+],
+"allodb:jenkins_2004_cdod": [
+"c0*(c1 + x1)**c2",
+"c0*x1 + c1",
+"c0*x1**(5/2)",
+"c0*x1**(5/2) + c1*x1**c2 + c3*x1**c4",
+"c0*x1**2 + c1",
+"c0*x1**2 + c1*x1 + c2",
+"c0*x1**c1"
+],
+"allodb:krumlik_1974_band": [
+"c0*x1**c1"
+],
+"allodb:li_2010_aout": [
+"c0*(c1*x1 + c2)**c3"
+],
+"allodb:luo_2018_acnt": [
+"c0*x1 + c1",
+"c0*x1**2",
+"c0*x1**2 + c1",
+"c0*x1**2 + c1*x1 + c2",
+"c0*x1**c1",
+"c0*x1*exp(c1*x1)",
+"c0*x1/(c1 + x1)"
+],
+"allodb:lutz_2014_ccaa": [
+"c0*x1**c1"
+],
+"allodb:lutz_2017_scsp": [
+"c0*x1**c1"
+],
+"allodb:martin_1998_aban": [
+"c0*x1**c1"
+],
+"allodb:means_1994_sfcp": [
+"c0*(c1*x1 + c2)**c3",
+"c0*x1**c1",
+"c0*x1**c1 + c2*x1**c3",
+"c0*x1**c1 + c2*x1**c3 + c4*x1**c5 + c6*x1**c7"
+],
+"allodb:muukkonen_2007_gava": [
+"c0*exp(c1*x1/(c2 + x1))"
+],
+"allodb:naidu_1998_cpob": [
+"c0*x1**c1"
+],
+"allodb:pastor_1981_bapo": [
+"c0*x1**c1"
+],
+"allodb:paul_2016_ttgo": [
+"c0*(c1*x1 + c2)**c3"
+],
+"allodb:perala_1994_abef": [
+"c0*x1**c1"
+],
+"allodb:reiners_1972_saeo": [
+"c0*x1**c1",
+"c0*x1**c1 + c2*x1**c3 + c4*x1**c5 + c6*x1**c7"
+],
+"allodb:russell_2005_ebic": [
+"c0*x1 + c1"
+],
+"allodb:schubert_1988_efpb": [
+"c0*x1**c1"
+],
+"allodb:siccama_1994_ctae": [
+"c0*x1**c1"
+],
+"allodb:singh_1984_befs": [
+"c0*x1**2 + c1*x1**3 + c2*x1 + c3"
+],
+"allodb:smith_1983_abef": [
+"c0*(c1*x1 + c2)**c3"
+],
+"allodb:sneill_1983_pcwa": [
+"c0*x1**c1",
+"c0*x1**c1 + c2*x1**c3 + c4*x1**c5"
+],
+"allodb:stovall_2018_ibca": [
+"c0*x1**c1 + c2"
+],
+"allodb:ter-mikaelian_1997_befs": [
+"c0*x1**c1"
+],
+"allodb:this_study": [
+"c0*exp(c1*x1**c2) + c3",
+"c0*x1**c1"
+],
+"allodb:wang_2006_bief": [
+"c0*x1**c1"
+],
+"allodb:westman_1998_absa": [
+"c0*x1**c1"
+],
+"allodb:williams_1984_bpef": [
+"c0*x1**c1"
+],
+"allodb:xiang_2016_ssag": [
+"c0*x1**c1",
+"c0*x1**c1 + c2*x1**c3 + c4*x1**c5"
+],
+"allodb:yarie_2007_abef": [
+"c0*x1**2"
+],
+"allodb:young_1980_wtft": [
+"c0*x1**c1"
+]
+},
+"snapshot": {
+"commit": "1cfe846eb4fd32e7561dcc2dd7a932354b2b3b33",
+"date": "2026-11-24",
+"sha256": "6f008e48dcd97686f91c2002987aee1635f99fea968a920bb0400e0191b24a5f",
+"url": "https://codeload.github.com/ropensci/allodb/tar.gz/1cfe846eb4fd32e7561dcc2dd7a932354b2b3b33"
+},
+"source": "allodb allometric equations for tree biomass and height as functions of DBH (equation strings checked against R's evaluation); one model per reference; literals generalised",
+"stats": {
+"distinct_keys": 23,
+"distinct_keys_expressible": 23,
+"equations": 570,
+"equations_reduced": 562,
+"failed": 0,
+"model_key_pairs": 80,
+"model_key_pairs_expressible": 80,
+"models": 54,
+"models_with_keys": 54,
+"not_univariate": 8,
+"verified": 562
+}
+}

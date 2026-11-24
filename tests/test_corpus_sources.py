@@ -387,13 +387,39 @@ def test_biomodels_fetch_rejects_checksum_mismatch(tmp_path, monkeypatch):
 
 # ---------------------------------------------------------------- nlmixr2lib
 def test_r_infix():
-    x = sp.Symbol("r_x", real=True)
+    x = sp.Symbol("r_x", positive=True)
     assert cs.r_infix("2 * x^2 + exp(-x)", {}) == 2 * x**2 + sp.exp(-x)
-    assert cs.r_infix("expit(a.b)", {}) == 1 / (1 + sp.exp(-sp.Symbol("r_a_dot_b", real=True)))
+    assert cs.r_infix("expit(a.b)", {}) == 1 / (1 + sp.exp(-sp.Symbol("r_a_dot_b", positive=True)))
     assert cs.r_infix("1e+06 * k", {"k": x}).equals(1000000 * x)
     for bad in ("if (x > 1) 2", "linCmt()", "podo(depot)", "x[1]", "ifelse(x, 1, 2)"):
         with pytest.raises(ValueError):
             cs.r_infix(bad, {})
+    assert cs.r_infix("log(pi*x)", {}) == sp.log(sp.pi * x)          # R's pi is a number
+    # positive symbols: (D^2)^b is D^(2b), not Abs(D)^(2b) (which has no key)
+    assert cs.law_keys(str(cs.r_infix("3.2*(dbh^2)^1.19", {})), ["r_dbh"]) == {"c0*x1**c1"}
+
+
+def test_allodb_check_and_build(tmp_path):
+    import math
+    rows = [("e1", "ref1", "DBH", "exp(-2+2.5*log(dbh))"), ("e2", "ref1", "DBH", "10^(1+2*log10(dbh))"),
+            ("e3", "ref2", "DBH", "exp(-5+2.49*(log(pi*dbh)))"), ("e4", "ref2", "DBH, H", "0.1*dbh^2*h"),
+            ("e5", "ref3", "DBH", "1.5*dbh/(20+dbh)")]
+    grid = [5, 10, 20, 40, 80]
+    f = {"e1": lambda d: math.exp(-2 + 2.5 * math.log(d)), "e2": lambda d: 10 ** (1 + 2 * math.log10(d)),
+         "e3": lambda d: math.exp(-5 + 2.49 * math.log(math.pi * d)), "e5": lambda d: 1.5 * d / (21 + d)}
+    lines = ["equation_id\tref_id\tindependent_variable\tdependent_variable\tequation_allometry\tdbh_grid\ty"]
+    for eid, ref, iv, eq in rows:
+        y = ";".join(repr(f[eid](d)) for d in grid) if eid in f else ""
+        lines.append(f"{eid}\t{ref}\t{iv}\tTotal aboveground biomass\t{eq}\t5;10;20;40;80\t{y}")
+    (tmp_path / "eq.tsv").write_text("\n".join(lines) + "\n")
+    (tmp_path / "a.tar.gz").write_bytes(b"tar")
+    (tmp_path / "manifest.json").write_text(json.dumps({"file": "a.tar.gz", "sha256": hashlib.sha256(b"tar").hexdigest(),
+                                                        "date": "d", "url": "u", "commit": "c"}))
+    res = cs.allodb_build(str(tmp_path), str(tmp_path / "eq.tsv"), str(tmp_path / "c.json"), processes=1)
+    # e5's R values (denominator 21 + dbh) disagree with its string: excluded
+    assert res["failures"] == {"e5": "differs from R's evaluation"}
+    assert res["stats"]["not_univariate"] == 1 and res["stats"]["verified"] == 3
+    assert res["per_model"] == {"allodb:ref1": ["c0*x1**(5/2)", "c0*x1**2"], "allodb:ref2": ["c0*x1**c1"]}
 
 
 def _nlmx_rows(stmts, ini=()):

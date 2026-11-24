@@ -796,7 +796,7 @@ def r_infix(expr, env):
         if name is None or name in _R_FUNCS:
             continue
         safe = "r_" + name.replace(".", "_dot_")
-        ns[safe] = env.get(name, sp.Symbol(safe, real=True))
+        ns[safe] = env.get(name, sp.pi if name == "pi" else sp.Symbol(safe, positive=True))
     ns.update(_R_FUNCS)
     txt = _R_TOKEN.sub(lambda m: m.group(0) if m.group("num") or m.group("id") in _R_FUNCS
                        else "r_" + m.group("id").replace(".", "_dot_"), expr).replace("^", "**")
@@ -834,7 +834,7 @@ def nlmixr2lib_model_equations(rows):
             continue
         if r["kind"] == "assign" and r["lhs"] not in variables:
             env[r["lhs"]] = val
-        present = sorted(n for n in variables if val.has(sp.Symbol("r_" + n.replace(".", "_dot_"), real=True)))
+        present = sorted(n for n in variables if val.has(sp.Symbol("r_" + n.replace(".", "_dot_"), positive=True)))
         if present and sp.count_ops(val) <= 400:
             eqs.append((str(val), ["r_" + n.replace(".", "_dot_") for n in present]))
     return sorted(set((e, tuple(v)) for e, v in eqs)), failed
@@ -874,6 +874,90 @@ def nlmixr2lib_build(raw_dir, tsv, out, processes=4):
                       "of model() blocks, assignments substituted); one model per file; each state, time or "
                       "covariate in turn is x1; literals generalised",
                snapshot={"date": man["date"], "url": man["url"], "sha256": man["sha256"]})
+    _write(res, out)
+    return res
+
+
+# -------------------------------------------------------------------- allodb
+def github_fetch(raw_dir, repo, commit, client=None):
+    """Download a public GitHub repository as a tarball at a fixed commit
+    (``codeload.github.com``, no authentication) with a manifest of its URL and sha256."""
+    client = client or PoliteClient(min_interval=1.5, accept="application/gzip,*/*")
+    os.makedirs(raw_dir, exist_ok=True)
+    url = f"https://codeload.github.com/{repo}/tar.gz/{commit}"
+    data, _ = client.get(url)
+    name = f"{repo.replace('/', '_')}_{commit[:12]}.tar.gz"
+    with open(os.path.join(raw_dir, name), "wb") as fh:
+        fh.write(data)
+    man = {"source": f"GitHub {repo}", "commit": commit, "url": url, "date": _today(), "file": name,
+           "sha256": sha256(data), "bytes": len(data)}
+    with open(os.path.join(raw_dir, "manifest.json"), "w") as fh:
+        json.dump(man, fh, indent=1)
+    return man
+
+
+def allodb_check(expr, grid, y, tol=1e-9):
+    """Does the sympy transcription of an allodb equation agree with R's
+    evaluation at the DBH grid? (relative error below ``tol`` at every point
+    where R's value is finite and non-zero, and at least 3 such points)"""
+    import math
+    f = sp.lambdify([sp.Symbol("r_dbh", positive=True)], expr, modules="math")
+    n = 0
+    for d, yv in zip(grid, y):
+        if not math.isfinite(yv) or yv == 0:
+            continue
+        try:
+            yp = float(f(d))
+        except (ValueError, ZeroDivisionError, OverflowError, TypeError):
+            return False
+        if not abs(yp - yv) <= tol * abs(yv):
+            return False
+        n += 1
+    return n >= 3
+
+
+def allodb_build(raw_dir, tsv, out, processes=4):
+    """Corpus of the allodb allometric equations with DBH as the only
+    independent variable; one model per reference (publication), each
+    contributing its distinct forms once. Every equation is checked against
+    R's evaluation (rule allodb_equations) before it is used."""
+    import csv
+    import math
+    with open(os.path.join(raw_dir, "manifest.json")) as fh:
+        man = json.load(fh)
+    with open(os.path.join(raw_dir, man["file"]), "rb") as fh:
+        if sha256(fh.read()) != man["sha256"]:
+            raise RuntimeError(f"checksum mismatch: {man['file']}")
+    with open(tsv) as fh:
+        rows = list(csv.DictReader(fh, delimiter="\t"))
+    stats = Counter(equations=len(rows))
+    laws, failures = [], {}
+    for r in rows:
+        if r["independent_variable"] != "DBH":
+            stats["not_univariate"] += 1
+            continue
+        try:
+            expr = r_infix(r["equation_allometry"], {})
+        except ValueError as e:
+            failures[r["equation_id"]] = str(e)
+            continue
+        grid = [float(v) for v in r["dbh_grid"].split(";")]
+        y = [float(v) if v.strip() not in ("NA", "") else math.nan for v in r["y"].split(";")]
+        if not allodb_check(expr, grid, y):
+            failures[r["equation_id"]] = "differs from R's evaluation"
+            continue
+        stats["verified"] += 1
+        laws.append((f"allodb:{r['ref_id']}", (str(expr), ("r_dbh",))))
+    law_cache = reduce_laws([law for _, law in laws], int(processes))
+    by_model = {}
+    for mid, law in laws:
+        stats["equations_reduced"] += bool(law_cache[law])
+        by_model.setdefault(mid, set()).update(law_cache[law])
+    stats["failed"] = len(failures)
+    res = _corpus_dict(by_model, dict(stats))
+    res.update(source="allodb allometric equations for tree biomass and height as functions of DBH (equation "
+                      "strings checked against R's evaluation); one model per reference; literals generalised",
+               failures=failures, snapshot={k: man[k] for k in ("date", "url", "commit", "sha256")})
     _write(res, out)
     return res
 

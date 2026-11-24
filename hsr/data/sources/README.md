@@ -162,6 +162,22 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
   nlmixr2, https://CRAN.R-project.org/package=nlmixr2lib). Each model file cites its source
   publication. Only derived skeletons and file names are committed.
 
+## allodb tree allometries (`corpus_allodb.json`)
+
+* Source: the allodb repository (rOpenSci; Gonzalez-Akre E et al. (2022) allodb: An R package for
+  biomass estimation at globally distributed extratropical forest plots. Methods Ecol Evol
+  13:330-338), downloaded as a tarball at the commit in `config.allodb_commit` (rule
+  `allodb_fetch`, `codeload.github.com`, no authentication; sha256 in the manifest). Its
+  `equations` table holds 570 published allometric equations (biomass, height, bark, foliage, ...)
+  as R expression strings, 562 with DBH as the only independent variable.
+* Parsing: rule `allodb_equations` (`workflow/scripts/allodb_extract.R`) loads the table and
+  evaluates every DBH-only equation with R at DBH = 5, 10, 20, 40, 80 cm; rule `allodb_corpus`
+  (`hsr.corpus_sources.allodb_build`) transcribes each string into sympy (`r_infix`) and keeps it
+  only if it agrees with R's values (relative error 1e-9; all 562 do), then reduces it with DBH as
+  x1. A model is one reference (`ref_id`, 54 publications), contributing each distinct form once.
+* Terms of use: allodb is GPL-3. Only derived skeletons and reference ids are committed; cite
+  Gonzalez-Akre et al. (2022) and the original references listed in allodb.
+
 ## Overlap between sources (`results/corpora/overlap.md`)
 
 Rule `corpus_overlap` tabulates, for every source of the leave-one-source-out comparison, its

@@ -7,6 +7,16 @@ grammar_compare:
 # R library holding nlraa, drc (rule curvelib_eval) and linpk, frair, FSA, deSolve (rule biocat_eval) ("" = default library)
 r_lib: "~/Library/R_hsr"
 
+# BioModels curated id range (rule biomodels_corpus); the highest curated id was BIOMD0000001103 on 2026-11-24
+biomodels_first: 1
+biomodels_last: 1103
+
+# nlmixr2lib model library (rule nlmixr2lib_fetch; CRAN source tarball)
+nlmixr2lib_version: "0.3.2"
+
+# allodb (ropensci/allodb) commit for rule allodb_fetch (master on 2026-11-24, last pushed 2025-03-06)
+allodb_commit: "1cfe846eb4fd32e7561dcc2dd7a932354b2b3b33"
+
 # hierarchical Pitman-Yor sampler (rule hpy_scores)
 hpy_sweeps: 20
 hpy_keep: 10
