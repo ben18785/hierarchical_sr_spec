@@ -142,6 +142,26 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
   (GPL >= 2; Ogle DH, Doll JC, Wheeler AP, Dinno A). Only the formulas are used; each row cites
   the original publication of the model. Versions are recorded in the corpus files.
 
+## nlmixr2lib model library (`corpus_nlmixr2lib.json`)
+
+* Source: the CRAN source tarball of nlmixr2lib (version `config.nlmixr2lib_version`, 0.3.2;
+  rule `nlmixr2lib_fetch`, one request; sha256 in the manifest): 59 pharmacometric models
+  (one- to three-compartment PK with linear, Michaelis-Menten and time-dependent clearance, transit
+  absorption, target-mediated disposition; indirect-response, precursor and circadian PD models;
+  tumour-growth inhibition (exponential, linear, power-law, logistic, Gompertz, von Bertalanffy,
+  Simeoni, Koch); drug-specific published models; endogenous IgG and phenylalanine models).
+* Parsing: rule `nlmixr2lib_statements` reads the `model({...})` block of every model file with
+  R's parser (`workflow/scripts/nlmixr2lib_extract.R`; nothing is evaluated, so rxode2 is not
+  needed); rule `nlmixr2lib_corpus` (`hsr.corpus_sources.nlmixr2lib_build`) substitutes each
+  assignment into the later statements and reduces every assignment and `d/dt()` right-hand side.
+  Variables: the states, time and the covariates (identifiers neither assigned in `model()` nor
+  defined in `ini()`, e.g. WT, AGE); parameters, random effects and derived quantities are
+  constants. Statements with conditionals, `linCmt()` or rxode2-specific functions are skipped
+  (13 of 835). A model is one file.
+* Terms of use: nlmixr2lib is GPL (>= 2) (Fidler M et al., nlmixr2lib: a model library for
+  nlmixr2, https://CRAN.R-project.org/package=nlmixr2lib). Each model file cites its source
+  publication. Only derived skeletons and file names are committed.
+
 ## Overlap between sources (`results/corpora/overlap.md`)
 
 Rule `corpus_overlap` tabulates, for every source of the leave-one-source-out comparison, its

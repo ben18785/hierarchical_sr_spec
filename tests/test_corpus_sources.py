@@ -383,3 +383,47 @@ def test_biomodels_fetch_rejects_checksum_mismatch(tmp_path, monkeypatch):
     man = cs.biomodels_fetch(str(tmp_path), query="q")
     assert man["entries"][0]["error"] == "checksum differs from the server's"
     assert not (tmp_path / "MODEL1.xml").exists()
+
+
+# ---------------------------------------------------------------- nlmixr2lib
+def test_r_infix():
+    x = sp.Symbol("r_x", real=True)
+    assert cs.r_infix("2 * x^2 + exp(-x)", {}) == 2 * x**2 + sp.exp(-x)
+    assert cs.r_infix("expit(a.b)", {}) == 1 / (1 + sp.exp(-sp.Symbol("r_a_dot_b", real=True)))
+    assert cs.r_infix("1e+06 * k", {"k": x}).equals(1000000 * x)
+    for bad in ("if (x > 1) 2", "linCmt()", "podo(depot)", "x[1]", "ifelse(x, 1, 2)"):
+        with pytest.raises(ValueError):
+            cs.r_infix(bad, {})
+
+
+def _nlmx_rows(stmts, ini=()):
+    return [{"file": "m.R", "kind": "ini", "lhs": p, "rhs": ""} for p in ini] + \
+        [{"file": "m.R", "kind": k, "lhs": l, "rhs": r} for k, l, r in stmts]
+
+
+def test_nlmixr2lib_model_equations():
+    rows = _nlmx_rows([("assign", "cl", "exp(lcl) * (WT/70)^0.75"),
+                       ("assign", "vc", "exp(lvc)"),
+                       ("assign", "kel", "cl/vc"),
+                       ("ddt", "central", "-kel * central"),
+                       ("assign", "Cc", "central/vc"),
+                       ("assign", "eff", "E0 + Emax * Cc/(EC50 + Cc)"),
+                       ("assign", "bad", "linCmt()")],
+                      ini=["lcl", "lvc", "E0", "Emax", "EC50", "eta.cl"])
+    eqs, failed = cs.nlmixr2lib_model_equations(rows)
+    assert failed == 1
+    keys = set()
+    for e, v in eqs:
+        keys |= cs.law_keys(e, list(v))
+    # WT is a covariate (a variable; allometric exponent 0.75 is a free constant); central a state;
+    # Cc is substituted, so eff is an Emax model of central
+    assert {"c0*x1**c1", "c0*x1", "c0*x1/(c1 + x1) + c2"} <= keys
+    assert all("r_Cc" not in v and "r_E0" not in v for _, v in eqs)
+
+
+def test_nlmixr2lib_build_checks_tarball(tmp_path):
+    (tmp_path / "p.tar.gz").write_bytes(b"tar")
+    (tmp_path / "manifest.json").write_text(json.dumps({"file": "p.tar.gz", "sha256": "0", "date": "d", "url": "u"}))
+    (tmp_path / "s.tsv").write_text("file\tkind\tlhs\trhs\n")
+    with pytest.raises(RuntimeError, match="checksum"):
+        cs.nlmixr2lib_build(str(tmp_path), str(tmp_path / "s.tsv"), str(tmp_path / "c.json"), processes=1)

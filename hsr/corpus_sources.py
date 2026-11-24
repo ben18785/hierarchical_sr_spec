@@ -751,6 +751,133 @@ def modeldb_build(eq_json, out, processes=4):
     return res
 
 
+# --------------------------------------------------------------- nlmixr2lib
+CRAN = "https://cran.r-project.org/src/contrib"
+_R_TOKEN = __import__("re").compile(r"(?P<num>(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)|(?P<id>[A-Za-z.][A-Za-z0-9._]*)")
+_R_FUNCS = {"exp": sp.exp, "log": sp.log, "sqrt": sp.sqrt, "sin": sp.sin, "cos": sp.cos, "tanh": sp.tanh,
+            "abs": sp.Abs, "expit": lambda a: 1 / (1 + sp.exp(-a)), "logit": lambda a: sp.log(a / (1 - a)),
+            "log10": lambda a: sp.log(a) / sp.log(10)}
+
+
+def cran_fetch(raw_dir, package, version, client=None):
+    """Download one CRAN source tarball (current or archived) into ``raw_dir``
+    with a manifest of its URL and sha256."""
+    client = client or PoliteClient(min_interval=1.5, accept="application/gzip,*/*")
+    os.makedirs(raw_dir, exist_ok=True)
+    name = f"{package}_{version}.tar.gz"
+    err = None
+    for url in (f"{CRAN}/{name}", f"{CRAN}/Archive/{package}/{name}"):
+        try:
+            data, _ = client.get(url)
+            break
+        except RuntimeError as e:
+            err = e
+    else:
+        raise RuntimeError(f"{name}: {err}")
+    with open(os.path.join(raw_dir, name), "wb") as fh:
+        fh.write(data)
+    man = {"source": f"CRAN {package} {version}", "url": url, "date": _today(), "file": name,
+           "sha256": sha256(data), "bytes": len(data)}
+    with open(os.path.join(raw_dir, "manifest.json"), "w") as fh:
+        json.dump(man, fh, indent=1)
+    return man
+
+
+def r_infix(expr, env):
+    """sympy expression of a deparsed R expression; identifiers become
+    symbols ``r_<name>`` unless ``env`` gives their value. Raises ValueError
+    for anything outside arithmetic and _R_FUNCS."""
+    import re
+    if re.search(r"[<>!&|%\[$]|==|\bif\b|\bifelse\b", expr):
+        raise ValueError("not arithmetic")
+    ns, out = {}, []
+    for m in _R_TOKEN.finditer(expr):
+        name = m.group("id")
+        if name is None or name in _R_FUNCS:
+            continue
+        safe = "r_" + name.replace(".", "_dot_")
+        ns[safe] = env.get(name, sp.Symbol(safe, real=True))
+    ns.update(_R_FUNCS)
+    txt = _R_TOKEN.sub(lambda m: m.group(0) if m.group("num") or m.group("id") in _R_FUNCS
+                       else "r_" + m.group("id").replace(".", "_dot_"), expr).replace("^", "**")
+    try:
+        val = sp.sympify(txt, locals=ns)
+    except Exception as e:
+        raise ValueError(f"parse: {type(e).__name__}") from e
+    if not isinstance(val, sp.Expr) or val.has(sp.Function("linCmt")) or any(
+            isinstance(f, sp.core.function.AppliedUndef) for f in val.atoms(sp.Function)):
+        raise ValueError("unknown function")
+    return val
+
+
+def nlmixr2lib_model_equations(rows):
+    """[(equation string, [variable names])], n_failed of one nlmixr2lib model
+    (its rows of nlmixr2lib_extract.R): assignments are substituted into later
+    statements; variables are the states (``d/dt``), time (t, time) and the
+    covariates (identifiers neither assigned in model() nor defined in ini());
+    parameters, random effects and derived quantities are constants."""
+    ini = {r["lhs"] for r in rows if r["kind"] == "ini"}
+    stmts = [r for r in rows if r["kind"] in ("assign", "ddt")]
+    assigned = {r["lhs"] for r in stmts}
+    states = {r["lhs"] for r in stmts if r["kind"] == "ddt"}
+    import re
+    idents = {m.group("id") for r in stmts for m in _R_TOKEN.finditer(r["rhs"]) if m.group("id")}
+    covariates = idents - assigned - ini - set(_R_FUNCS)
+    variables = states | {"t", "time"} | covariates
+    env, eqs, failed = {}, [], 0
+    for r in stmts:
+        try:
+            val = r_infix(r["rhs"], env)
+        except ValueError:
+            failed += 1
+            env.pop(r["lhs"], None)
+            continue
+        if r["kind"] == "assign" and r["lhs"] not in variables:
+            env[r["lhs"]] = val
+        present = sorted(n for n in variables if val.has(sp.Symbol("r_" + n.replace(".", "_dot_"), real=True)))
+        if present and sp.count_ops(val) <= 400:
+            eqs.append((str(val), ["r_" + n.replace(".", "_dot_") for n in present]))
+    return sorted(set((e, tuple(v)) for e, v in eqs)), failed
+
+
+def nlmixr2lib_build(raw_dir, tsv, out, processes=4):
+    """Corpus of the nlmixr2lib model library: one model per model file."""
+    import csv
+    with open(os.path.join(raw_dir, "manifest.json")) as fh:
+        man = json.load(fh)
+    with open(os.path.join(raw_dir, man["file"]), "rb") as fh:
+        if sha256(fh.read()) != man["sha256"]:
+            raise RuntimeError(f"checksum mismatch: {man['file']}")
+    with open(tsv) as fh:
+        rows = list(csv.DictReader(fh, delimiter="\t"))
+    by_file = {}
+    for r in rows:
+        by_file.setdefault(r["file"], []).append({k: (v or "") for k, v in r.items()})
+    stats = Counter(model_files=len(by_file))
+    laws = []
+    for f, rs in sorted(by_file.items()):
+        if any(r["kind"] == "error" for r in rs):
+            stats["files_unparsed"] += 1
+            continue
+        eqs, failed = nlmixr2lib_model_equations(rs)
+        stats["statements"] += sum(r["kind"] in ("assign", "ddt") for r in rs)
+        stats["statements_not_arithmetic"] += failed
+        laws += [(f"nlmixr2lib:{f[:-2]}", law) for law in eqs]
+    stats["equations"] = len(laws)
+    law_cache = reduce_laws([law for _, law in laws], int(processes))
+    by_model = {}
+    for mid, law in laws:
+        stats["equations_reduced"] += bool(law_cache[law])
+        by_model.setdefault(mid, set()).update(law_cache[law])
+    res = _corpus_dict(by_model, dict(stats))
+    res.update(source="nlmixr2lib model library (pharmacometric PK/PD, disease and endogenous models; statements "
+                      "of model() blocks, assignments substituted); one model per file; each state, time or "
+                      "covariate in turn is x1; literals generalised",
+               snapshot={"date": man["date"], "url": man["url"], "sha256": man["sha256"]})
+    _write(res, out)
+    return res
+
+
 # ----------------------------------------------------- overlap between sources
 def source_forms(path, gen_map):
     """{model id: set of generalised forms} of a corpus file, as

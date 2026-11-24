@@ -240,6 +240,50 @@ rule modeldb_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py modeldb_build {input.eq} {output} {threads}"
 
 
+rule nlmixr2lib_fetch:
+    """The nlmixr2lib source tarball from CRAN (version in config), with its sha256."""
+    output:
+        "results/corpora/raw/nlmixr2lib/manifest.json",
+    params:
+        raw="results/corpora/raw/nlmixr2lib",
+        version=config.get("nlmixr2lib_version", "0.3.2"),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py cran_fetch {params.raw} nlmixr2lib {params.version}"
+
+
+rule nlmixr2lib_statements:
+    """Statements of the model() blocks of every nlmixr2lib model (R parser, no evaluation)."""
+    input:
+        man="results/corpora/raw/nlmixr2lib/manifest.json",
+        code="workflow/scripts/nlmixr2lib_extract.R",
+    output:
+        "results/corpora/nlmixr2lib_statements.tsv",
+    params:
+        tarball=lambda wc: "results/corpora/raw/nlmixr2lib/nlmixr2lib_{}.tar.gz".format(
+            config.get("nlmixr2lib_version", "0.3.2")),
+    shell:
+        "Rscript workflow/scripts/nlmixr2lib_extract.R {params.tarball} {output}"
+
+
+rule nlmixr2lib_corpus:
+    """nlmixr2lib model equations reduced to generalised one-variable skeletons, one model per file (committed)."""
+    input:
+        man="results/corpora/raw/nlmixr2lib/manifest.json",
+        tsv="results/corpora/nlmixr2lib_statements.tsv",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_nlmixr2lib.json",
+    params:
+        raw="results/corpora/raw/nlmixr2lib",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py nlmixr2lib_build {params.raw} {input.tsv} {output} {threads}"
+
+
 # R curve catalogues (hsr/data/sources/<name>_curves.csv) and the R packages
 # whose implementations verify them
 CURVE_CATALOGUES = {"thermal": "rTPC,devRate", "ecocurves": "sars,nlsMicrobio,growthrates,FSA"}
@@ -279,8 +323,9 @@ rule rcurves_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py curves_build {input.src} {input.ev} {output}"
 
 
-LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat", "biomodels_nc", "thermal", "ecocurves"]
-NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves"]
+LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat", "biomodels_nc", "thermal", "ecocurves", "modeldb",
+        "nlmixr2lib"]
+NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves", "modeldb", "nlmixr2lib"]
 
 
 rule corpus_overlap:

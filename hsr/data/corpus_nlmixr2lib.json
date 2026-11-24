@@ -1,0 +1,404 @@
+{
+"freq": {
+"(c1 + c3*x1**4 + c4*x1 + c5*x1**3 + c6*x1**2)/(c0*c2*x1**2 + c0*c7 + c0*x1 + c2*c8*x1**3 + c7*c8*x1 + c8*x1**2)": 1,
+"(c1*x1*(c3*x1 + c4 + x1**2) + c2*x1*(c0 + x1)*(c3*x1 + c4 + x1**2) + c5*x1**2*(c0 + x1) + c6*(c0 + x1)*(c3*x1 + c4 + x1**2))/((c0 + x1)*(c3*x1 + c4 + x1**2))": 1,
+"(c2*x1**c5 + c3*x1**c0 + c4*x1**c0*x1**c5)/(c1 + x1**c5)": 1,
+"(c3 + c4*x1**c7 + c5*x1**c0 + c6*x1**c2)/(c1 + x1**c8)": 1,
+"c0 + log(x1)": 2,
+"c0 + x1": 4,
+"c0*(c1*(c2 + x1)**20 + c4)**c5 + c3": 1,
+"c0*c1/(c0*c1 + exp(c2*x1))": 1,
+"c0*c1/(c0*c1 + x1**c2)": 1,
+"c0*exp(c1*x1 + c2)/(c0*exp(c1*x1 + c2) + c3)": 1,
+"c0*exp(c1*x1)": 2,
+"c0*exp(c1*x1**c2/(c3 + x1**c2))": 1,
+"c0*exp(c1*x1**c2/(c3 + x1**c2)) + c4": 1,
+"c0*exp(c2 + c3*x1)/(c1 + exp(c2)*exp(c3*x1))": 1,
+"c0*exp(c2 + c3*x1)/(c1 + exp(c2)*exp(c3*x1)) + c4": 1,
+"c0*exp(c2*x1)/(c1 + exp(c2*x1))": 1,
+"c0*exp(c2*x1)/(c1 + exp(c2*x1)) + c3": 1,
+"c0*exp(x1)": 3,
+"c0*x1": 52,
+"c0*x1 + c1": 52,
+"c0*x1 + c1*x1*(c2*(c3 + x1)**20 + c4)**c5": 1,
+"c0*x1 + c1*x1*log(x1)": 1,
+"c0*x1 + c1*x1/(c2 + x1) + c3": 5,
+"c0*x1**2 + c1*x1": 1,
+"c0*x1**2/(c1*x1 + c2 + x1**2)": 1,
+"c0*x1**c1": 11,
+"c0*x1**c1 + c2": 4,
+"c0*x1**c1 + c2*x1": 3,
+"c0*x1**c1/(c2 + x1**c3)": 1,
+"c0*x1/(c1 + x1)": 4,
+"c0*x1/(c1 + x1) + c2": 25,
+"c0/(c1 + x1)": 3,
+"c0/(c1 + x1) + c2": 16,
+"c0/(c1 + x1**c2) + c3": 2,
+"c0/(c1 + x1**c2) + c3*x1**c4": 1,
+"c0/x1": 9,
+"c0/x1 + c1": 4,
+"c1*x1**c4 + c3/(c2 + x1**c0) + c5": 1,
+"c1/(c0 + x1**c5) + c2*x1**c4 + c3": 1,
+"c2*exp(c0*x1)/(c1 + exp(c0*x1)) + c4*exp(c7*x1) + c5*exp(c3*x1) + c6": 1,
+"x1**c0": 1
+},
+"not_expressible": {},
+"per_model": {
+"nlmixr2lib:PK_1cmt_des": [
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:PK_2cmt_des": [
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:PK_2cmt_no_depot": [
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:PK_2cmt_tdcl_des": [
+"c0*exp(c1*x1**c2/(c3 + x1**c2))",
+"c0*exp(c1*x1**c2/(c3 + x1**c2)) + c4",
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:PK_3cmt_des": [
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:endogenous/igg_kim_2006": [
+"c0*x1 + c1*x1/(c2 + x1) + c3",
+"c0/(c1 + x1)",
+"c0/(c1 + x1) + c2"
+],
+"nlmixr2lib:endogenous/phenylalanine_charbonneau_2021": [
+"(c1 + c3*x1**4 + c4*x1 + c5*x1**3 + c6*x1**2)/(c0*c2*x1**2 + c0*c7 + c0*x1 + c2*c8*x1**3 + c7*c8*x1 + c8*x1**2)",
+"(c1*x1*(c3*x1 + c4 + x1**2) + c2*x1*(c0 + x1)*(c3*x1 + c4 + x1**2) + c5*x1**2*(c0 + x1) + c6*(c0 + x1)*(c3*x1 + c4 + x1**2))/((c0 + x1)*(c3*x1 + c4 + x1**2))",
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**2/(c1*x1 + c2 + x1**2)",
+"c0*x1/(c1 + x1)",
+"c0/x1",
+"c0/x1 + c1"
+],
+"nlmixr2lib:pharmacodynamics/indirect_0cpt_transitEx": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1 + c1*x1/(c2 + x1) + c3"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_inhi_kin": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_inhi_kin_CLV": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_inhi_kin_r0rmaxcrmax": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_inhi_kout": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_inhi_kout_CLV": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_inhi_kout_r0rmaxcrmax": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_stim_kin": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_stim_kin_CLV": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_stim_kin_r0rmaxcrmax": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_stim_kout": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2",
+"c0/x1"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_stim_kout_CLV": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_1cpt_stim_kout_r0rmaxcrmax": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_circ_1cpt_inhi_kin_kin_t": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_circ_1cpt_inhi_kin_kout_t": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2",
+"c0/x1",
+"c0/x1 + c1"
+],
+"nlmixr2lib:pharmacodynamics/indirect_circ_1cpt_inhi_kout_kin_t": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2",
+"c0/x1",
+"c0/x1 + c1"
+],
+"nlmixr2lib:pharmacodynamics/indirect_circ_1cpt_inhi_kout_kout_t": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2",
+"c0/x1",
+"c0/x1 + c1"
+],
+"nlmixr2lib:pharmacodynamics/indirect_circ_1cpt_stim_kin_kin_t": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2",
+"c0/x1"
+],
+"nlmixr2lib:pharmacodynamics/indirect_circ_1cpt_stim_kin_kout_t": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2",
+"c0/x1"
+],
+"nlmixr2lib:pharmacodynamics/indirect_circ_1cpt_stim_kout_kin_t": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2",
+"c0/x1"
+],
+"nlmixr2lib:pharmacodynamics/indirect_circ_1cpt_stim_kout_kout_t": [
+"c0 + x1",
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2",
+"c0/x1"
+],
+"nlmixr2lib:pharmacodynamics/indirect_prec_1cpt_inhi_CLV": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_prec_1cpt_inhi_r0rmaxcrmax": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_prec_1cpt_stim_CLV": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacodynamics/indirect_prec_1cpt_stim_r0rmaxcrmax": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2"
+],
+"nlmixr2lib:pharmacokinetics/PK_2cmt_mAb_Davda_2014": [
+"c0 + log(x1)",
+"c0*exp(x1)",
+"c0*x1**c1"
+],
+"nlmixr2lib:pharmacokinetics/PK_double_sim_01": [
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:pharmacokinetics/PK_double_sim_10": [
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:pharmacokinetics/PK_double_sim_11": [
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:specificDrugs/CarlssonPetri_2021_liraglutide": [
+"c0*x1**c1",
+"x1**c0"
+],
+"nlmixr2lib:specificDrugs/Cirincione_2017_exenatide": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1 + c1*x1/(c2 + x1) + c3",
+"c0*x1**c1",
+"c0*x1**c1 + c2",
+"c0/(c1 + x1)",
+"c0/(c1 + x1) + c2",
+"c0/(c1 + x1**c2) + c3*x1**c4",
+"c1*x1**c4 + c3/(c2 + x1**c0) + c5"
+],
+"nlmixr2lib:specificDrugs/Grimm_2023_gantenerumab": [
+"c0 + x1",
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**c1",
+"c0*x1**c1 + c2"
+],
+"nlmixr2lib:specificDrugs/Grimm_2023_trontinemab": [
+"(c2*x1**c5 + c3*x1**c0 + c4*x1**c0*x1**c5)/(c1 + x1**c5)",
+"c0 + x1",
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1 + c1*x1/(c2 + x1) + c3",
+"c0*x1**c1",
+"c0*x1**c1 + c2"
+],
+"nlmixr2lib:specificDrugs/Kovalenko_2020_dupilumab": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1 + c1*x1/(c2 + x1) + c3",
+"c0*x1**c1",
+"c0/(c1 + x1**c2) + c3"
+],
+"nlmixr2lib:specificDrugs/Kyhl_2016_nalmefene": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**c1",
+"c0*x1**c1 + c2",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)",
+"c0/(c1 + x1) + c2"
+],
+"nlmixr2lib:specificDrugs/Soehoel_2022_tralokinumab": [
+"c0*exp(x1)",
+"c0*x1 + c1",
+"c0*x1**c1"
+],
+"nlmixr2lib:specificDrugs/Xie_2019_agomelatine": [
+"(c3 + c4*x1**c7 + c5*x1**c0 + c6*x1**c2)/(c1 + x1**c8)",
+"c0 + log(x1)",
+"c0*c1/(c0*c1 + exp(c2*x1))",
+"c0*c1/(c0*c1 + x1**c2)",
+"c0*exp(c1*x1 + c2)/(c0*exp(c1*x1 + c2) + c3)",
+"c0*exp(c1*x1)",
+"c0*exp(c2 + c3*x1)/(c1 + exp(c2)*exp(c3*x1))",
+"c0*exp(c2 + c3*x1)/(c1 + exp(c2)*exp(c3*x1)) + c4",
+"c0*exp(c2*x1)/(c1 + exp(c2*x1))",
+"c0*exp(c2*x1)/(c1 + exp(c2*x1)) + c3",
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**c1",
+"c0*x1**c1/(c2 + x1**c3)",
+"c0/(c1 + x1**c2) + c3",
+"c1/(c0 + x1**c5) + c2*x1**c4 + c3",
+"c2*exp(c0*x1)/(c1 + exp(c0*x1)) + c4*exp(c7*x1) + c5*exp(c3*x1) + c6"
+],
+"nlmixr2lib:specificDrugs/Zhu_2017_lebrikizumab": [
+"c0*exp(c1*x1)",
+"c0*exp(x1)",
+"c0*x1",
+"c0*x1**c1"
+],
+"nlmixr2lib:therapeuticArea/oncology/oncology_sdm_lobo_2002": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1)",
+"c0*x1/(c1 + x1) + c2"
+],
+"nlmixr2lib:therapeuticArea/oncology/oncology_xenograft_simeoni_2004": [
+"c0 + x1",
+"c0*(c1*(c2 + x1)**20 + c4)**c5 + c3",
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1 + c1*x1*(c2*(c3 + x1)**20 + c4)**c5"
+],
+"nlmixr2lib:therapeuticArea/oncology/tgi_no_sat_Koch": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1)"
+],
+"nlmixr2lib:therapeuticArea/oncology/tgi_no_sat_expo": [
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:therapeuticArea/oncology/tgi_no_sat_linear": [
+"c0*x1",
+"c0*x1 + c1"
+],
+"nlmixr2lib:therapeuticArea/oncology/tgi_no_sat_powerLaw": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**c1"
+],
+"nlmixr2lib:therapeuticArea/oncology/tgi_sat_Gompertz": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1 + c1*x1*log(x1)"
+],
+"nlmixr2lib:therapeuticArea/oncology/tgi_sat_VonBertalanffy": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**c1 + c2*x1"
+],
+"nlmixr2lib:therapeuticArea/oncology/tgi_sat_genLogistic": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**c1 + c2*x1"
+],
+"nlmixr2lib:therapeuticArea/oncology/tgi_sat_genVonBertalanffy": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**c1 + c2*x1"
+],
+"nlmixr2lib:therapeuticArea/oncology/tgi_sat_logistic": [
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**2 + c1*x1"
+]
+},
+"snapshot": {
+"date": "2026-11-24",
+"sha256": "a978d793e5f9df37c5467b857b29342461cd46974e886a2c8ad3e4a18dfa4b9a",
+"url": "https://cran.r-project.org/src/contrib/nlmixr2lib_0.3.2.tar.gz"
+},
+"source": "nlmixr2lib model library (pharmacometric PK/PD, disease and endogenous models; statements of model() blocks, assignments substituted); one model per file; each state, time or covariate in turn is x1; literals generalised",
+"stats": {
+"distinct_keys": 41,
+"distinct_keys_expressible": 41,
+"equations": 334,
+"equations_reduced": 330,
+"model_files": 59,
+"model_key_pairs": 225,
+"model_key_pairs_expressible": 225,
+"models": 56,
+"models_with_keys": 56,
+"statements": 835,
+"statements_not_arithmetic": 13
+}
+}
