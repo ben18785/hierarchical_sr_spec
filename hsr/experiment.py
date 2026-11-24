@@ -24,6 +24,7 @@ from .families import SETTINGS as FAMILY_SETTINGS
 from .families import family_metrics, family_population, theme_metrics
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
+from .equivalence import Equivalence, class_summary
 from .likelihood import (CompiledSkeleton, LikelihoodTable, compute_likelihoods, predictive_logpdf,
                          scale_population)
 from .constraints import Spec, apply_truncation, check_grid, constrained_candidates_path, prepare, satisfied, unscale_y
@@ -93,6 +94,7 @@ def one_hot(idx, n_cols):
 
 
 _ACCEPT = None   # set by run_replicate when a property spec truncates the prior
+_EQUIV = None    # behaviour classes for reporting (hsr.equivalence), set by run_replicate
 
 
 def evaluate(name, probs, pop, skeletons, table, sx, sy, true_idx, weights_est=None, extras=None,
@@ -120,6 +122,8 @@ def evaluate(name, probs, pop, skeletons, table, sx, sy, true_idx, weights_est=N
         out["calib_y"] = y.tolist()
     if hasattr(pop, "parent_key"):
         out.update(family_metrics(pop, top_keys))
+    if _EQUIV is not None:
+        out.update(class_summary(probs, _EQUIV.classes(probs), skeletons, true_idx=true_idx))
     if extras:
         out.update(extras)
     return out
@@ -159,8 +163,8 @@ def _scaled_grammar(g: Grammar, scale: float) -> Grammar:
 def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig, expand=False,
                   sensitivity=False, kinds=("laplace", "bic"), J=30, n_starts=10, seed_base=12345,
                   scaling="pooled", tau=3.0, grow_rounds=0, pooled=False, themes=False, theme_top_k=10,
-                  theme_min_mass=0.02, scale_invariant=False, spec=None):
-    global _ACCEPT
+                  theme_min_mass=0.02, scale_invariant=False, spec=None, classes=True):
+    global _ACCEPT, _EQUIV
     t0 = time.time()
     seed = seed_base + 1_000_003 * rep + int(1000 * noise) * 7919 + n * 104729 + SETTING_SEED[setting]
     rng = np.random.default_rng(abs(seed))
@@ -243,6 +247,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
     if spec is not None:
         apply_truncation(table1, skeletons[:n_C], X1, np.ones(Y1.shape), spec, tau, [sy[0]], _compiled, seed=rep)
     tab1 = baselines.broadcast_table(table1, J)
+    _EQUIV = Equivalence(skeletons, table, X, compiled=_compiled, seed=rep) if classes else None
     t_lik = time.time() - t0
 
     rows = []

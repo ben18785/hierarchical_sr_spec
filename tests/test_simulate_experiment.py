@@ -136,3 +136,7 @@ def test_run_replicate_family_themes(tiny_candidates):
     assert len(r["theme_top_keys"]) == 6 and len(r["top_keys"]) == 6
     assert "theme_family" in r and "extension_detected" in r or "extension_when_parent" in r
     assert r["n_kernel_edges"] > 0 and r["n_added_by_themes"] >= 0
+    # behaviour classes are reported for every method
+    for r in rows:
+        assert len(r["top_class_keys"]) == 6 and 0 <= r["class_recovery"] <= 1
+        assert len(r["chains"]) == 2 if r["method"].startswith("hier") else True

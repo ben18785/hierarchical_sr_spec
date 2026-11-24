@@ -35,6 +35,7 @@ from . import baselines
 from .candidates import CandidateSet, default_n_jobs, edit_graph, expand_candidates, from_skeletons
 from .canonical import canonicalise
 from .experiment import _COMPILED, gibbs_summary
+from .equivalence import Equivalence, class_summary
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .likelihood import LikelihoodTable, compute_likelihoods, predictive_logpdf, scale_population
@@ -104,6 +105,7 @@ def pad(arrs):
 
 # --------------------------------------------------------------- scoring
 _ACCEPT = None   # set by run() when a property spec truncates the prior
+_EQUIV = None    # behaviour classes for reporting (hsr.equivalence), set by run()
 
 
 def heldout_lpd(probs, skeletons, table, held, sx, sy, min_prob=1e-3, n_draws=200):
@@ -157,6 +159,9 @@ def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=No
     order = np.argsort(pop_weight)[::-1][:top_n]
     out["pop_weight"] = {skeletons[e].key: float(pop_weight[e]) for e in order if pop_weight[e] > 1e-3}
     out["lpd_heldout"], out["lpd_group"] = heldout_lpd(probs, skeletons, table, held, sx, sy)
+    if _EQUIV is not None:
+        out.update(class_summary(probs, _EQUIV.classes(probs), skeletons,
+                                 z_samples=None if res is None else res.z_samples))
     if extras:
         out.update(extras)
     return out
@@ -164,8 +169,9 @@ def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=No
 
 # ------------------------------------------------------------------- run
 def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scaling="pooled", n_starts=10, tau=3.0,
-        grow_rounds=0, themes=False, theme_top_k=10, theme_min_mass=0.02, seed=0, scale_invariant=False, spec=None):
-    global _ACCEPT
+        grow_rounds=0, themes=False, theme_top_k=10, theme_min_mass=0.02, seed=0, scale_invariant=False, spec=None,
+        classes=True):
+    global _ACCEPT, _EQUIV
     t0 = time.time()
     groups = load_groups(data)
     names = list(groups)
@@ -240,6 +246,7 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
         apply_truncation(table1, sks, X1, np.ones(Y1.shape), spec, tau, [sy[0]], _compiled, seed=seed)
     tab1 = baselines.broadcast_table(table1, J)
     t_lik = time.time() - t0
+    _EQUIV = Equivalence(sks, table, X, M > 0, compiled=_compiled, seed=seed) if classes else None
 
     rows = []
     for kind in ("laplace", "bic"):
