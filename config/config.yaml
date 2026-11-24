@@ -10,3 +10,35 @@ r_lib: "~/Library/R_hsr"
 # hierarchical Pitman-Yor sampler (rule hpy_scores)
 hpy_sweeps: 20
 hpy_keep: 10
+
+# tree-prior variants (rules hpyv_*; hsr.pyp, hsr.adaptor). Keys other than
+# model/mode are hsr.pyp.ContextSpec arguments: n ancestors in a first
+# child's context (a second child has n-1 and its left sibling l); drop_L /
+# drop_R the back-off order (first dropped first; default: source s, depth d,
+# most distant ancestor first, the sibling last, as fnprior); graph the
+# components dropped along parallel back-off paths with learned mixing
+# weights; depth_cap the capped node depth as a component; source the corpus
+# source as a component. model adaptor: a Pitman-Yor adaptor over whole
+# subtrees at the root only (mode root: forms) or at every node (mode all).
+hpyv:
+  sweeps: 20
+  keep: 10
+  calib_samples: 4000
+  variants:
+    sym0: {n: 0, drop_L: [], drop_R: []}
+    hpy2: {n: 2}
+    hpy2_parent: {n: 2, drop_R: [l, a1]}
+    hpy2_graph: {n: 2, graph: [a2, a1, l]}
+    hpy3: {n: 3}
+    hpy3_graph: {n: 3, graph: [a3, a2, a1, l]}
+    hpy2_depth: {n: 2, depth_cap: 6}
+    hpy2_src: {n: 2, source: true}
+    hpy2_dhpy: {n: 2, source: true, graph: [s]}
+    form_ad: {model: adaptor, mode: root, n: 2}
+    tree_ad: {model: adaptor, mode: all, n: 2}
+    hpy3_depth: {n: 3, depth_cap: 6}
+    form_ad3: {model: adaptor, mode: root, n: 3}
+    tree_ad3: {model: adaptor, mode: all, n: 3}
+    tree_ad_depth: {model: adaptor, mode: all, n: 2, depth_cap: 6}
+    form_ad3_depth: {model: adaptor, mode: root, n: 3, depth_cap: 6}
+    tree_ad3_depth: {model: adaptor, mode: all, n: 3, depth_cap: 6}
