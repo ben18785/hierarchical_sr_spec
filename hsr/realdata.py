@@ -162,6 +162,7 @@ def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=No
     if _EQUIV is not None:
         out.update(class_summary(probs, _EQUIV.classes(probs), skeletons,
                                  z_samples=None if res is None else res.z_samples))
+        out.update(_EQUIV.end_summary(probs))
     if extras:
         out.update(extras)
     return out

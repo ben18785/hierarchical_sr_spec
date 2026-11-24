@@ -37,3 +37,34 @@ def test_class_summary_sums_members():
     assert out["n_classes_posterior"] == {1: 0.5, 2: 0.5}
     assert out["class_recovery"] == 0.75
     assert out["class_coassignment"][0][3] == 0.5
+
+
+def test_end_behaviour_labels():
+    from hsr.equivalence import end_behaviour
+    from hsr.likelihood import CompiledSkeleton
+    cases = [("c0*x1/(c1 + x1)", [2.0, 1.0], "levels_off", "zero"),
+             ("c0*exp(c1*x1)", [2.0, -0.7], "to_zero", "nonzero"),
+             ("c0*exp(c1*x1)", [2.0, 0.7], "unbounded", "nonzero"),
+             ("c0*x1**c1", [1.0, 0.5], "unbounded", "zero"),
+             ("c0*log(x1)", [1.0], "unbounded", "unbounded"),
+             ("c0*sin(x1)", [1.0], "other", "zero")]
+    for key, phi, right, left in cases:
+        r, l = end_behaviour(CompiledSkeleton(skeleton_from_key(key)), [phi], 0.1, 3.0, 1.0)
+        assert (r[0], l[0]) == (right, left), key
+
+
+def test_in_range_lookalikes_with_different_ends_are_kept_apart():
+    """A power law fits saturating data on a short range, but grows without
+    bound where Michaelis-Menten levels off: they must not share a class."""
+    rng = np.random.default_rng(1)
+    J, n = 4, 12
+    X = np.tile(np.linspace(0.5, 2.0, n), (J, 1))[..., None]
+    Y = np.array([3 * X[j, :, 0] / (4 + X[j, :, 0]) + rng.normal(0, 0.02, n) for j in range(J)])
+    sks = [skeleton_from_key(k) for k in ["c0*x1/(c1 + x1)", "c0*x1**c1"]]
+    table = compute_likelihoods(sks, X, Y, n_starts=6, seed=0)
+    eq = Equivalence(sks, table, X)
+    assert eq.end_labels(0, 0)[0].get("levels_off", 0) > 0.5
+    assert eq.end_labels(1, 0)[0].get("unbounded", 0) > 0.5
+    assert not eq.equivalent(0, 1)
+    es = eq.end_summary(np.tile([0.5, 0.5], (J, 1)))
+    assert abs(es["end_right"][0].get("levels_off", 0) - 0.5) < 0.2

@@ -124,6 +124,8 @@ def evaluate(name, probs, pop, skeletons, table, sx, sy, true_idx, weights_est=N
         out.update(family_metrics(pop, top_keys))
     if _EQUIV is not None:
         out.update(class_summary(probs, _EQUIV.classes(probs), skeletons, true_idx=true_idx))
+        es = _EQUIV.end_summary(probs)
+        out.update({"end_right_mean": es["end_right_mean"], "end_left_mean": es["end_left_mean"]})
     if extras:
         out.update(extras)
     return out
