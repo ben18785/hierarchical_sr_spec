@@ -51,7 +51,8 @@ def table(folds_path, out_json, out_md, *score_files):
     n_test = sum(len(f["test"]) for f in F["folds"])
     with open(out_md, "w") as fh:
         if F.get("test_corpus"):
-            fh.write(f"Trained on all BioModels; tested on the {n_test} forms of {F['test_corpus']}; "
+            train = ", ".join(f"{k} ({v})" for k, v in F["train_sizes"].items()) if F.get("train_sizes") else "all BioModels"
+            fh.write(f"Trained on {train}; tested on the {n_test} forms of {F['test_corpus']}; "
                      f"log probability renormalised over a common support of {len(F['support'])} forms.\n\n")
         else:
             fh.write(f"Held-out log probability per form, renormalised over a common support of "
