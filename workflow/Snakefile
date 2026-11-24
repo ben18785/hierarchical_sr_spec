@@ -19,11 +19,55 @@ SEEDS = GC["seeds"]
 rule all:
     input:
         "results/grammar/table.md",
+        "results/grammar/transfer_curvelib/table.md",
 
 
 rule grammar:
     input:
         "results/grammar/table.md",
+        "results/grammar/transfer_curvelib/table.md",
+
+
+# ---------------------------------------------------------------- corpora
+rule curvelib_eval:
+    """Evaluate the R implementations (stats self-start models, nlraa, drc) at
+    fixed random parameters; package versions are written alongside."""
+    input:
+        "hsr/data/sources/curve_libraries.csv",
+    output:
+        csv="results/corpora/curvelib_eval.csv",
+        versions="results/corpora/curvelib_eval.csv.versions",
+    params:
+        rlib=config.get("r_lib", ""),
+    shell:
+        "Rscript workflow/scripts/curvelib_eval.R {input} {output.csv} '{params.rlib}'"
+
+
+rule curvelib_corpus:
+    """Verified, canonicalised corpus of curve-library forms (committed)."""
+    input:
+        src="hsr/data/sources/curve_libraries.csv",
+        ev="results/corpora/curvelib_eval.csv",
+        code=["workflow/scripts/curvelib_build.py", "hsr/grammar_compare.py", "hsr/canonical.py"],
+    output:
+        "hsr/data/corpus_curvelib.json",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/curvelib_build.py {input.src} {input.ev} {output}"
+
+
+rule transfer_folds:
+    input:
+        gen="results/grammar/generalised.json",
+        test="hsr/data/corpus_{name}.json",
+        code=["hsr/grammar_compare.py", "workflow/scripts/grammar_steps.py"],
+    output:
+        "results/grammar/transfer_{name}/folds.json",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py transfer {input.gen} {input.test} {output}"
 
 
 rule corpus_generalised:
@@ -69,10 +113,10 @@ rule folds:
 
 rule grammar_scores:
     input:
-        folds="results/grammar/seed{seed}/folds.json",
+        folds="results/grammar/{run}/folds.json",
         code="hsr/grammar_compare.py",
     output:
-        "results/grammar/seed{seed}/ours.json",
+        "results/grammar/{run}/ours.json",
     conda:
         HSR_ENV
     shell:
@@ -81,24 +125,24 @@ rule grammar_scores:
 
 rule fnprior_scores:
     input:
-        folds="results/grammar/seed{seed}/folds.json",
+        folds="results/grammar/{run}/folds.json",
         code="workflow/scripts/fnprior_score.py",
     output:
-        "results/grammar/seed{seed}/fnprior.json",
+        "results/grammar/{run}/fnprior.json",
     conda:
         "envs/fnprior.yaml"
     shell:
         "python workflow/scripts/fnprior_score.py {input.folds} {output}"
 
 
-rule grammar_table_seed:
+rule grammar_table_run:
     input:
-        folds="results/grammar/seed{seed}/folds.json",
-        ours="results/grammar/seed{seed}/ours.json",
-        fnp="results/grammar/seed{seed}/fnprior.json",
+        folds="results/grammar/{run}/folds.json",
+        ours="results/grammar/{run}/ours.json",
+        fnp="results/grammar/{run}/fnprior.json",
     output:
-        json="results/grammar/seed{seed}/table.json",
-        md="results/grammar/seed{seed}/table.md",
+        json="results/grammar/{run}/table.json",
+        md="results/grammar/{run}/table.md",
     conda:
         HSR_ENV
     shell:

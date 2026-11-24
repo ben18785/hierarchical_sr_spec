@@ -485,3 +485,17 @@ def heldout_table(folds: dict, logpriors: dict) -> list:
             fmeans.append(float(np.mean(fv)) if fv else float("nan"))
         rows.append({"prior": name, "heldout_logp": float(np.mean(vals)), "n_zero": zeros, "fold_means": fmeans})
     return sorted(rows, key=lambda r: -r["heldout_logp"])
+
+
+def make_transfer(gen_map: dict, test_corpus, corpus=CORPUS, candidates=CANDIDATES) -> dict:
+    """One 'fold': train on every BioModels model, test on the forms of another
+    corpus (e.g. the R curve-fitting libraries). Same format as make_folds, so
+    the same scoring code applies; the support also contains the test forms."""
+    base = make_folds(corpus, candidates, k=2, seed=0, gen_map=gen_map)
+    train = [key for f in base["folds"] for key in f["test"]]
+    with open(test_corpus) as fh:
+        T = json.load(fh)
+    test = [ks[0] for ks in T["per_model"].values()]
+    support = sorted(set(base["support"]) | set(test))
+    return {"support": support, "folds": [{"train": train, "test": test, "test_models": list(T["per_model"])}],
+            "k": 1, "seed": 0, "generalise_literals": True, "test_corpus": os.path.basename(test_corpus)}

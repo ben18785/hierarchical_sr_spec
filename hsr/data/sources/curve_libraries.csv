@@ -1,0 +1,41 @@
+source|package|function|params|formula|r_call|notes
+R stats|stats|SSasymp|Asym,R0,lrc|Asym + (R0 - Asym)*exp(-exp(lrc)*x)|SSasymp(x, Asym, R0, lrc)|asymptotic regression
+R stats|stats|SSasympOff|Asym,lrc,c0|Asym*(1 - exp(-exp(lrc)*(x - c0)))|SSasympOff(x, Asym, lrc, c0)|asymptotic regression with offset
+R stats|stats|SSasympOrig|Asym,lrc|Asym*(1 - exp(-exp(lrc)*x))|SSasympOrig(x, Asym, lrc)|asymptotic regression through the origin
+R stats|stats|SSbiexp|A1,lrc1,A2,lrc2|A1*exp(-exp(lrc1)*x) + A2*exp(-exp(lrc2)*x)|SSbiexp(x, A1, lrc1, A2, lrc2)|biexponential
+R stats|stats|SSfol|Dose,lKe,lKa,lCl|Dose*exp(lKe + lKa - lCl)*(exp(-exp(lKe)*x) - exp(-exp(lKa)*x))/(exp(lKa) - exp(lKe))|SSfol(Dose, x, lKe, lKa, lCl)|first-order compartment (oral dose)
+R stats|stats|SSfpl|A,B,xmid,scal|A + (B - A)/(1 + exp((xmid - x)/scal))|SSfpl(x, A, B, xmid, scal)|four-parameter logistic
+R stats|stats|SSgompertz|Asym,b2,b3|Asym*exp(-b2*b3**x)|SSgompertz(x, Asym, b2, b3)|Gompertz
+R stats|stats|SSlogis|Asym,xmid,scal|Asym/(1 + exp((xmid - x)/scal))|SSlogis(x, Asym, xmid, scal)|logistic
+R stats|stats|SSmicmen|Vm,K|Vm*x/(K + x)|SSmicmen(x, Vm, K)|Michaelis-Menten
+R stats|stats|SSweibull|Asym,Drop,lrc,pwr|Asym - Drop*exp(-exp(lrc)*x**pwr)|SSweibull(x, Asym, Drop, lrc, pwr)|Weibull growth
+nlraa|nlraa|SSbgf|wmax,te,tm|wmax*(1 + (te - x)/(te - tm))*(x/te)**(te/(te - tm))|SSbgf(x, wmax, te, tm)|beta growth
+nlraa|nlraa|SSbgf4|wmax,te,tm,tb|wmax*(1 + (te - x)/(te - tm))*((x - tb)/(te - tb))**((te - tb)/(te - tm))|SSbgf4(x, wmax, te, tm, tb)|beta growth, four parameters
+nlraa|nlraa|SSdlf|asym,a2,xmid,scal|(asym - a2)/(1 + exp((xmid - x)/scal)) + a2|SSdlf(x, asym, a2, xmid, scal)|declining logistic
+nlraa|nlraa|SSexpf|a,c|a*exp(c*x)|SSexpf(x, a, c)|exponential
+nlraa|nlraa|SSexplin|cm,rm,tb|(cm/rm)*log(1 + exp(rm*(x - tb)))|SSexplin(x, cm, rm, tb)|expolinear (Goudriaan)
+nlraa|nlraa|SShill1|Ka|1/(1 + Ka/x)|SShill1(x, Ka)|Hill, coefficient 1
+nlraa|nlraa|SShill2|Ka,n|1/(1 + (Ka/x)**n)|SShill2(x, Ka, n)|Hill
+nlraa|nlraa|SShill3|Ka,n,a|a/(1 + (Ka/x)**n)|SShill3(x, Ka, n, a)|Hill with asymptote
+nlraa|nlraa|SSlogis5|asym1,asym2,xmid,iscal,theta|asym2 + (asym1 - asym2)/(1 + exp(iscal*(log(x) - log(xmid))))**theta|SSlogis5(x, asym1, asym2, xmid, iscal, theta)|five-parameter logistic
+nlraa|nlraa|SSnrh|asym,phi,theta,rd|(1/(2*theta))*(phi*x + asym - sqrt((phi*x + asym)**2 - 4*theta*phi*asym*x)) - rd|SSnrh(x, asym, phi, theta, rd)|non-rectangular hyperbola
+nlraa|nlraa|SSprofd|a,b,c,d|a - (a - b)*(1 - exp(-c*x))**d|SSprofd(x, a, b, c, d)|profile decay
+nlraa|nlraa|SSratio|a,b,c,d|a*x**c/(1 + b*x**d)|SSratio(x, a, b, c, d)|rational
+nlraa|nlraa|SSricker|a,b|a*x*exp(-b*x)|SSricker(x, a, b)|Ricker
+nlraa|nlraa|SSbell|ymax,a,b,xc|ymax*exp(a*(x - xc)**2 + b*(x - xc)**3)|SSbell(x, ymax, a, b, xc)|bell-shaped
+nlraa|nlraa|SSbeta5|mu,tb,a,tc,b|exp(mu)*(x - tb)**a*(tc - x)**b|SSbeta5(x, mu, tb, a, tc, b)|beta temperature response
+nlraa|nlraa|SStemp3|tm,tl,th|2**((x - tm)/10)/((1 + exp(0.3*(tl - x)))*(1 + exp(0.3*(x - th))))|SStemp3(x, tm, tl, th)|temperature response (Q10 = 2)
+nlraa|nlraa|SSgmicmen|y0,ymax,c,k|(y0*k**c + ymax*x**c)/(k**c + x**c)|SSgmicmen(x, y0, ymax, c, k)|generalised Michaelis-Menten
+nlraa|nlraa|SSmoh|asym,xmin,k|asym*(x - xmin)/(x + k)|SSmoh(x, asym, xmin, k)|Morgan-Mercer-Flodin-type hyperbola
+drc|drc|LL.4|b,c,d,e|c + (d - c)/(1 + exp(b*(log(x) - log(e))))|LL.4()$fct(x, matrix(c(b, c, d, e), nrow=1))|log-logistic
+drc|drc|LL.5|b,c,d,e,f|c + (d - c)/(1 + exp(b*(log(x) - log(e))))**f|LL.5()$fct(x, matrix(c(b, c, d, e, f), nrow=1))|generalised log-logistic
+drc|drc|W1.4|b,c,d,e|c + (d - c)*exp(-exp(b*(log(x) - log(e))))|W1.4()$fct(x, matrix(c(b, c, d, e), nrow=1))|Weibull type 1
+drc|drc|W2.4|b,c,d,e|c + (d - c)*(1 - exp(-exp(b*(log(x) - log(e)))))|W2.4()$fct(x, matrix(c(b, c, d, e), nrow=1))|Weibull type 2
+drc|drc|L.4|b,c,d,e|c + (d - c)/(1 + exp(b*(x - e)))|L.4()$fct(x, matrix(c(b, c, d, e), nrow=1))|logistic
+drc|drc|G.4|b,c,d,e|c + (d - c)*exp(-exp(b*(x - e)))|G.4()$fct(x, matrix(c(b, c, d, e), nrow=1))|Gompertz
+drc|drc|BC.5|b,c,d,e,f|c + (d - c + f*x)/(1 + exp(b*(log(x) - log(e))))|BC.5()$fct(x, matrix(c(b, c, d, e, f), nrow=1))|Brain-Cousens hormesis
+drc|drc|CRS.4a|b,d,e,f|(d + f*exp(-1/x))/(1 + exp(b*(log(x) - log(e))))|CRS.4a()$fct(x, matrix(c(b, d, e, f), nrow=1))|Cedergreen-Ritz-Streibig hormesis, alpha=1
+drc|drc|AR.3|c,d,e|c + (d - c)*(1 - exp(-x/e))|AR.3()$fct(x, matrix(c(c, d, e), nrow=1))|asymptotic regression
+drc|drc|EXD.3|c,d,e|c + (d - c)*exp(-x/e)|EXD.3()$fct(x, matrix(c(c, d, e), nrow=1))|exponential decay
+drc|drc|MM.3|c,d,e|c + (d - c)/(1 + e/x)|MM.3()$fct(x, matrix(c(c, d, e), nrow=1))|Michaelis-Menten with lower limit
+drc|drc|gaussian|b,c,d,e,f|c + (d - c)*exp(-0.5*abs((x - e)/b)**f)|gaussian()$fct(x, matrix(c(b, c, d, e, f), nrow=1))|gaussian-type (checked numerically)

@@ -1,0 +1,479 @@
+{
+ "freq": {
+  "(c0 + c1*x1)/(c2 + x1)": 1,
+  "(c0 + c1*x1**c2)/(c3 + x1**c2)": 1,
+  "-c0*exp(c1*x1) + c0": 1,
+  "-c0*exp(c1*x1) + c0*exp(c2*x1)": 1,
+  "c0*(c1 + x1)/(c2 + x1)": 1,
+  "c0*(c1 - exp(c2*x1))**c3 + c4": 1,
+  "c0*(c1 - x1)*(c2 - x1)**c3": 1,
+  "c0*(c1*x1**c2 + c5)**c3 + c4": 2,
+  "c0*(c2*exp(-1/x1) + c3)/(c0 + x1**c1)": 1,
+  "c0*(c2*x1 + c3)/(c0 + x1**c1) + c4": 1,
+  "c0*c1*x1 - c0*sqrt(c2*x1 + (c1*x1 + c3)**2) + c4": 1,
+  "c0*exp((c1 + c2*(c3 - x1))*(c3 - x1)**2)": 1,
+  "c0*exp(c1*exp(c2*x1))": 1,
+  "c0*exp(c1*exp(c2*x1)) + c3": 1,
+  "c0*exp(c1*x1)": 1,
+  "c0*exp(c1*x1) + c2": 4,
+  "c0*exp(c1*x1) + c2*exp(c3*x1)": 1,
+  "c0*exp(c1*x1**c2) + c3": 3,
+  "c0*log(c1*exp(c2*x1) + c3)": 1,
+  "c0*x1**c1*(c2 - x1)": 1,
+  "c0*x1**c1/(c2 + x1**c3)": 1,
+  "c0*x1*exp(c1*x1)": 1,
+  "c0*x1/(c1 + x1)": 1,
+  "c0/(c0 + x1**c1)": 1,
+  "c0/(c1 + exp(c2*x1))": 1,
+  "c0/(c1 + exp(c2*x1)) + c3": 3,
+  "c0/(c1 + x1**c2)": 1,
+  "c0/(c1 + x1**c2) + c3": 1,
+  "c1*exp(c0*x1)/(c2 + c3*exp(c5*x1) + exp(c4*x1))": 1,
+  "x1/(c0 + x1)": 1
+ },
+ "per_model": {
+  "drc::AR.3": [
+   "c0*exp(c1*x1) + c2"
+  ],
+  "drc::BC.5": [
+   "c0*(c2*x1 + c3)/(c0 + x1**c1) + c4"
+  ],
+  "drc::CRS.4a": [
+   "c0*(c2*exp(-1/x1) + c3)/(c0 + x1**c1)"
+  ],
+  "drc::EXD.3": [
+   "c0*exp(c1*x1) + c2"
+  ],
+  "drc::G.4": [
+   "c0*exp(c1*exp(c2*x1)) + c3"
+  ],
+  "drc::L.4": [
+   "c0/(c1 + exp(c2*x1)) + c3"
+  ],
+  "drc::LL.4": [
+   "c0/(c1 + x1**c2) + c3"
+  ],
+  "drc::LL.5": [
+   "c0*(c1*x1**c2 + c5)**c3 + c4"
+  ],
+  "drc::MM.3": [
+   "(c0 + c1*x1)/(c2 + x1)"
+  ],
+  "drc::W1.4": [
+   "c0*exp(c1*x1**c2) + c3"
+  ],
+  "drc::W2.4": [
+   "c0*exp(c1*x1**c2) + c3"
+  ],
+  "nlraa::SSbell": [
+   "c0*exp((c1 + c2*(c3 - x1))*(c3 - x1)**2)"
+  ],
+  "nlraa::SSbgf": [
+   "c0*x1**c1*(c2 - x1)"
+  ],
+  "nlraa::SSbgf4": [
+   "c0*(c1 - x1)*(c2 - x1)**c3"
+  ],
+  "nlraa::SSdlf": [
+   "c0/(c1 + exp(c2*x1)) + c3"
+  ],
+  "nlraa::SSexpf": [
+   "c0*exp(c1*x1)"
+  ],
+  "nlraa::SSexplin": [
+   "c0*log(c1*exp(c2*x1) + c3)"
+  ],
+  "nlraa::SSgmicmen": [
+   "(c0 + c1*x1**c2)/(c3 + x1**c2)"
+  ],
+  "nlraa::SShill1": [
+   "x1/(c0 + x1)"
+  ],
+  "nlraa::SShill2": [
+   "c0/(c0 + x1**c1)"
+  ],
+  "nlraa::SShill3": [
+   "c0/(c1 + x1**c2)"
+  ],
+  "nlraa::SSlogis5": [
+   "c0*(c1*x1**c2 + c5)**c3 + c4"
+  ],
+  "nlraa::SSmoh": [
+   "c0*(c1 + x1)/(c2 + x1)"
+  ],
+  "nlraa::SSnrh": [
+   "c0*c1*x1 - c0*sqrt(c2*x1 + (c1*x1 + c3)**2) + c4"
+  ],
+  "nlraa::SSprofd": [
+   "c0*(c1 - exp(c2*x1))**c3 + c4"
+  ],
+  "nlraa::SSratio": [
+   "c0*x1**c1/(c2 + x1**c3)"
+  ],
+  "nlraa::SSricker": [
+   "c0*x1*exp(c1*x1)"
+  ],
+  "nlraa::SStemp3": [
+   "c1*exp(c0*x1)/(c2 + c3*exp(c5*x1) + exp(c4*x1))"
+  ],
+  "stats::SSasymp": [
+   "c0*exp(c1*x1) + c2"
+  ],
+  "stats::SSasympOff": [
+   "c0*exp(c1*x1) + c2"
+  ],
+  "stats::SSasympOrig": [
+   "-c0*exp(c1*x1) + c0"
+  ],
+  "stats::SSbiexp": [
+   "c0*exp(c1*x1) + c2*exp(c3*x1)"
+  ],
+  "stats::SSfol": [
+   "-c0*exp(c1*x1) + c0*exp(c2*x1)"
+  ],
+  "stats::SSfpl": [
+   "c0/(c1 + exp(c2*x1)) + c3"
+  ],
+  "stats::SSgompertz": [
+   "c0*exp(c1*exp(c2*x1))"
+  ],
+  "stats::SSlogis": [
+   "c0/(c1 + exp(c2*x1))"
+  ],
+  "stats::SSmicmen": [
+   "c0*x1/(c1 + x1)"
+  ],
+  "stats::SSweibull": [
+   "c0*exp(c1*x1**c2) + c3"
+  ]
+ },
+ "source": "R curve-fitting libraries (stats self-start models, nlraa, drc); formulas transcribed and verified numerically against the packages",
+ "stats": {
+  "functions": 40,
+  "in_corpus": 38,
+  "verified": 39
+ },
+ "verification": {
+  "drc::AR.3": {
+   "formula": "c + (d - c)*(1 - exp(-x/e))",
+   "key": "c0*exp(c1*x1) + c2",
+   "max_rel_err": 4.107531133584546e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::BC.5": {
+   "formula": "c + (d - c + f*x)/(1 + exp(b*(log(x) - log(e))))",
+   "key": "c0*(c2*x1 + c3)/(c0 + x1**c1) + c4",
+   "max_rel_err": 4.161482753876601e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::CRS.4a": {
+   "formula": "(d + f*exp(-1/x))/(1 + exp(b*(log(x) - log(e))))",
+   "key": "c0*(c2*exp(-1/x1) + c3)/(c0 + x1**c1)",
+   "max_rel_err": 4.8297339022440274e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::EXD.3": {
+   "formula": "c + (d - c)*exp(-x/e)",
+   "key": "c0*exp(c1*x1) + c2",
+   "max_rel_err": 4.137603193161163e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::G.4": {
+   "formula": "c + (d - c)*exp(-exp(b*(x - e)))",
+   "key": "c0*exp(c1*exp(c2*x1)) + c3",
+   "max_rel_err": 4.738287501904085e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::L.4": {
+   "formula": "c + (d - c)/(1 + exp(b*(x - e)))",
+   "key": "c0/(c1 + exp(c2*x1)) + c3",
+   "max_rel_err": 4.136166197486419e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::LL.4": {
+   "formula": "c + (d - c)/(1 + exp(b*(log(x) - log(e))))",
+   "key": "c0/(c1 + x1**c2) + c3",
+   "max_rel_err": 4.437577585513353e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::LL.5": {
+   "formula": "c + (d - c)/(1 + exp(b*(log(x) - log(e))))**f",
+   "key": "c0*(c1*x1**c2 + c5)**c3 + c4",
+   "max_rel_err": 3.614548658743672e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::MM.3": {
+   "formula": "c + (d - c)/(1 + e/x)",
+   "key": "(c0 + c1*x1)/(c2 + x1)",
+   "max_rel_err": 4.6161751222768814e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::W1.4": {
+   "formula": "c + (d - c)*exp(-exp(b*(log(x) - log(e))))",
+   "key": "c0*exp(c1*x1**c2) + c3",
+   "max_rel_err": 4.320248407393605e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::W2.4": {
+   "formula": "c + (d - c)*(1 - exp(-exp(b*(log(x) - log(e)))))",
+   "key": "c0*exp(c1*x1**c2) + c3",
+   "max_rel_err": 4.719264565508228e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "drc::gaussian": {
+   "formula": "c + (d - c)*exp(-0.5*abs((x - e)/b)**f)",
+   "key": null,
+   "max_rel_err": 3.8637153598942694e-15,
+   "n_points": 75,
+   "note": "not expressible in the grammar",
+   "verified": true
+  },
+  "nlraa::SSbell": {
+   "formula": "ymax*exp(a*(x - xc)**2 + b*(x - xc)**3)",
+   "key": "c0*exp((c1 + c2*(c3 - x1))*(c3 - x1)**2)",
+   "max_rel_err": 1.7759682732427395e-13,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSbeta5": {
+   "formula": "exp(mu)*(x - tb)**a*(tc - x)**b",
+   "key": null,
+   "max_rel_err": 5.64123942871364e-19,
+   "n_points": 1,
+   "note": "",
+   "verified": false
+  },
+  "nlraa::SSbgf": {
+   "formula": "wmax*(1 + (te - x)/(te - tm))*(x/te)**(te/(te - tm))",
+   "key": "c0*x1**c1*(c2 - x1)",
+   "max_rel_err": 3.008704396734174e-14,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSbgf4": {
+   "formula": "wmax*(1 + (te - x)/(te - tm))*((x - tb)/(te - tb))**((te - tb)/(te - tm))",
+   "key": "c0*(c1 - x1)*(c2 - x1)**c3",
+   "max_rel_err": 2.475797344914099e-14,
+   "n_points": 9,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSdlf": {
+   "formula": "(asym - a2)/(1 + exp((xmid - x)/scal)) + a2",
+   "key": "c0/(c1 + exp(c2*x1)) + c3",
+   "max_rel_err": 3.974936040016836e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSexpf": {
+   "formula": "a*exp(c*x)",
+   "key": "c0*exp(c1*x1)",
+   "max_rel_err": 9.028484814010138e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSexplin": {
+   "formula": "(cm/rm)*log(1 + exp(rm*(x - tb)))",
+   "key": "c0*log(c1*exp(c2*x1) + c3)",
+   "max_rel_err": 5.01378046867932e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSgmicmen": {
+   "formula": "(y0*k**c + ymax*x**c)/(k**c + x**c)",
+   "key": "(c0 + c1*x1**c2)/(c3 + x1**c2)",
+   "max_rel_err": 3.4879971504223636e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SShill1": {
+   "formula": "1/(1 + Ka/x)",
+   "key": "x1/(c0 + x1)",
+   "max_rel_err": 1.1102230246251565e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SShill2": {
+   "formula": "1/(1 + (Ka/x)**n)",
+   "key": "c0/(c0 + x1**c1)",
+   "max_rel_err": 9.992007221626409e-16,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SShill3": {
+   "formula": "a/(1 + (Ka/x)**n)",
+   "key": "c0/(c1 + x1**c2)",
+   "max_rel_err": 3.431833876114472e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSlogis5": {
+   "formula": "asym2 + (asym1 - asym2)/(1 + exp(iscal*(log(x) - log(xmid))))**theta",
+   "key": "c0*(c1*x1**c2 + c5)**c3 + c4",
+   "max_rel_err": 4.574133156228836e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSmoh": {
+   "formula": "asym*(x - xmin)/(x + k)",
+   "key": "c0*(c1 + x1)/(c2 + x1)",
+   "max_rel_err": 3.164135620181696e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSnrh": {
+   "formula": "(1/(2*theta))*(phi*x + asym - sqrt((phi*x + asym)**2 - 4*theta*phi*asym*x)) - rd",
+   "key": "c0*c1*x1 - c0*sqrt(c2*x1 + (c1*x1 + c3)**2) + c4",
+   "max_rel_err": 4.759956387654594e-15,
+   "n_points": 33,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSprofd": {
+   "formula": "a - (a - b)*(1 - exp(-c*x))**d",
+   "key": "c0*(c1 - exp(c2*x1))**c3 + c4",
+   "max_rel_err": 4.875307543470484e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSratio": {
+   "formula": "a*x**c/(1 + b*x**d)",
+   "key": "c0*x1**c1/(c2 + x1**c3)",
+   "max_rel_err": 9.992007221626409e-16,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SSricker": {
+   "formula": "a*x*exp(-b*x)",
+   "key": "c0*x1*exp(c1*x1)",
+   "max_rel_err": 1.3322676295501878e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "nlraa::SStemp3": {
+   "formula": "2**((x - tm)/10)/((1 + exp(0.3*(tl - x)))*(1 + exp(0.3*(x - th))))",
+   "key": "c1*exp(c0*x1)/(c2 + c3*exp(c5*x1) + exp(c4*x1))",
+   "max_rel_err": 5.273559366969494e-16,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSasymp": {
+   "formula": "Asym + (R0 - Asym)*exp(-exp(lrc)*x)",
+   "key": "c0*exp(c1*x1) + c2",
+   "max_rel_err": 2.7095022822570225e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSasympOff": {
+   "formula": "Asym*(1 - exp(-exp(lrc)*(x - c0)))",
+   "key": "c0*exp(c1*x1) + c2",
+   "max_rel_err": 2.5462666629211215e-14,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSasympOrig": {
+   "formula": "Asym*(1 - exp(-exp(lrc)*x))",
+   "key": "-c0*exp(c1*x1) + c0",
+   "max_rel_err": 4.357718820390766e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSbiexp": {
+   "formula": "A1*exp(-exp(lrc1)*x) + A2*exp(-exp(lrc2)*x)",
+   "key": "c0*exp(c1*x1) + c2*exp(c3*x1)",
+   "max_rel_err": 3.8477690756865196e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSfol": {
+   "formula": "Dose*exp(lKe + lKa - lCl)*(exp(-exp(lKe)*x) - exp(-exp(lKa)*x))/(exp(lKa) - exp(lKe))",
+   "key": "-c0*exp(c1*x1) + c0*exp(c2*x1)",
+   "max_rel_err": 9.43689570931383e-16,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSfpl": {
+   "formula": "A + (B - A)/(1 + exp((xmid - x)/scal))",
+   "key": "c0/(c1 + exp(c2*x1)) + c3",
+   "max_rel_err": 4.74708114402078e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSgompertz": {
+   "formula": "Asym*exp(-b2*b3**x)",
+   "key": "c0*exp(c1*exp(c2*x1))",
+   "max_rel_err": 1.1102230246251565e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSlogis": {
+   "formula": "Asym/(1 + exp((xmid - x)/scal))",
+   "key": "c0/(c1 + exp(c2*x1))",
+   "max_rel_err": 5.303884140397394e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSmicmen": {
+   "formula": "Vm*x/(K + x)",
+   "key": "c0*x1/(c1 + x1)",
+   "max_rel_err": 5.546218303138099e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  },
+  "stats::SSweibull": {
+   "formula": "Asym - Drop*exp(-exp(lrc)*x**pwr)",
+   "key": "c0*exp(c1*x1**c2) + c3",
+   "max_rel_err": 3.511288858352431e-15,
+   "n_points": 75,
+   "note": "",
+   "verified": true
+  }
+ },
+ "versions": "stats=4.5.1;nlraa=1.9.10;drc=4.0.0"
+}

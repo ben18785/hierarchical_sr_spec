@@ -7,3 +7,5 @@ results/raw/
 .snakemake/
 results/grammar/seed*/
 results/grammar/generalised.json
+results/grammar/transfer_*/
+results/corpora/
