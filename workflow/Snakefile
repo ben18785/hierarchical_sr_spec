@@ -359,7 +359,7 @@ rule allodb_corpus:
 # R curve catalogues (hsr/data/sources/<name>_curves.csv) and the R packages
 # whose implementations verify them
 CURVE_CATALOGUES = {"thermal": "rTPC,devRate,photosynthesis",
-                    "ecocurves": "sars,nlsMicrobio,growthrates,FSA,growthmodels,fitplc,photosynthesis"}
+                    "ecocurves": "sars,nlsMicrobio,growthrates,FSA,growthmodels,fitplc,photosynthesis,DoseFinding"}
 # R files sourced from CRAN source tarballs (packages not installed; versions in config.cran_sources)
 CURVE_SOURCED = {"thermal": [], "ecocurves": [("bayesnec", "bayesnec/R/pred_equations.R")]}
 

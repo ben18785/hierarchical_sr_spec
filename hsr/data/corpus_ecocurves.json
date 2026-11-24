@@ -33,11 +33,12 @@
 "c0*exp(c1*exp(c2*x1)) + c3": 3,
 "c0*exp(c1*x1 + c2*sin(c3 + c5*x1)) + c4": 1,
 "c0*exp(c1*x1)": 4,
-"c0*exp(c1*x1) + c2": 5,
+"c0*exp(c1*x1) + c2": 6,
 "c0*exp(c1*x1**c2)": 1,
 "c0*exp(c1*x1**c2) + c3": 2,
 "c0*exp(c3*x1)/(c1 + exp(c2*x1))": 1,
 "c0*log((c1 + exp(c2*x1))/(c3 + exp(c2*x1))) + c4": 1,
+"c0*log(c1 + x1) + c2": 1,
 "c0*log(c1*exp(c2*x1) + c3)": 1,
 "c0*log(c1*exp(c2*x1) + c3) + c4": 1,
 "c0*log(c1*exp(c2*x1**c3) + c4)": 1,
@@ -48,16 +49,20 @@
 "c0*x1 + c1 + c5*log(c2*exp(c3*x1) + c4)": 1,
 "c0*x1**(c1*x1**c2)": 1,
 "c0*x1**(c1/x1 + c2)": 1,
+"c0*x1**2 + c1*x1 + c2": 1,
 "c0*x1**c1": 1,
 "c0*x1**c1 + c2": 2,
+"c0*x1**c1*(c2*x1 + c5)**c3 + c4": 1,
 "c0*x1**c1*exp(c2*x1)": 2,
 "c0*x1**c1*exp(c2/x1)": 1,
 "c0*x1*exp(c1*x1)": 1,
 "c0*x1/(c1 + x1)": 2,
+"c0*x1/(c1 + x1) + c2": 1,
 "c0*x1/(c1 + x1**c2)": 1,
 "c0/(c1 + exp(c2*x1))": 3,
-"c0/(c1 + exp(c2*x1)) + c3": 3,
+"c0/(c1 + exp(c2*x1)) + c3": 4,
 "c0/(c1 + x1**c2)": 3,
+"c0/(c1 + x1**c2) + c3": 1,
 "c1*(c0*exp(c2*x1) + c6)**c3*exp(c4*x1) + c5": 1,
 "c2/(c1 + exp(c3*log(c0*exp(c4*x1) + c6) + c5*x1))": 1,
 "c3*exp(c5*c6*log(c4 + exp(c0*x1) - exp(c0*x1 + c1)) + c6*x1)/(c2 + exp(c6*x1)*exp(c5*c6*log(c4 - exp(c1)*exp(c0*x1) + exp(c0*x1))))": 1,
@@ -81,6 +86,21 @@
 ],
 "Brody1945": [
 "c0*exp(c1*x1) + c2"
+],
+"DoseFinding:betaMod": [
+"c0*x1**c1*(c2*x1 + c5)**c3 + c4"
+],
+"DoseFinding:exponential": [
+"c0*exp(c1*x1) + c2"
+],
+"DoseFinding:linlog": [
+"c0*log(c1 + x1) + c2"
+],
+"DoseFinding:logistic": [
+"c0/(c1 + exp(c2*x1)) + c3"
+],
+"Emax": [
+"c0*x1/(c1 + x1) + c2"
 ],
 "Geeraerd2000": [
 "c0 + c4*log(c1/(c2 + exp(c3*x1)) + c5)",
@@ -146,6 +166,9 @@
 ],
 "Shepherd1982": [
 "c0*x1/(c1 + x1**c2)"
+],
+"SigmoidEmax": [
+"c0/(c1 + x1**c2) + c3"
 ],
 "Stannard1985": [
 "c0*(c1*exp(c2*x1) + c3)**c4"
@@ -239,6 +262,9 @@
 "negativeExponential": [
 "-c0*exp(c1*x1) + c0"
 ],
+"quadratic": [
+"c0*x1**2 + c1*x1 + c2"
+],
 "sars:asymp": [
 "c0*exp(c1*x1) + c2"
 ],
@@ -311,10 +337,11 @@
 },
 "source": "R curve catalogue ecocurves_curves.csv; formulas transcribed and verified numerically against the packages; one model per original publication",
 "stats": {
-"distinct_keys": 62,
-"expressible": 123,
-"models": 76,
+"distinct_keys": 67,
+"expressible": 130,
+"models": 83,
 "packages": [
+"DoseFinding",
 "FSA",
 "bayesnec",
 "fitplc",
@@ -324,9 +351,9 @@
 "photosynthesis",
 "sars"
 ],
-"rows": 123,
-"rows_in_corpus": 123,
-"verified": 122
+"rows": 130,
+"rows_in_corpus": 130,
+"verified": 129
 },
 "verification": {
 "bnec_ecx4param": {
@@ -603,6 +630,90 @@
 "n_points": 64,
 "note": "",
 "package": "bayesnec",
+"verified": true
+},
+"df_betaMod": {
+"formula": "e0 + eMax/exp(L)*(x/scal)**delta1*(1 - x/scal)**delta2",
+"function": "betaMod",
+"in_corpus": true,
+"key": "c0*x1**c1*(c2*x1 + c5)**c3 + c4",
+"max_rel_err": 3.1724563581840494e-15,
+"model": "DoseFinding:betaMod",
+"n_points": 75,
+"note": "",
+"package": "DoseFinding",
+"verified": true
+},
+"df_emax": {
+"formula": "e0 + eMax*x/(ed50 + x)",
+"function": "emax",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1) + c2",
+"max_rel_err": 4.424015766258254e-15,
+"model": "Emax",
+"n_points": 75,
+"note": "",
+"package": "DoseFinding",
+"verified": true
+},
+"df_exponential": {
+"formula": "e0 + e1*(exp(x/delta) - 1)",
+"function": "exponential",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2",
+"max_rel_err": 6.617419025306075e-15,
+"model": "DoseFinding:exponential",
+"n_points": 75,
+"note": "",
+"package": "DoseFinding",
+"verified": true
+},
+"df_linlog": {
+"formula": "e0 + delta*log(x + off)",
+"function": "linlog",
+"in_corpus": true,
+"key": "c0*log(c1 + x1) + c2",
+"max_rel_err": 2.8195284066099426e-15,
+"model": "DoseFinding:linlog",
+"n_points": 75,
+"note": "",
+"package": "DoseFinding",
+"verified": true
+},
+"df_logistic": {
+"formula": "e0 + eMax/(1 + exp((ed50 - x)/delta))",
+"function": "logistic",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*x1)) + c3",
+"max_rel_err": 3.58203012133446e-15,
+"model": "DoseFinding:logistic",
+"n_points": 75,
+"note": "",
+"package": "DoseFinding",
+"verified": true
+},
+"df_quadratic": {
+"formula": "e0 + b1*x + b2*x**2",
+"function": "quadratic",
+"in_corpus": true,
+"key": "c0*x1**2 + c1*x1 + c2",
+"max_rel_err": 6.1061462984913776e-15,
+"model": "quadratic",
+"n_points": 75,
+"note": "",
+"package": "DoseFinding",
+"verified": true
+},
+"df_sigEmax": {
+"formula": "e0 + eMax/(1 + (ed50/x)**h)",
+"function": "sigEmax",
+"in_corpus": true,
+"key": "c0/(c1 + x1**c2) + c3",
+"max_rel_err": 3.615435486152458e-15,
+"model": "SigmoidEmax",
+"n_points": 75,
+"note": "",
+"package": "DoseFinding",
 "verified": true
 },
 "fsa_bh1": {
@@ -1806,5 +1917,5 @@
 "verified": true
 }
 },
-"versions": "R=4.5.1;sars=2.1.1;nlsMicrobio=1.0.0;growthrates=0.8.5;FSA=0.10.1;growthmodels=1.3.1;fitplc=1.2.3.1;photosynthesis=2.1.5;bayesnec_2.1.3.1.tar.gz::bayesnec/R/pred_equations.R=sourced"
+"versions": "R=4.5.1;sars=2.1.1;nlsMicrobio=1.0.0;growthrates=0.8.5;FSA=0.10.1;growthmodels=1.3.1;fitplc=1.2.3.1;photosynthesis=2.1.5;DoseFinding=1.4.2;bayesnec_2.1.3.1.tar.gz::bayesnec/R/pred_equations.R=sourced"
 }

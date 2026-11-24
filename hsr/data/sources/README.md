@@ -188,7 +188,9 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
   the 23 concentration-response (ecotoxicology) equations of **bayesnec** 2.1.3.1 (NEC models
   as their branch above the no-effect concentration, ECx models, hormesis models). bayesnec is
   not installed (it needs brms/Stan): its `R/pred_equations.R` is sourced from the CRAN source
-  tarball (rule `cran_source_fetch`, version in `config.cran_sources`, sha256 in the manifest).
+  tarball (rule `cran_source_fetch`, version in `config.cran_sources`, sha256 in the manifest);
+  and the dose-response models of **DoseFinding** 1.4-2 (Emax, sigmoid Emax, exponential,
+  quadratic, linear-in-log, logistic, beta).
 * A "model" is the original publication (column `model`), not the package function: functions
   of one publication (e.g. Briere-1 and Briere-2; Schoolfield full/high/low; the FSA
   parametrisations of von Bertalanffy) and the same model in two packages (rTPC and devRate) form
@@ -211,7 +213,8 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
   the original publication of the model. growthmodels (GPL-3; Oliveira D), fitplc (GPL; Duursma
   R, Choat B (2017) J Plant Hydraul 4:e002), photosynthesis (MIT; Stinziano JR et al. (2021)
   Methods Ecol Evol 12:1094-1102), bayesnec (GPL-2; Fisher R, Barneche DR, Ricardo GF, Fox DR
-  (2024) J Stat Softw 110(5)). Versions are recorded in the corpus files.
+  (2024) J Stat Softw 110(5)), DoseFinding (GPL-3; Bornkamp B, Pinheiro J, Bretz F). Versions are
+  recorded in the corpus files.
 
 ## nlmixr2lib model library (`corpus_nlmixr2lib.json`)
 
