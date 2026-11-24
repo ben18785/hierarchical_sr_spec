@@ -205,3 +205,40 @@ def test_partition_log_prior_normalises():
             n_e = np.bincount(z, minlength=C).astype(float)
             tot += np.exp(partition_log_prior(n_e, np.log(p), gamma))
         assert abs(tot - 1) < 1e-10
+
+
+def _exact_coassign(L, logp, gamma):
+    J, C = L.shape
+    p = np.exp(logp)
+    lws, zs = [], []
+    for z in itertools.product(range(C), repeat=J):
+        lw, n = 0.0, np.zeros(C)
+        for i, e in enumerate(z):
+            lw += np.log(n[e] + gamma * p[e]) - np.log(gamma + i)
+            n[e] += 1
+        lws.append(lw + sum(L[j, e] for j, e in enumerate(z)))
+        zs.append(z)
+    w = np.exp(np.array(lws) - special.logsumexp(lws))
+    Z = np.array(zs)
+    return np.einsum("s,sij->ij", w, (Z[:, :, None] == Z[:, None, :]).astype(float))
+
+
+@pytest.mark.parametrize("single_site", [False, True])
+def test_split_merge_matches_exact_posterior(single_site):
+    """Split-merge (with the block relabel move, and with or without
+    single-site updates) leaves the exact posterior invariant: label
+    marginals and co-assignment probabilities match enumeration. The data
+    favour two clusters ({0,1,2} and {3,4}) so splits and merges matter."""
+    rng = np.random.default_rng(11)
+    g, counts = one_var_grammar(4)
+    J = 5
+    L = rng.normal(0, 0.5, (J, 4))
+    L[:3, 0] += 2.0
+    L[3:, 1] += 2.0
+    gamma = 1.5
+    cfg = GibbsConfig(n_sweeps=15000, burn_in=500, n_chains=2, update_theta=False, update_gamma=False,
+                      gamma_init=gamma, seed=13, relabel=True, split_merge=4, single_site=single_site)
+    res = run_gibbs(L, counts, g, cfg)
+    lp = g.log_prob(counts, g.prior_mean())
+    assert np.max(np.abs(res.assign_probs - _exact_posterior(L, lp, gamma))) < 0.02
+    assert np.max(np.abs(res.coassignment() - _exact_coassign(L, lp, gamma))) < 0.02

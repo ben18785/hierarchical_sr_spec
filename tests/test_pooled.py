@@ -173,3 +173,21 @@ def test_non_identified_skeleton_is_not_pooled():
     assert pm.marginal_all(members)[1] == pytest.approx(L[:, 1].sum())
     assert np.allclose(pm.singletons()[:, 1], L[:, 1])
     assert pm.marginal(0, members) > L[:, 0].sum() + 10
+
+
+def test_split_merge_with_pooled_model_matches_enumeration():
+    """Split-merge and relabel only (no single-site updates) with the pooled
+    model: marginals equal the exact posterior."""
+    rng = np.random.default_rng(4)
+    g, counts = one_var_grammar(3)
+    J = 4
+    L = rng.normal(0, 1, (J, 3))
+    phis = [rng.normal(1, 0.5, (J, 1)), rng.normal(-1, 0.5, (J, 2)), np.zeros((J, 0))]
+    vars_ = [rng.uniform(0.05, 0.5, (J, 1)), rng.uniform(0.05, 0.5, (J, 2)), np.zeros((J, 0))]
+    model = PooledModel(fake_table(L, phis, vars_), [1, 2, 0])
+    gamma = 0.8
+    cfg = GibbsConfig(n_sweeps=12000, burn_in=500, n_chains=2, update_theta=False, update_gamma=False,
+                      gamma_init=gamma, relabel=True, split_merge=4, single_site=False, seed=7)
+    res = run_gibbs(L, counts, g, cfg, model=model)
+    exact = _exact_posterior(model, g.log_prob(counts, g.prior_mean()), gamma, J, 3)
+    assert np.max(np.abs(res.assign_probs - exact)) < 0.02

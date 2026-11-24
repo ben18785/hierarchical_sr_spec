@@ -32,6 +32,8 @@ class GibbsConfig:
                                   # its own posterior: dispersed starts) or "argmax"
     relabel: bool = True          # block move: resample the skeleton of a whole cluster
     relabel_every: int = 1        # sweeps between block moves
+    split_merge: int = 3          # split-merge proposals per sweep (0 = off)
+    single_site: bool = True      # single-dataset Gibbs updates (off only for testing other moves)
     thin: int = 1
     seed: int = 0
 
@@ -135,6 +137,120 @@ def _relabel_blocks(rng, z, n_e, members, Mc, model, log_p, gamma):
             Mc[new] = model.marginal(new, S)
 
 
+def _cluster_label_weights(model, T, log_p, gamma, allowed):
+    """log g_T(e) = log gamma P(e) + sum_{k=1}^{m-1} log(k + gamma P(e)) + M_e(T)
+    for every label e (-inf where not allowed): the prior-times-marginal
+    weight of cluster T carrying label e."""
+    m = len(T)
+    gp = gamma * np.exp(log_p)
+    lg = np.log(gp) + model.marginal_all(sorted(T))
+    if m > 1:
+        lg = lg + np.log(np.arange(1, m)[:, None] + gp[None, :]).sum(axis=0)
+    return np.where(allowed, lg, -np.inf)
+
+
+def _log_w_pair(lg1, lg2):
+    """log sum_{e1 != e2} exp(lg1[e1] + lg2[e2])."""
+    a1, a2 = logsumexp(lg1), logsumexp(lg2)
+    if not (np.isfinite(a1) and np.isfinite(a2)):
+        return -np.inf
+    r = logsumexp(lg1 + lg2) - a1 - a2
+    if r >= 0:
+        return -np.inf
+    with np.errstate(divide="ignore"):
+        return a1 + a2 + np.log1p(-np.exp(r))
+
+
+def _split_merge(rng, z, n_e, members, Mc, model, log_p, gamma, logsim, n_prop):
+    """Split-merge Metropolis-Hastings moves (in the spirit of Jain & Neal 2004
+    and Dahl 2003), with the labels of the clusters involved integrated out.
+
+    Pick two datasets i != j at random. If they share a cluster S, propose
+    splitting it into S_i (with i) and S_j (with j); every other member k goes
+    to i's side with probability 1 / (1 + exp(logsim[k, j] - logsim[k, i])),
+    where logsim[k, l] is the log probability that k and l use the same form
+    when fitted alone. If they are in different clusters, propose merging
+    them. The target is the posterior of the partition of the datasets
+    involved with the labels of the clusters involved summed out (labels used
+    by other clusters are excluded), so the acceptance ratio uses
+        W(S) = sum_e g_S(e)  and  W(S_i, S_j) = sum_{e1 != e2} g_{S_i}(e1) g_{S_j}(e2).
+    After an accepted move the new labels are drawn from their exact
+    conditional; a rejected move leaves the state unchanged."""
+    J = len(z)
+    C = len(n_e)
+    for _ in range(n_prop):
+        i, j = rng.choice(J, size=2, replace=False)
+        ci, cj = int(z[i]), int(z[j])
+        allowed = n_e == 0
+        allowed[ci] = True
+        allowed[cj] = True
+        if ci == cj:
+            S = members[ci]
+            Si, Sj, logq = {int(i)}, {int(j)}, 0.0
+            for k in rng.permutation(sorted(S - {i, j})):
+                p_i = 1.0 / (1.0 + np.exp(logsim[k, j] - logsim[k, i]))
+                if rng.random() < p_i:
+                    Si.add(int(k))
+                    logq += np.log(p_i)
+                else:
+                    Sj.add(int(k))
+                    logq += np.log1p(-p_i)
+            lgS = _cluster_label_weights(model, S, log_p, gamma, allowed)
+            lg1 = _cluster_label_weights(model, Si, log_p, gamma, allowed)
+            lg2 = _cluster_label_weights(model, Sj, log_p, gamma, allowed)
+            log_a = _log_w_pair(lg1, lg2) - logsumexp(lgS) - logq
+            if np.isnan(log_a) or np.log(rng.random()) >= log_a:
+                continue
+            # labels (e1, e2), e1 != e2, from g1(e1) g2(e2)
+            a2 = logsumexp(lg2)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                m1 = lg1 + a2 + np.log1p(-np.exp(np.minimum(lg2 - a2, 0.0)))
+            m1 = np.where(np.isfinite(m1), m1, -np.inf)
+            e1 = int(rng.choice(C, p=np.exp(m1 - logsumexp(m1))))
+            lg2b = lg2.copy()
+            lg2b[e1] = -np.inf
+            e2 = int(rng.choice(C, p=np.exp(lg2b - logsumexp(lg2b))))
+            del members[ci]
+            Mc.pop(ci, None)
+            n_e[ci] = 0
+            for e, T in ((e1, Si), (e2, Sj)):
+                members[e] = set(T)
+                n_e[e] = len(T)
+                z[sorted(T)] = e
+                Mc[e] = model.marginal(e, sorted(T))
+        else:
+            Si, Sj = members[ci], members[cj]
+            S = Si | Sj
+            logq = 0.0
+            for k in S - {i, j}:
+                p_i = 1.0 / (1.0 + np.exp(logsim[k, j] - logsim[k, i]))
+                logq += np.log(p_i) if k in Si else np.log1p(-p_i)
+            lgS = _cluster_label_weights(model, S, log_p, gamma, allowed)
+            lg1 = _cluster_label_weights(model, Si, log_p, gamma, allowed)
+            lg2 = _cluster_label_weights(model, Sj, log_p, gamma, allowed)
+            log_a = logsumexp(lgS) - _log_w_pair(lg1, lg2) + logq
+            if np.isnan(log_a) or np.log(rng.random()) >= log_a:
+                continue
+            e = int(rng.choice(C, p=np.exp(lgS - logsumexp(lgS))))
+            for c in (ci, cj):
+                del members[c]
+                Mc.pop(c, None)
+                n_e[c] = 0
+            members[e] = set(S)
+            n_e[e] = len(S)
+            z[sorted(S)] = e
+            Mc[e] = model.marginal(e, sorted(S))
+
+
+def _log_similarity(S1, log_p):
+    """(J, J) log P(datasets k and l use the same form | each fitted alone)."""
+    lw = log_p[None, :] + S1
+    lw = np.where(np.isfinite(lw), lw, -np.inf)
+    P = np.exp(lw - logsumexp(lw, axis=1, keepdims=True))
+    with np.errstate(divide="ignore"):
+        return np.log(np.maximum(P @ P.T, 1e-300))
+
+
 def partition_log_prior(n_e, log_p, gamma) -> float:
     """log P(z | gamma, theta) under the DP with discrete base P_theta: each
     cluster b of size m with label e contributes
@@ -193,7 +309,7 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
     thetas = {nt: [] for nt in nt_names}
     for sweep in range(cfg.n_sweeps):
         log_gamma = np.log(gamma)
-        for j in rng.permutation(J):
+        for j in (rng.permutation(J) if cfg.single_site else ()):
             e0 = int(z[j])
             members[e0].discard(j)
             n_e[e0] -= 1
@@ -224,6 +340,9 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
             else:
                 members[e1] = {j}
                 Mc[e1] = S1[j, e1]
+        if cfg.split_merge and J > 1:
+            _split_merge(rng, z, n_e, members, Mc, model, log_p, gamma, _log_similarity(S1, log_p),
+                         cfg.split_merge)
         if cfg.relabel and sweep % cfg.relabel_every == 0:
             _relabel_blocks(rng, z, n_e, members, Mc, model, log_p, gamma)
         in_use = np.flatnonzero(n_e > 0)
