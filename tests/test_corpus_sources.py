@@ -453,3 +453,23 @@ def test_nlmixr2lib_build_checks_tarball(tmp_path):
     (tmp_path / "s.tsv").write_text("file\tkind\tlhs\trhs\n")
     with pytest.raises(RuntimeError, match="checksum"):
         cs.nlmixr2lib_build(str(tmp_path), str(tmp_path / "s.tsv"), str(tmp_path / "c.json"), processes=1)
+
+
+def test_jws_fetch_and_build(tmp_path, monkeypatch):
+    pytest.importorskip("libsbml")
+
+    class Fake:
+        def get(self, url):
+            if "/rest/models/" in url:
+                return json.dumps([{"slug": "b1", "cbm": False}, {"slug": "a1", "cbm": False},
+                                   {"slug": "fba", "cbm": True}, {"slug": "../x", "cbm": False}]).encode(), {}
+            return (_SBML if "/a1/" in url else b"<html>not found</html>"), {}
+
+    monkeypatch.setattr(cs, "PoliteClient", lambda **kw: Fake())
+    man = cs.jws_fetch(str(tmp_path))
+    ent = {e["id"]: e for e in man["entries"]}
+    assert set(ent) == {"../x", "a1", "b1"}                  # constraint-based models skipped
+    assert ent["../x"]["error"] == "unsafe slug" and ent["b1"]["error"] == "not SBML"
+    res = cs.biomodels_build(str(tmp_path), str(tmp_path / "c.json"), processes=1)
+    assert res["per_model"] == {"a1": ["c0*x1/(c1 + x1)"]}
+    assert res["source"].startswith("JWS Online")

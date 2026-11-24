@@ -197,6 +197,35 @@ rule biomodels_nc_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py biomodels_build {params.raw} {output} {threads}"
 
 
+rule jws_fetch:
+    """Snapshot of the SBML export of every JWS Online model (<= 40 requests
+    per minute). Delete results/corpora/raw/jws to refresh."""
+    output:
+        "results/corpora/raw/jws/manifest.json",
+    params:
+        raw="results/corpora/raw/jws",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py jws_fetch {params.raw}"
+
+
+rule jws_corpus:
+    """Kinetic laws of the JWS Online models, reduced as BioModels (committed)."""
+    input:
+        man="results/corpora/raw/jws/manifest.json",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_jws.json",
+    params:
+        raw="results/corpora/raw/jws",
+    threads: 4
+    conda:
+        "envs/biomodels.yaml"
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py biomodels_build {params.raw} {output} {threads}"
+
+
 rule modeldb_fetch:
     """Snapshot of the NMODL files of every NEURON model in ModelDB (one zip
     per model, <= 40 requests per minute). Delete results/corpora/raw/modeldb to refresh."""
@@ -389,8 +418,8 @@ rule rcurves_corpus:
 
 
 LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat", "biomodels_nc", "thermal", "ecocurves", "modeldb",
-        "nlmixr2lib", "allodb"]
-NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves", "modeldb", "nlmixr2lib", "allodb"]
+        "nlmixr2lib", "allodb", "jws"]
+NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves", "modeldb", "nlmixr2lib", "allodb", "jws"]
 
 
 rule corpus_overlap:

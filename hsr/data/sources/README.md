@@ -14,8 +14,66 @@ Transfer tables (prior trained on all BioModels, scored on the corpus):
 
 ## BioModels (`corpus.json`)
 
-Kinetic laws of the manually curated BioModels (built on GitHub Actions, `python -m hsr.corpus build`).
+Kinetic laws of the manually curated BioModels (rule `biomodels_corpus`, `python -m hsr.corpus build`,
+run locally since EBI blocks GitHub-hosted runners; ids `config.biomodels_first`..`biomodels_last`).
 BioModels content is free to use (CC0 for the curated models).
+
+* Fixed 2026-11-24: the build downloaded `<id>?filename=<id>_url.xml` only. That file exists for
+  older entries only; for most curated models from about BIOMD0000000700 on, the main SBML file
+  carries the name of the submitted file (e.g. MODEL1712050009.xml) and the request failed
+  (HTTP 400), so 403 of BIOMD1-1100 were missing from the corpus. `hsr.corpus.download_model`
+  now falls back to the file named in the model's record (`/<id>?format=json`). Also fixed: laws
+  containing `pi` gave no key (see `hsr.corpus.project`).
+
+## BioModels non-curated (`corpus_biomodels_nc.json`)
+
+* Source: every non-curated SBML entry of BioModels (search `curationstatus:"Non-curated" AND
+  modelformat:"SBML"`, 1474 entries on 2026-11-24; path2models entries are not in this set).
+  Rule `biomodels_nc_fetch` (`hsr.corpus_sources.biomodels_fetch`) pages through the search
+  API, reads each model's record (main file name and the server's sha256) and downloads the main
+  file, rejecting files whose checksum differs from the server's (<= 40 requests per minute).
+* Parsing: rule `biomodels_nc_corpus` (`biomodels_build`) reduces kinetic laws exactly as the
+  curated corpus (`hsr.corpus.model_keys`), keys generalised; one model per entry. Non-curated
+  entries include genome-scale and constraint-based models without kinetic laws (no keys) and
+  some models that also exist, curated, under a BIOMD id.
+* Terms of use: BioModels states that all models are available under CC0 (public domain).
+  Cite: Malik-Sheriff RS et al. (2020) BioModels - 15 years of sharing computational models in
+  life science. Nucleic Acids Res 48:D407-D415.
+
+## ModelDB NMODL (`corpus_modeldb.json`)
+
+* Source: ModelDB (https://modeldb.science): the models whose modelling application is NEURON
+  (`/api/v1/models?modeling_application=NEURON`), each downloaded as its zip (`/download/<id>`;
+  rule `modeldb_fetch`, <= 40 requests per minute), keeping only the `.mod` (NMODL) files; the
+  manifest records each zip's URL, size and sha256.
+* Parsing (rule `modeldb_equations`, `hsr.nmodl`): a light NMODL parser reads the FUNCTION,
+  PROCEDURE, BREAKPOINT, DERIVATIVE and INITIAL blocks; every assignment (`x = e`, `x' = e`) is an
+  equation, with LOCAL variables substituted and calls of the file's own FUNCTIONs inlined (a
+  function's value is its last assignment to its name, i.e. the `else` branch of guards such as
+  `vtrap`); unit annotations after numbers (`1 (mV)`) are dropped; both branches of `if`/`else`
+  appear as equations. Variables: `v`, `t`, STATE variables, ion concentrations READ, and the
+  arguments of the enclosing FUNCTION/PROCEDURE; PARAMETERs, ASSIGNED variables and `celsius`
+  are constants. Assignments with comparisons, arrays or unknown functions are skipped (counted
+  in `stats.assignments_not_parsed`); identical files are parsed once. Rule `modeldb_corpus`
+  reduces each equation as for CellML; a model is one ModelDB entry.
+* Terms of use: ModelDB asks users of its models, or of information derived from them, to cite
+  ModelDB (McDougal RA et al. (2017) Twenty years of ModelDB and beyond. J Comput Neurosci
+  42:1-10) and the papers describing the models (accession numbers are the model ids in
+  `per_model`). The model code is the authors'; only derived skeletons and accession numbers are
+  committed.
+
+## JWS Online (`corpus_jws.json`)
+
+* Source: JWS Online model database (https://jjj.bio.vu.nl): the model list
+  (`/rest/models/`) and the SBML export of each kinetic model (`/models/<slug>/sbml/`;
+  constraint-based models are skipped). Rule `jws_fetch`, <= 40 requests per minute; manifest of
+  URLs and sha256; rule `jws_corpus` reduces as BioModels. A model is one JWS entry.
+* Many JWS models are also in BioModels (JWS curates models for BioModels), so this source
+  overlaps the BioModels corpora; the overlap is reported in `results/corpora/overlap.md`.
+* Terms of use: the JWS Online site states no licence for the model files; they are published
+  for reuse in research. Only derived skeletons and model slugs are committed. Cite: Peters M
+  et al. (2017) JWS Online: a reproducible database of kinetic models. Bioinformatics
+  33:1589-1590 (or Olivier BG, Snoep JL (2004) Bioinformatics 20:2143).
 
 ## R curve libraries (`curve_libraries.csv` -> `corpus_curvelib.json`)
 

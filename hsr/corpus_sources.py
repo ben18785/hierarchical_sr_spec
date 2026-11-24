@@ -28,6 +28,7 @@ import gzip
 import hashlib
 import json
 import os
+import re
 import signal
 import time
 import urllib.error
@@ -1097,6 +1098,49 @@ def biomodels_fetch(raw_dir, query=BIOMODELS_NONCURATED, limit=None, client=None
     return manifest
 
 
+JWS = "https://jjj.bio.vu.nl"
+
+
+def jws_fetch(raw_dir, limit=None, client=None):
+    """Snapshot of the SBML export of every JWS Online model: one listing
+    request (``/rest/models/``), then ``/models/<slug>/sbml/`` per model, at
+    most 40 requests per minute. Files are saved as ``<raw_dir>/<slug>.xml``;
+    the manifest (same layout as ``biomodels_fetch``) records URLs and sha256."""
+    client = client or PoliteClient(min_interval=1.5, accept="application/json")
+    dl = PoliteClient(min_interval=1.5, accept="application/xml,text/plain,*/*")
+    os.makedirs(raw_dir, exist_ok=True)
+    listing = f"{JWS}/rest/models/?format=json"
+    models = json.loads(client.get(listing)[0])
+    slugs = sorted(m["slug"] for m in models if not m.get("cbm"))
+    if limit:
+        slugs = slugs[:int(limit)]
+    entries = []
+    for i, slug in enumerate(slugs):
+        if not re.fullmatch(r"[A-Za-z0-9_.-]+", slug):
+            entries.append({"id": slug, "error": "unsafe slug"})
+            continue
+        rec = {"id": slug, "url": f"{JWS}/models/{urllib.parse.quote(slug)}/sbml/"}
+        entries.append(rec)
+        try:
+            data, _ = dl.get(rec["url"])
+        except Exception as e:
+            rec["error"] = f"download: {e!r}"[:300]
+            continue
+        if b"<sbml" not in data[:2000]:
+            rec["error"] = "not SBML"
+            continue
+        with open(os.path.join(raw_dir, slug + ".xml"), "wb") as fh:
+            fh.write(data)
+        rec.update(file=slug + ".xml", sha256=sha256(data), bytes=len(data))
+        if (i + 1) % 50 == 0:
+            print(f"[{i + 1}/{len(slugs)}] {slug}", flush=True)
+    manifest = {"source": "JWS Online", "listing": listing, "date": _today(), "matches": len(slugs),
+                "entries": entries, "sha256_all": sha256("".join(e.get("sha256", "") for e in entries).encode())}
+    with open(os.path.join(raw_dir, "manifest.json"), "w") as fh:
+        json.dump(manifest, fh, indent=1)
+    return manifest
+
+
 def _model_keys_star(path):
     from .corpus import model_keys
     try:
@@ -1150,10 +1194,13 @@ def biomodels_build(raw_dir, out, processes=4, label="non-curated"):
         stats["laws_reduced"] += n_ok
         by_model[mid] = {g for g in map(gen, keys) if g}
     res = _corpus_dict(by_model, dict(stats))
-    res.update(source=f"BioModels {label} SBML models (kinetic laws, as hsr.corpus); one model per entry; "
-                      "each species in turn is x1; literals generalised",
-               snapshot={"date": man["date"], "query": man["query"], "matches": man["matches"],
-                         "sha256_all": man["sha256_all"]})
+    if man.get("source") == "BioModels":
+        source = f"BioModels {label} SBML models"
+    else:
+        source = f"{man.get('source')} SBML models"
+    res.update(source=source + " (kinetic laws, as hsr.corpus); one model per entry; each species in turn is x1; "
+                               "literals generalised",
+               snapshot={k: man[k] for k in ("date", "query", "listing", "matches", "sha256_all") if k in man})
     _write(res, out)
     return res
 
