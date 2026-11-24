@@ -258,3 +258,23 @@ Rule `corpus_overlap` tabulates, for every source of the leave-one-source-out co
 models, model-form pairs and distinct generalised forms, the forms found in no other source, the
 forms not in the union of the original five sources (BioModels curated, SABIO-RK, CellML,
 curvelib, biocat), and the number of forms shared by each pair of sources.
+
+Snapshot of 2026-11-24 (forms are generalised keys; ModelDB forms are long because called
+FUNCTIONs are inlined, median 8 constants against 4 for CellML; many are singletons):
+
+| source | models | model-form pairs | distinct forms | not in any other source | not in baseline union |
+|---|---|---|---|---|---|
+| biomodels | 947 | 3526 | 341 | 104 | - |
+| sabiork | 5057 | 7976 | 175 | 104 | - |
+| cellml | 347 | 4571 | 493 | 275 | - |
+| curvelib | 38 | 38 | 30 | 8 | - |
+| biocat | 54 | 54 | 30 | 3 | - |
+| biomodels_nc | 531 | 2480 | 223 | 76 | 87 |
+| thermal | 62 | 82 | 69 | 49 | 53 |
+| ecocurves | 83 | 99 | 67 | 30 | 33 |
+| modeldb | 778 | 19848 | 1256 | 1051 | 1063 |
+| nlmixr2lib | 56 | 225 | 41 | 19 | 21 |
+| allodb | 54 | 80 | 23 | 8 | 9 |
+| jws | 673 | 3004 | 255 | 58 | 66 |
+
+Baseline: 874 distinct forms; all twelve sources: 2185 (1311 not in the baseline).
