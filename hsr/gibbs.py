@@ -46,6 +46,7 @@ class GibbsResult:
     theta: dict                   # nt -> (n_chains, n_kept, n_options)
     z_samples: np.ndarray         # (n_chains, n_kept, J)
     log_lik: np.ndarray = None    # (n_chains, n_kept) sum of cluster marginals (label-invariant diagnostic)
+    log_post: np.ndarray = None   # (n_chains, n_kept) log_lik + log P(partition, labels | gamma, theta)
 
     @property
     def top(self) -> np.ndarray:
@@ -134,6 +135,21 @@ def _relabel_blocks(rng, z, n_e, members, Mc, model, log_p, gamma):
             Mc[new] = model.marginal(new, S)
 
 
+def partition_log_prior(n_e, log_p, gamma) -> float:
+    """log P(z | gamma, theta) under the DP with discrete base P_theta: each
+    cluster b of size m with label e contributes
+    log(gamma P(e)) + sum_{k=1}^{m-1} log(k + gamma P(e)), and the whole
+    assignment is divided by prod_{i=0}^{J-1} (gamma + i)."""
+    used = np.flatnonzero(n_e > 0)
+    J = int(n_e.sum())
+    out = -float(np.sum(np.log(gamma + np.arange(J))))
+    for e in used:
+        gp = gamma * np.exp(log_p[e])
+        m = int(n_e[e])
+        out += float(np.log(gp) + np.sum(np.log(np.arange(1, m) + gp)))
+    return out
+
+
 def escobar_west_gamma(rng, gamma: float, K: int, n: int, a: float, b: float) -> float:
     """One Escobar & West (1995) update of the DP concentration (b = rate)."""
     eta = rng.beta(gamma + 1.0, n)
@@ -173,7 +189,7 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
     nt_names = grammar.nonterminals
     assign_counts = np.zeros((J, C))
     pop = np.zeros(C)
-    n_forms, gammas, log_liks = [], [], []
+    n_forms, gammas, log_liks, log_posts = [], [], [], []
     thetas = {nt: [] for nt in nt_names}
     for sweep in range(cfg.n_sweeps):
         log_gamma = np.log(gamma)
@@ -222,6 +238,7 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
             n_forms.append(len(in_use))
             gammas.append(gamma)
             log_liks.append(float(sum(Mc.values())))
+            log_posts.append(log_liks[-1] + partition_log_prior(n_e, log_p, gamma))
             for nt in nt_names:
                 thetas[nt].append(theta[nt])
             kept.append(z.copy())
@@ -234,6 +251,7 @@ def run_chain(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
         "theta": {nt: np.array(v) for nt, v in thetas.items()},
         "z": np.array(kept),
         "log_lik": np.array(log_liks),
+        "log_post": np.array(log_posts),
     }
 
 
@@ -258,4 +276,5 @@ def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
         theta={nt: np.stack([ch["theta"][nt] for ch in chains]) for nt in grammar.nonterminals},
         z_samples=np.stack([ch["z"] for ch in chains]),
         log_lik=np.stack([ch["log_lik"] for ch in chains]),
+        log_post=np.stack([ch["log_post"] for ch in chains]),
     )

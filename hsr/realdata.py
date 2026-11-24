@@ -246,7 +246,7 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
         L = table.matrix(kind)
         res = run_gibbs(L, cnt, grammar, cfg)
         rows.append(summarise("hier", res.assign_probs, sks, table, held, sx, sy, names, res.pop_weight,
-                              gibbs_summary(res), res=res) | {"kind": kind})
+                              gibbs_summary(res, [s.key for s in sks]), res=res) | {"kind": kind})
         P = baselines.no_pooling_posterior(L, cnt, grammar)
         rows.append(summarise("no_pool_bma", P, sks, table, held, sx, sy, names) | {"kind": kind})
         Pc = baselines.complete_pooling_posterior(L, cnt, grammar)
@@ -266,11 +266,11 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
             pm = PooledModel(table, [s.n_consts for s in sks], tau_ref=tau, tau_mu=tau, trunc_logq=trunc_logq)
             resp = run_gibbs(L, cnt, grammar, cfg, model=pm)
             rows.append(summarise("hier_pooled", resp.assign_probs, sks, table, held, sx, sy, names,
-                                  resp.pop_weight, gibbs_summary(resp), res=resp) | {"kind": kind})
+                                  resp.pop_weight, gibbs_summary(resp, [s.key for s in sks]), res=resp) | {"kind": kind})
             if themes:
                 kernel = EditKernel(n_C, edges, log_w=grammar.log_prob(cnt, grammar.prior_mean()))
                 rest = run_gibbs_themes(L, cnt, grammar, kernel, cfg, model=pm)
-                ext = gibbs_summary(rest) | {"theme_top_keys": [sks[t].key for t in rest.theme_top],
+                ext = gibbs_summary(rest, [s.key for s in sks]) | {"theme_top_keys": [sks[t].key for t in rest.theme_top],
                                              "n_themes_mean": float(rest.n_themes.mean()),
                                              "rho_mean": float(rest.rho.mean())}
                 rows.append(summarise("hier_themes", rest.assign_probs, sks, table, held, sx, sy, names,

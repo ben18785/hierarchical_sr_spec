@@ -189,3 +189,19 @@ def test_coassignment_from_samples():
     C = r.coassignment()
     assert np.allclose(np.diag(C), 1)
     assert np.isclose(C[0, 1], 3 / 4) and np.isclose(C[1, 2], 2 / 4) and np.isclose(C[0, 2], 1 / 4)
+
+
+def test_partition_log_prior_normalises():
+    """Summed over every labelled assignment z in C^J, the DP prior with a
+    discrete base measure is 1."""
+    import itertools
+    from hsr.gibbs import partition_log_prior
+    rng = np.random.default_rng(3)
+    C, J = 3, 4
+    p = rng.dirichlet(np.ones(C))
+    for gamma in (0.3, 2.0):
+        tot = 0.0
+        for z in itertools.product(range(C), repeat=J):
+            n_e = np.bincount(z, minlength=C).astype(float)
+            tot += np.exp(partition_log_prior(n_e, np.log(p), gamma))
+        assert abs(tot - 1) < 1e-10

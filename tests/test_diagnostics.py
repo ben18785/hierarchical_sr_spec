@@ -28,3 +28,17 @@ def test_chain_tv():
     P[1, 2, 1] = 1
     mean, mx = chain_tv(P)
     assert np.isclose(mx, 1.0) and np.isclose(mean, 1 / 3)
+
+
+def test_chain_report_flags_stuck_chain():
+    from types import SimpleNamespace
+    from hsr.diagnostics import chain_report
+    rng = np.random.default_rng(0)
+    moving = rng.integers(0, 3, size=(50, 5))
+    stuck = np.zeros((50, 5), int)
+    res = SimpleNamespace(z_samples=np.stack([moving, stuck]), log_lik=np.zeros((2, 50)),
+                          log_post=np.vstack([np.zeros(50), -10 * np.ones(50)]),
+                          n_forms=np.ones((2, 50)))
+    rep = chain_report(res, keys=["a", "b", "c"])
+    assert rep[0]["moves"] > 0.5 and rep[1]["moves"] == 0 and rep[1]["n_states"] == 1
+    assert rep[1]["top"] == [["a", 1.0]] and rep[1]["log_post"] == -10

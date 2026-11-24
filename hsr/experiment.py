@@ -125,7 +125,8 @@ def evaluate(name, probs, pop, skeletons, table, sx, sy, true_idx, weights_est=N
     return out
 
 
-def gibbs_summary(res):
+def gibbs_summary(res, keys=None):
+    from .diagnostics import chain_report
     from .diagnostics import summary as diag_summary
     rh = res.rhat(res.n_forms.astype(float))
     out = {
@@ -136,7 +137,8 @@ def gibbs_summary(res):
     }
     d = diag_summary(res)
     out.update({"max_rhat": d["max_rhat"], "min_ess_bulk": d["min_ess_bulk"], "chain_tv_mean": d["chain_tv_mean"],
-                "converged": d["converged"], "diagnostics": {"rhat": d["rhat"], "ess_bulk": d["ess_bulk"]}})
+                "converged": d["converged"], "diagnostics": {"rhat": d["rhat"], "ess_bulk": d["ess_bulk"]},
+                "chains": chain_report(res, keys)})
     return out
 
 
@@ -253,7 +255,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         res = run_gibbs(L, cnt, grammar, cfg)
         pop_w = {sk_C[e].key: float(res.pop_weight[e]) for e in range(n_C)}
         rows.append(evaluate(f"hier", res.assign_probs, pop, sk_C, tabC, sx, sy, true_idx_C, pop_w,
-                             gibbs_summary(res)) | {"kind": kind})
+                             gibbs_summary(res, [s.key for s in sk_C])) | {"kind": kind})
 
         if (pooled or themes) and kind == "laplace":
             tab_in = LikelihoodTable(table.laplace[:, :n_C], table.bic[:, :n_C], table.phi[:n_C],
@@ -263,14 +265,14 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
             resp = run_gibbs(L, cnt, grammar, cfg, model=pm)
             pop_wp = {sk_C[e].key: float(resp.pop_weight[e]) for e in range(n_C)}
             rows.append(evaluate("hier_pooled", resp.assign_probs, pop, sk_C, table, sx, sy, true_idx_C, pop_wp,
-                                 gibbs_summary(resp)) | {"kind": kind})
+                                 gibbs_summary(resp, [s.key for s in sk_C])) | {"kind": kind})
 
         if themes and kind == "laplace":
             kernel = EditKernel(n_C, edges, log_w=grammar.log_prob(cnt, grammar.prior_mean()))
             rest = run_gibbs_themes(L, cnt, grammar, kernel, cfg, model=pm)
             pop_wt = {sk_C[e].key: float(rest.pop_weight[e]) for e in range(n_C)}
             theme_keys = [sk_C[t].key for t in rest.theme_top]
-            ext = gibbs_summary(rest) | {"theme_top_keys": theme_keys,
+            ext = gibbs_summary(rest, [s.key for s in sk_C]) | {"theme_top_keys": theme_keys,
                                          "n_themes_mean": float(rest.n_themes.mean()),
                                          "rho_mean": float(rest.rho.mean()),
                                          "n_kernel_edges": kernel.n_edges}

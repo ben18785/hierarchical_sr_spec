@@ -136,3 +136,36 @@ def summary(res, top_k=3, rhat_max=1.05, ess_min=100) -> dict:
         "chain_tv_mean": tv_mean, "chain_tv_max": tv_max,
         "converged": bool(np.isfinite(max_rhat) and max_rhat < rhat_max and np.isfinite(min_ess) and min_ess >= ess_min),
     }
+
+
+def chain_report(res, keys=None, top_k=3) -> list:
+    """Per-chain summary, for telling a sampler that is stuck in different
+    modes from one that moves between modes of similar mass.
+
+      log_lik, log_post  mean over kept sweeps (log_post: log_lik plus the log
+                         prior of the partition and labels; GibbsResult only)
+      moves              fraction of kept sweeps in which any assignment changed
+      n_states           number of distinct (label-invariant) partitions visited
+      top                the chain's most common skeletons and their mean share
+                         of datasets
+    Chain 0 starts at the per-dataset argmax, the others from random draws."""
+    z = res.z_samples
+    out = []
+    for c in range(z.shape[0]):
+        zc = z[c]
+        J = zc.shape[1]
+        moves = float(np.mean(np.any(zc[1:] != zc[:-1], axis=1))) if len(zc) > 1 else 0.0
+        states = {tuple(np.unique(row, return_inverse=True)[1]) for row in zc}
+        share = np.bincount(zc.ravel(), minlength=int(zc.max()) + 1) / zc.size
+        top = np.argsort(share)[::-1][:top_k]
+        row = {
+            "chain": c,
+            "log_lik": float(res.log_lik[c].mean()) if getattr(res, "log_lik", None) is not None else None,
+            "log_post": float(res.log_post[c].mean()) if getattr(res, "log_post", None) is not None else None,
+            "n_forms": float(res.n_forms[c].mean()),
+            "moves": moves,
+            "n_states": len(states),
+            "top": [[keys[int(e)] if keys is not None else int(e), round(float(share[e]), 3)] for e in top if share[e] > 0],
+        }
+        out.append(row)
+    return out
