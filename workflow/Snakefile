@@ -332,3 +332,138 @@ rule grammar_table:
         "results/grammar/table.md",
     shell:
         "for f in {input}; do echo \"## $(dirname $f | xargs basename)\"; cat $f; echo; done > {output}"
+
+
+# ------------------------------------------- tree-prior variants (hpyv_*)
+# Graphical/hierarchical Pitman-Yor priors and subtree adaptors over
+# fnprior's tree coding (hsr.pyp, hsr.adaptor), scored on every comparison
+# run both renormalised over the support and as raw log P(tree).
+#
+#     snakemake --use-conda --cores 4 hpyv
+HPYV = config["hpyv"]
+HPYV_VARIANTS = list(HPYV["variants"])
+HPYV_RUNS = ([f"seed{s}" for s in SEEDS] + [f"transfer_{n}" for n in TRANSFER]
+             + [f"loso_{t}_{w}" for t in LOSO for w in ("pooled", "equal")])
+HPYV_CODE = ["hsr/treecode.py", "hsr/pyp.py", "hsr/adaptor.py", "hsr/treecheck.py", "hsr/fnprior_tools.py"]
+
+
+rule hpyv:
+    input:
+        "results/grammar/hpy_variants.md",
+
+
+rule hpyv_variant:
+    """One variant's settings (from config) as a file, so that scores depend on it."""
+    output:
+        "results/grammar/hpyv/variants/{v}.json",
+    params:
+        spec=lambda wc: HPYV["variants"].get(wc.v, {}),
+    run:
+        import json
+        with open(output[0], "w") as fh:
+            json.dump({"name": wildcards.v, **params.spec}, fh, indent=1)
+
+
+rule hpyv_trees:
+    """Every support form coded as a tree (hsr.treecode); checks the events against fnprior's own coding."""
+    input:
+        folds=expand("results/grammar/{run}/folds.json", run=HPYV_RUNS),
+        code=["workflow/scripts/hpyv_trees.py", "hsr/treecode.py", "hsr/fnprior_tools.py"],
+    output:
+        "results/grammar/hpyv/trees.json",
+    conda:
+        "envs/fnprior.yaml"
+    shell:
+        "python workflow/scripts/hpyv_trees.py {output} {input.folds}"
+
+
+rule hpyv_sources:
+    """Model-form pairs of every corpus source (labels for the source-level hierarchy)."""
+    input:
+        gen="results/grammar/generalised.json",
+        corpora=expand("hsr/data/corpus_{n}.json", n=["sabiork", "cellml", "curvelib", "biocat"]) + ["hsr/data/corpus.json"],
+        code=["workflow/scripts/hpyv_sources.py", "hsr/grammar_compare.py"],
+    output:
+        "results/grammar/hpyv/sources.json",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/hpyv_sources.py {input.gen} {output}"
+
+
+rule hpyv_scores:
+    input:
+        folds="results/grammar/{run}/folds.json",
+        trees="results/grammar/hpyv/trees.json",
+        sources="results/grammar/hpyv/sources.json",
+        variant="results/grammar/hpyv/variants/{v}.json",
+        code=["workflow/scripts/hpyv_score.py"] + HPYV_CODE,
+    output:
+        "results/grammar/{run}/hpyv_{v}.json",
+    wildcard_constraints:
+        run="[^/]+",
+    params:
+        sweeps=HPYV["sweeps"],
+        keep=HPYV["keep"],
+    conda:
+        "envs/fnprior.yaml"
+    shell:
+        "python workflow/scripts/hpyv_score.py {input.folds} {input.trees} {input.sources} {input.variant} {output} "
+        "{params.sweeps} {params.keep}"
+
+
+rule hpyv_table_run:
+    input:
+        folds="results/grammar/{run}/folds.json",
+        trees="results/grammar/hpyv/trees.json",
+        ours="results/grammar/{run}/ours.json",
+        fnp="results/grammar/{run}/fnprior.json",
+        hpy="results/grammar/{run}/hpy.json",
+        v=expand("results/grammar/{{run}}/hpyv_{v}.json", v=HPYV_VARIANTS),
+        code="workflow/scripts/hpyv_table.py",
+    output:
+        json="results/grammar/{run}/table_v.json",
+        md="results/grammar/{run}/table_v.md",
+    wildcard_constraints:
+        run="[^/]+",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/hpyv_table.py {input.folds} {input.trees} {output.json} {output.md} "
+        "{input.ours} {input.fnp} {input.hpy} {input.v}"
+
+
+rule hpyv_calib:
+    """Size calibration and properness of a prior trained on all BioModels forms (forward samples)."""
+    input:
+        folds="results/grammar/transfer_sabiork/folds.json",
+        trees="results/grammar/hpyv/trees.json",
+        variant="results/grammar/hpyv/variants/{v}.json",
+        code=["workflow/scripts/hpyv_calib.py"] + HPYV_CODE,
+    output:
+        "results/grammar/hpyv/calib_{v}.json",
+    params:
+        sweeps=HPYV["sweeps"],
+        keep=HPYV["keep"],
+        n=HPYV["calib_samples"],
+    conda:
+        "envs/fnprior.yaml"
+    shell:
+        "python workflow/scripts/hpyv_calib.py {input.folds} {input.trees} {input.variant} {output} "
+        "{params.sweeps} {params.keep} {params.n}"
+
+
+rule hpyv_report:
+    input:
+        tables=expand("results/grammar/{run}/table_v.json", run=HPYV_RUNS),
+        scores=expand("results/grammar/{run}/hpyv_{v}.json", run=HPYV_RUNS, v=HPYV_VARIANTS),
+        calib=expand("results/grammar/hpyv/calib_{v}.json", v=HPYV_VARIANTS + ["fnprior_kn"]),
+        trees="results/grammar/hpyv/trees.json",
+        code="workflow/scripts/hpyv_report.py",
+    output:
+        "results/grammar/hpy_variants.md",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/hpyv_report.py {output} {input.trees} "
+        "--tables {input.tables} --scores {input.scores} --calib {input.calib}"
