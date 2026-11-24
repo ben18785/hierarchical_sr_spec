@@ -161,9 +161,11 @@ def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=No
     out["pop_weight"] = {skeletons[e].key: float(pop_weight[e]) for e in order if pop_weight[e] > 1e-3}
     out["lpd_heldout"], out["lpd_group"] = heldout_lpd(probs, skeletons, table, held, sx, sy)
     if _EQUIV is not None:
+        t_cls = time.time()
         out.update(class_summary(probs, _EQUIV.classes(probs), skeletons,
                                  z_samples=None if res is None else res.z_samples))
         out.update(_EQUIV.end_summary(probs))
+        out["seconds_classes"] = time.time() - t_cls
     if extras:
         out.update(extras)
     return out

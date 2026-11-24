@@ -49,6 +49,7 @@ class GibbsResult:
     z_samples: np.ndarray         # (n_chains, n_kept, J)
     log_lik: np.ndarray = None    # (n_chains, n_kept) sum of cluster marginals (label-invariant diagnostic)
     log_post: np.ndarray = None   # (n_chains, n_kept) log_lik + log P(partition, labels | gamma, theta)
+    seconds: float = None         # wall time of the sampler
 
     @property
     def top(self) -> np.ndarray:
@@ -161,16 +162,49 @@ def _log_w_pair(lg1, lg2):
         return a1 + a2 + np.log1p(-np.exp(r))
 
 
+def _sequential_allocation(rng, model, S, i, j, label_score, target=None):
+    """Sequential allocation (Dahl 2003) of the members of S other than i and j
+    to two sides seeded with i and j, in random order. Each member k goes to
+    side s with probability proportional to |T_s| exp(M_{e_s}(T_s + k) - M_{e_s}(T_s)),
+    where e_s is the side's best label under ``label_score`` (refreshed when
+    the side's size reaches 1, 2, 4, 8, ...), so placements follow the groups
+    as they form rather than the two seeds alone.
+
+    With ``target`` (dict k -> 0/1) the placements are forced, which gives the
+    probability of proposing a given split (for the reverse of a merge).
+    Returns (side sets, log proposal probability)."""
+    T = [{int(i)}, {int(j)}]
+    lab = [int(np.argmax(label_score(T[0]))), int(np.argmax(label_score(T[1])))]
+    cur = [model.marginal(lab[0], sorted(T[0])), model.marginal(lab[1], sorted(T[1]))]
+    nxt_refresh = [2, 2]
+    logq = 0.0
+    for k in rng.permutation(sorted(S - {i, j})):
+        k = int(k)
+        new = [model.marginal(lab[s], sorted(T[s] | {k})) for s in (0, 1)]
+        lw = np.array([np.log(len(T[s])) + new[s] - cur[s] for s in (0, 1)])
+        if not np.all(np.isfinite(lw)):
+            lw = np.where(np.isfinite(lw), 0.0, -np.inf) if np.isfinite(lw).any() else np.zeros(2)
+        lp = lw - logsumexp(lw)
+        side = (0 if rng.random() < np.exp(lp[0]) else 1) if target is None else target[k]
+        logq += lp[side]
+        T[side].add(k)
+        cur[side] = new[side]
+        if len(T[side]) >= nxt_refresh[side]:
+            nxt_refresh[side] *= 2
+            lab[side] = int(np.argmax(label_score(T[side])))
+            cur[side] = model.marginal(lab[side], sorted(T[side]))
+    return T[0], T[1], logq
+
+
 def _split_merge(rng, z, n_e, members, Mc, model, log_p, gamma, logsim, n_prop):
     """Split-merge Metropolis-Hastings moves (in the spirit of Jain & Neal 2004
     and Dahl 2003), with the labels of the clusters involved integrated out.
 
     Pick two datasets i != j at random. If they share a cluster S, propose
-    splitting it into S_i (with i) and S_j (with j); every other member k goes
-    to i's side with probability 1 / (1 + exp(logsim[k, j] - logsim[k, i])),
-    where logsim[k, l] is the log probability that k and l use the same form
-    when fitted alone. If they are in different clusters, propose merging
-    them. The target is the posterior of the partition of the datasets
+    splitting it into S_i (with i) and S_j (with j), the other members placed
+    by sequential allocation (_sequential_allocation). If they are in
+    different clusters, propose merging them; the reverse probability is that
+    of the sequential allocation producing the current split. The target is the posterior of the partition of the datasets
     involved with the labels of the clusters involved summed out (labels used
     by other clusters are excluded), so the acceptance ratio uses
         W(S) = sum_e g_S(e)  and  W(S_i, S_j) = sum_{e1 != e2} g_{S_i}(e1) g_{S_j}(e2).
@@ -184,17 +218,10 @@ def _split_merge(rng, z, n_e, members, Mc, model, log_p, gamma, logsim, n_prop):
         allowed = n_e == 0
         allowed[ci] = True
         allowed[cj] = True
+        score = lambda T: _cluster_label_weights(model, T, log_p, gamma, allowed)
         if ci == cj:
             S = members[ci]
-            Si, Sj, logq = {int(i)}, {int(j)}, 0.0
-            for k in rng.permutation(sorted(S - {i, j})):
-                p_i = 1.0 / (1.0 + np.exp(logsim[k, j] - logsim[k, i]))
-                if rng.random() < p_i:
-                    Si.add(int(k))
-                    logq += np.log(p_i)
-                else:
-                    Sj.add(int(k))
-                    logq += np.log1p(-p_i)
+            Si, Sj, logq = _sequential_allocation(rng, model, S, i, j, score)
             lgS = _cluster_label_weights(model, S, log_p, gamma, allowed)
             lg1 = _cluster_label_weights(model, Si, log_p, gamma, allowed)
             lg2 = _cluster_label_weights(model, Sj, log_p, gamma, allowed)
@@ -221,10 +248,8 @@ def _split_merge(rng, z, n_e, members, Mc, model, log_p, gamma, logsim, n_prop):
         else:
             Si, Sj = members[ci], members[cj]
             S = Si | Sj
-            logq = 0.0
-            for k in S - {i, j}:
-                p_i = 1.0 / (1.0 + np.exp(logsim[k, j] - logsim[k, i]))
-                logq += np.log(p_i) if k in Si else np.log1p(-p_i)
+            _, _, logq = _sequential_allocation(rng, model, S, i, j, score,
+                                                target={k: (0 if k in Si else 1) for k in S})
             lgS = _cluster_label_weights(model, S, log_p, gamma, allowed)
             lg1 = _cluster_label_weights(model, Si, log_p, gamma, allowed)
             lg2 = _cluster_label_weights(model, Sj, log_p, gamma, allowed)
@@ -381,6 +406,8 @@ def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
     cfg = cfg or GibbsConfig()
     if cfg.burn_in >= cfg.n_sweeps:
         raise ValueError("burn_in must be smaller than n_sweeps")
+    import time
+    t0 = time.time()
     chains = []
     for c in range(cfg.n_chains):
         init = "argmax" if c == 0 else cfg.init
@@ -396,4 +423,5 @@ def run_gibbs(L: np.ndarray, counts: np.ndarray, grammar: Grammar, cfg: GibbsCon
         z_samples=np.stack([ch["z"] for ch in chains]),
         log_lik=np.stack([ch["log_lik"] for ch in chains]),
         log_post=np.stack([ch["log_post"] for ch in chains]),
+        seconds=time.time() - t0,
     )

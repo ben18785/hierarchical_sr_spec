@@ -45,7 +45,7 @@ from scipy.special import logsumexp
 
 from scipy.special import gammaln
 
-from .gibbs import GibbsConfig, GibbsResult, _log_similarity, escobar_west_gamma
+from .gibbs import GibbsConfig, GibbsResult, _log_similarity, _sequential_allocation, escobar_west_gamma
 from .grammar import Grammar
 
 
@@ -149,6 +149,7 @@ def _split_merge_themes(rng, z, n_e, members, Mc, theme, m, model, kernel, rho, 
     """Split-merge moves for the themes model, with the skeletons and themes of
     the clusters involved summed out. Allocation as in hsr.gibbs._split_merge.
 
+    Members are placed by sequential allocation (hsr.gibbs._sequential_allocation).
     With w(t) = m_t + gamma0 P0(t) counting the B0 other clusters' themes, and
     a_S(e) = exp M_e(S) over the skeletons not used by other clusters, the
     weight of one cluster S (CRP(gamma) term, theme and skeleton summed) is
@@ -158,7 +159,7 @@ def _split_merge_themes(rng, z, n_e, members, Mc, theme, m, model, kernel, rho, 
         T = sum_{t1,t2,e1!=e2} w(t1) (w(t2) + [t2 = t1]) K(e1|t1) K(e2|t2) a1(e1) a2(e2)
           = (w.u1)(w.u2) + sum_t w u1 u2 - sum_e a1 a2 (push(w)^2 + push2(w)),
     with u = pull(a). After an accepted move the new skeletons and themes are
-    drawn from their exact conditional."""
+    drawn from their exact conditional. (logsim is unused; kept for the call signature.)"""
     J = len(z)
     C = len(n_e)
     for _ in range(n_prop):
@@ -180,24 +181,17 @@ def _split_merge_themes(rng, z, n_e, members, Mc, theme, m, model, kernel, rho, 
             c0 = M.max()
             return np.exp(M - c0) if np.isfinite(c0) else np.zeros(C), c0
 
+        with np.errstate(divide="ignore"):
+            lpw = np.log(pw)
+        score = lambda T: np.where(allowed, lpw + model.marginal_all(sorted(T)), -np.inf)
         if ci == cj:
             S = members[ci]
-            Si, Sj, logq = {int(i)}, {int(j)}, 0.0
-            for k in rng.permutation(sorted(S - {i, j})):
-                p_i = 1.0 / (1.0 + np.exp(logsim[k, j] - logsim[k, i]))
-                if rng.random() < p_i:
-                    Si.add(int(k))
-                    logq += np.log(p_i)
-                else:
-                    Sj.add(int(k))
-                    logq += np.log1p(-p_i)
+            Si, Sj, logq = _sequential_allocation(rng, model, S, i, j, score)
         else:
             Si, Sj = members[ci], members[cj]
             S = Si | Sj
-            logq = 0.0
-            for k in S - {i, j}:
-                p_i = 1.0 / (1.0 + np.exp(logsim[k, j] - logsim[k, i]))
-                logq += np.log(p_i) if k in Si else np.log1p(-p_i)
+            _, _, logq = _sequential_allocation(rng, model, S, i, j, score,
+                                                target={k: (0 if k in Si else 1) for k in S})
         a, ca = scaled(S)
         a1, c1 = scaled(Si)
         a2, c2 = scaled(Sj)
@@ -421,6 +415,8 @@ def run_gibbs_themes(L, counts, grammar: Grammar, kernel: EditKernel, cfg: Gibbs
     tcfg = tcfg or ThemeConfig()
     if cfg.burn_in >= cfg.n_sweeps:
         raise ValueError("burn_in must be smaller than n_sweeps")
+    import time
+    t0 = time.time()
     chains = [run_chain_themes(L, counts, grammar, kernel, cfg, tcfg, seed=cfg.seed * 1000 + c + 17,
                                init="argmax" if c == 0 else cfg.init, model=model, z_init=z_init)
               for c in range(cfg.n_chains)]
@@ -437,4 +433,5 @@ def run_gibbs_themes(L, counts, grammar: Grammar, kernel: EditKernel, cfg: Gibbs
         n_themes=np.stack([ch["n_themes"] for ch in chains]),
         rho=np.stack([ch["rho"] for ch in chains]),
         gamma0=np.stack([ch["gamma0"] for ch in chains]),
+        seconds=time.time() - t0,
     )

@@ -124,9 +124,11 @@ def evaluate(name, probs, pop, skeletons, table, sx, sy, true_idx, weights_est=N
     if hasattr(pop, "parent_key"):
         out.update(family_metrics(pop, top_keys))
     if _EQUIV is not None:
+        t_cls = time.time()
         out.update(class_summary(probs, _EQUIV.classes(probs), skeletons, true_idx=true_idx))
         es = _EQUIV.end_summary(probs)
         out.update({"end_right_mean": es["end_right_mean"], "end_left_mean": es["end_left_mean"]})
+        out["seconds_classes"] = time.time() - t_cls
     if extras:
         out.update(extras)
     return out
@@ -145,7 +147,7 @@ def gibbs_summary(res, keys=None):
     d = diag_summary(res)
     out.update({"max_rhat": d["max_rhat"], "min_ess_bulk": d["min_ess_bulk"], "chain_tv_mean": d["chain_tv_mean"],
                 "converged": d["converged"], "diagnostics": {"rhat": d["rhat"], "ess_bulk": d["ess_bulk"]},
-                "chains": chain_report(res, keys)})
+                "chains": chain_report(res, keys), "seconds_sampler": getattr(res, "seconds", None)})
     return out
 
 
