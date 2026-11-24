@@ -197,6 +197,49 @@ rule biomodels_nc_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py biomodels_build {params.raw} {output} {threads}"
 
 
+rule modeldb_fetch:
+    """Snapshot of the NMODL files of every NEURON model in ModelDB (one zip
+    per model, <= 40 requests per minute). Delete results/corpora/raw/modeldb to refresh."""
+    output:
+        "results/corpora/raw/modeldb/manifest.json",
+    params:
+        raw="results/corpora/raw/modeldb",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py modeldb_fetch {params.raw}"
+
+
+rule modeldb_equations:
+    """Equations of every NMODL file of the ModelDB snapshot (hsr.nmodl)."""
+    input:
+        man="results/corpora/raw/modeldb/manifest.json",
+        code=["hsr/nmodl.py", "hsr/corpus_sources.py"],
+    output:
+        "results/corpora/modeldb_equations.json",
+    params:
+        raw="results/corpora/raw/modeldb",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py modeldb_equations {params.raw} {output} {threads}"
+
+
+rule modeldb_corpus:
+    """NMODL equations reduced to generalised one-variable skeletons, one model per ModelDB entry (committed)."""
+    input:
+        eq="results/corpora/modeldb_equations.json",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_modeldb.json",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py modeldb_build {input.eq} {output} {threads}"
+
+
 # R curve catalogues (hsr/data/sources/<name>_curves.csv) and the R packages
 # whose implementations verify them
 CURVE_CATALOGUES = {"thermal": "rTPC,devRate", "ecocurves": "sars,nlsMicrobio,growthrates,FSA"}

@@ -609,6 +609,148 @@ def curves_build(src, r_eval, out, label=""):
     return res
 
 
+# ------------------------------------------------------------------ ModelDB
+MODELDB = "https://modeldb.science"
+
+
+def modeldb_fetch(raw_dir, application="NEURON", limit=None, max_bytes=300_000_000, client=None):
+    """Snapshot of the NMODL (.mod) files of every ModelDB model of a modelling
+    application (default NEURON): one listing request
+    (``/api/v1/models?modeling_application=...``), then one zip download per
+    model (``/download/<id>``), at most 40 requests per minute. Only ``.mod``
+    members are kept, under ``<raw_dir>/<id>/``; the manifest records each
+    zip's URL, size and sha256."""
+    import io
+    import zipfile
+    client = client or PoliteClient(min_interval=1.5, accept="application/json")
+    arch = PoliteClient(min_interval=1.5, accept="application/zip,*/*")
+    os.makedirs(raw_dir, exist_ok=True)
+    listing = f"{MODELDB}/api/v1/models?" + urllib.parse.urlencode({"modeling_application": application})
+    ids = sorted(int(i) for i in json.loads(client.get(listing)[0]))
+    if limit:
+        ids = ids[:int(limit)]
+    entries = []
+    for i, mid in enumerate(ids):
+        rec = {"id": mid, "url": f"{MODELDB}/download/{mid}"}
+        entries.append(rec)
+        try:
+            data, _ = arch.get(rec["url"])
+        except Exception as e:
+            rec["error"] = f"download: {e!r}"[:300]
+            continue
+        rec.update(sha256=sha256(data), bytes=len(data))
+        if len(data) > max_bytes:
+            rec["error"] = "archive too large"
+            continue
+        files = []
+        try:
+            with zipfile.ZipFile(io.BytesIO(data)) as zf:
+                for mem in zf.infolist():
+                    parts = [p for p in mem.filename.replace("\\", "/").split("/") if p]
+                    if (mem.is_dir() or not parts or any(p in ("..", ".") for p in parts)
+                            or parts[0] == "__MACOSX" or not parts[-1].lower().endswith(".mod")):
+                        continue
+                    dest = os.path.join(raw_dir, str(mid), *parts)
+                    os.makedirs(os.path.dirname(dest), exist_ok=True)
+                    with open(dest, "wb") as fh:
+                        fh.write(zf.read(mem))
+                    files.append("/".join(parts))
+        except Exception as e:
+            rec["error"] = f"unzip: {e!r}"[:300]
+        rec["mod_files"] = sorted(files)
+        if (i + 1) % 25 == 0:
+            print(f"[{i + 1}/{len(ids)}] {mid}: {len(files)} mod files", flush=True)
+    manifest = {"source": "ModelDB (NMODL files)", "listing": listing, "date": _today(), "n_models": len(ids),
+                "entries": entries, "sha256_all": sha256("".join(e.get("sha256", "") for e in entries).encode())}
+    with open(os.path.join(raw_dir, "manifest.json"), "w") as fh:
+        json.dump(manifest, fh, indent=1)
+    return manifest
+
+
+def _mod_file_equations(path, timeout=30):
+    """{"status", "equations": [[rhs, [variables]]], "errors": n} of one NMODL file (hsr.nmodl)."""
+    from .nmodl import Module
+    old = signal.signal(signal.SIGALRM, _alarm)
+    signal.alarm(timeout)
+    try:
+        with open(path, "rb") as fh:
+            text = fh.read().decode("utf-8", errors="replace")
+        eqs, errors = Module(text).equations()
+        return {"status": "ok", "equations": sorted({(e, tuple(v)) for e, v in eqs}), "errors": len(errors)}
+    except _Timeout:
+        return {"status": "timeout", "equations": [], "errors": 0}
+    except Exception as e:
+        return {"status": f"failed: {type(e).__name__}", "equations": [], "errors": 0}
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, old)
+
+
+def modeldb_equations(raw_dir, out, processes=4):
+    """Equations of every NMODL file of the ModelDB snapshot (``hsr.nmodl``);
+    files with identical content are parsed once."""
+    import multiprocessing as mp
+    with open(os.path.join(raw_dir, "manifest.json")) as fh:
+        man = json.load(fh)
+    jobs, by_hash = [], {}
+    for e in man["entries"]:
+        for f in e.get("mod_files", []):
+            path = os.path.join(raw_dir, str(e["id"]), *f.split("/"))
+            with open(path, "rb") as fh:
+                h = sha256(fh.read())
+            jobs.append((e["id"], f, h))
+            by_hash.setdefault(h, path)
+    hashes = sorted(by_hash)
+    with mp.get_context("fork").Pool(int(processes)) as pool:
+        res = dict(zip(hashes, pool.map(_mod_file_equations, [by_hash[h] for h in hashes], chunksize=8)))
+    models = {}
+    for mid, f, h in jobs:
+        models.setdefault(str(mid), []).append({"file": f, "sha256": h, **res[h]})
+    E = {"date": man["date"], "listing": man["listing"], "sha256_all": man["sha256_all"],
+         "n_files": len(jobs), "n_distinct_files": len(hashes), "models": models}
+    with open(out, "w") as fh:
+        json.dump(E, fh)
+    st = Counter(r["status"] for r in res.values())
+    print(f"{len(jobs)} files ({len(hashes)} distinct): {dict(st)}")
+    return E
+
+
+def modeldb_build(eq_json, out, processes=4):
+    """Corpus from the ModelDB NMODL equations; one model per ModelDB entry;
+    each variable of an equation (v, t, a STATE, a concentration read, an
+    argument of the enclosing FUNCTION/PROCEDURE) in turn is x1."""
+    with open(eq_json) as fh:
+        E = json.load(fh)
+    stats = Counter()
+    rows = []
+    for mid, files in E["models"].items():
+        stats["models"] += 1
+        stats["models_with_mod_files"] += bool(files)
+        for f in files:
+            stats["files"] += 1
+            stats["files_" + f["status"].split(":")[0]] += 1
+            stats["assignments_not_parsed"] += f["errors"]
+            for rhs, var in f["equations"]:
+                rows.append((f"ModelDB:{mid}", (rhs, tuple(var))))
+    stats["equations"] = len(rows)
+    law_cache = reduce_laws([ck for _, ck in rows], int(processes))
+    by_model = {}
+    for mid, ck in rows:
+        ks = law_cache[ck]
+        stats["equations_reduced"] += bool(ks)
+        by_model.setdefault(mid, set()).update(ks)
+    stats = dict(stats)
+    stats["distinct_equations"] = len(law_cache)
+    stats["distinct_equations_reduced"] = sum(1 for v in law_cache.values() if v)
+    res = _corpus_dict(by_model, stats)
+    res.update(source="ModelDB NEURON models: equations of the NMODL files (hsr.nmodl; locals substituted, the "
+                      "file's FUNCTIONs inlined); one model per ModelDB entry; each variable in turn is x1; "
+                      "literals generalised",
+               snapshot={"date": E["date"], "listing": E["listing"], "sha256_all": E["sha256_all"]})
+    _write(res, out)
+    return res
+
+
 # ----------------------------------------------------- overlap between sources
 def source_forms(path, gen_map):
     """{model id: set of generalised forms} of a corpus file, as
