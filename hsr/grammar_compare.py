@@ -351,7 +351,10 @@ def generalise(key):
             return e.func(*[walk(a) for a in e.args])
         return e
 
-    sk = canonicalise(str(walk(expr)), 1, max_consts=None)
+    new = walk(expr)
+    if n[0] == 0:
+        return key          # no literal to generalise: skip the (slow) re-canonicalisation
+    sk = canonicalise(str(new), 1, max_consts=None)
     return key if sk is None else sk.key
 
 

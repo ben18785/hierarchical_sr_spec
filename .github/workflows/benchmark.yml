@@ -17,7 +17,7 @@ on:
         description: "burn-in sweeps"
         default: "500"
       grid:
-        description: "main | sensitivity | all | families | families_full | families_corpus | families_si | constraints | realdata | realdata_si | pysr"
+        description: "main | sensitivity | all | families | families_full | families_corpus | families_si | constraints | realdata | realdata_si | pysr | prior"
         default: "all"
       only:
         description: "optional regex: run only matrix jobs whose name matches"
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[plots]"
+      - run: pip install -e ".[plots,fnprior]"
       - if: matrix.module == 'pysr'
         uses: actions/cache@v4
         with:
@@ -93,14 +93,14 @@ jobs:
 
   summarise:
     needs: run
-    if: always() && inputs.task != 'corpus' && !startsWith(inputs.grid, 'realdata') && inputs.grid != 'pysr' && inputs.grid != 'constraints'
+    if: always() && inputs.task != 'corpus' && !startsWith(inputs.grid, 'realdata') && inputs.grid != 'pysr' && inputs.grid != 'constraints' && inputs.grid != 'prior'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[plots]"
+      - run: pip install -e ".[plots,fnprior]"
       - uses: actions/download-artifact@v4
         with:
           pattern: raw-*

@@ -1,6 +1,6 @@
 """Score every support form under fnprior (Bartlett & Desmond's n-gram prior),
 trained separately on each fold's training equations. Runs in the fnprior
-environment (workflow/envs/fnprior.yaml), so it does not import hsr.
+environment (workflow/envs/fnprior.yaml); it imports only hsr.fnprior_tools (fnprior, numpy).
 
 Input  folds.json: {"support": [keys], "folds": [{"train": [keys], "test": [keys]}, ...]}
 Output JSON: {"settings": ..., "logprior": {variant: [[logp per support key] per fold]}}
@@ -9,46 +9,13 @@ Keys use x1 for the variable and c0, c1, ... for constants; fnprior wants
 x0 and a0, a1, ... (with code_constants=True, constants are coded "a", so a
 power law x**a and an exponential a**x get different priors).
 """
-import csv
 import json
 import os
-import re
 import sys
 import tempfile
 
-import numpy as np
-from fnprior.prior import FunctionPrior
-
-BASIS = [["a", "x"], ["sqrt", "exp", "log", "sin", "tanh", "inv"], ["+", "-", "*", "/", "pow"]]
-
-
-def to_fn(key):
-    s = re.sub(r"\bx1\b", "x0", key)
-    return re.sub(r"\bc(\d+)\b", r"a\1", s)
-
-
-def train(keys, tune, n, tmpdir, tag):
-    path = os.path.join(tmpdir, f"train_{tag}.csv")
-    with open(path, "w", newline="") as fh:
-        w = csv.writer(fh)
-        w.writerow(["Filename", "Number", "Old Formula", "New Formula"])
-        for i, k in enumerate(keys):
-            w.writerow([f"f{i}", i, k, to_fn(k)])
-    kp = FunctionPrior(n, BASIS, None, path, code_constants=True)
-    if tune:
-        kp.tune_discounts()
-    return kp
-
-
-def score(kp, keys):
-    out = []
-    for k in keys:
-        try:
-            v = float(kp.logprior(to_fn(k)))
-        except Exception:
-            v = float("-inf")
-        out.append(v if np.isfinite(v) else None)
-    return out
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+from hsr.fnprior_tools import BASIS, score, train  # noqa: E402  (imports only fnprior/numpy)
 
 
 def main(folds_path, out_path, n=2):

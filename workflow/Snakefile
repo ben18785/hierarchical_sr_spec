@@ -26,6 +26,19 @@ rule grammar:
         "results/grammar/table.md",
 
 
+rule corpus_generalised:
+    """Literal-free form of every corpus key, shipped with the package (used by --prior fnprior)."""
+    input:
+        corpus="hsr/data/corpus.json",
+        code=["hsr/grammar_compare.py", "hsr/canonical.py", "hsr/fixed_prior.py"],
+    output:
+        "hsr/data/corpus_generalised.json",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python -c 'from hsr.fixed_prior import build_generalised; build_generalised()'"
+
+
 rule generalised:
     """Literal-free generalisation of every corpus and candidate form (slow: sympy)."""
     input:

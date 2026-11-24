@@ -89,6 +89,20 @@ def families_si_grid(ns=(10, 20), kappa=50):
     return out
 
 
+def prior_grid(ns=(10, 20), kappa=50):
+    """fnprior (fixed corpus-derived base measure, benchmark families held out)
+    against the grammar prior with the held-out corpus, both with the units
+    filter; and the real data with fnprior."""
+    base = "--grow 1 --pooled --themes --scale-invariant"
+    out = []
+    for job in families_grid(ns):
+        out.append(job | {"name": job["name"] + f"_si_corpusHO{kappa}",
+                          "extra": base + f" --corpus hsr/data/corpus.json --corpus-heldout --kappa {kappa}"})
+        out.append(job | {"name": job["name"] + "_si_fnprior", "extra": base + " --prior fnprior"})
+    out += realdata_grid("--grow 1 --themes --scale-invariant --prior fnprior", "_si_fnprior")
+    return out
+
+
 CDF_SPEC = "range=0,1;limit_inf=1;monotone=increasing"
 FORAGE_SPEC = "nonneg;value0=0;monotone=increasing"
 
@@ -126,7 +140,8 @@ def pysr_grid():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid", default="all", choices=["main", "sensitivity", "all", "families", "families_full",
-                                                        "families_corpus", "realdata", "realdata_si", "families_si", "constraints", "pysr"])
+                                                        "families_corpus", "realdata", "realdata_si", "families_si", "constraints", "pysr",
+                                                        "prior"])
     ap.add_argument("--only", default="", help="regex; keep only jobs whose name matches")
     a = ap.parse_args()
     jobs = []
@@ -150,6 +165,8 @@ if __name__ == "__main__":
         jobs += constraints_grid()
     if a.grid == "pysr":
         jobs += pysr_grid()
+    if a.grid == "prior":
+        jobs += prior_grid()
     if a.only:
         import re
         jobs = [j for j in jobs if re.search(a.only, j["name"])]

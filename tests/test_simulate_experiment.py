@@ -140,3 +140,19 @@ def test_run_replicate_family_themes(tiny_candidates):
     for r in rows:
         assert len(r["top_class_keys"]) == 6 and 0 <= r["class_recovery"] <= 1
         assert len(r["chains"]) == 2 if r["method"].startswith("hier") else True
+
+
+def test_run_replicate_with_fnprior_base_measure(tiny_candidates):
+    """--prior fnprior: the DP base measure is the fixed corpus-derived prior."""
+    pytest.importorskip("fnprior")
+    from hsr.fixed_prior import FixedPrior, fnprior_log_prior, with_log_prior
+    from hsr.grammar import Grammar
+    lp = fnprior_log_prior(["c0*x1", "c0*x1/(c1 + x1)", "c0*sin(c1*tanh(x1))"])
+    assert lp[1] > lp[2]                    # Michaelis-Menten is a common biochemical form
+    fp = FixedPrior(Grammar())
+    cnt = with_log_prior(np.zeros((3, Grammar().n_rules)), lp)
+    assert np.allclose(fp.log_prob(cnt, fp.prior_mean()), lp)
+    cfg = GibbsConfig(n_sweeps=30, burn_in=10, n_chains=2)
+    rows = run_replicate("decay_parent", 10, 0.05, 0, tiny_candidates, cfg, J=4, n_starts=2,
+                         kinds=("laplace",), prior="fnprior", pooled=True)
+    assert {"hier", "hier_pooled", "complete_pool"} <= {r["method"] for r in rows}

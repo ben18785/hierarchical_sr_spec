@@ -36,6 +36,7 @@ from .candidates import CandidateSet, default_n_jobs, edit_graph, expand_candida
 from .canonical import canonicalise
 from .experiment import _COMPILED, gibbs_summary
 from .equivalence import Equivalence, class_summary
+from .fixed_prior import FixedPrior, fnprior_log_prior, with_log_prior
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .likelihood import LikelihoodTable, compute_likelihoods, predictive_logpdf, scale_population
@@ -171,7 +172,7 @@ def summarise(name, probs, skeletons, table, held, sx, sy, groups, pop_weight=No
 # ------------------------------------------------------------------- run
 def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scaling="pooled", n_starts=10, tau=3.0,
         grow_rounds=0, themes=False, theme_top_k=10, theme_min_mass=0.02, seed=0, scale_invariant=False, spec=None,
-        classes=True):
+        classes=True, prior=None):
     global _ACCEPT, _EQUIV
     t0 = time.time()
     groups = load_groups(data)
@@ -233,6 +234,10 @@ def run(data, split, cands: CandidateSet, cfg: GibbsConfig, reference=(), scalin
     sks = list(cset.skeletons)
     cnt = cset.counts
     n_C = len(sks)
+    if prior == "fnprior":
+        # fixed corpus-derived base measure (hsr.fixed_prior); candidate growth above used the grammar
+        cnt = with_log_prior(cnt, fnprior_log_prior([s.key for s in sks]))
+        grammar = FixedPrior(grammar, "fnprior")
     _ACCEPT = None
     trunc_logq = None
     if spec is not None:
@@ -316,12 +321,16 @@ def main(argv=None):
                     help='known properties of f, e.g. "range=0,1;limit_inf=1;monotone=increasing" (hsr.constraints)')
     ap.add_argument("--corpus", default=None, help="corpus JSON: corpus-informed grammar prior")
     ap.add_argument("--kappa", type=float, default=50.0)
+    ap.add_argument("--prior", default="grammar", choices=["grammar", "fnprior"],
+                    help="DP base measure: the learned grammar (default) or fnprior trained on the BioModels corpus")
     args = ap.parse_args(argv)
     grammar, prior_label = None, "default"
     if args.corpus:
         from .corpus import corpus_alpha, load as load_corpus
         grammar = Grammar(alpha=corpus_alpha(load_corpus(args.corpus), Grammar(), kappa=args.kappa))
         prior_label = f"corpus_k{args.kappa:g}"
+    if args.prior == "fnprior":
+        prior_label = "fnprior_biomodels"
     spec = Spec.parse(args.constrain)
     if spec is not None and spec.exact and args.candidates == ap.get_default("candidates"):
         args.candidates = constrained_candidates_path(spec)
@@ -330,7 +339,8 @@ def main(argv=None):
     name = os.path.splitext(os.path.basename(args.data))[0]
     reference = args.reference if args.reference is not None else REFERENCE.get(name, [])
     rows = run(args.data, args.split, cands, cfg, reference, args.scaling, args.starts, args.tau, args.grow,
-               args.themes, scale_invariant=args.scale_invariant, spec=spec)
+               args.themes, scale_invariant=args.scale_invariant, spec=spec,
+               prior=None if args.prior == "grammar" else args.prior)
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "a") as fh:
         for r in rows:

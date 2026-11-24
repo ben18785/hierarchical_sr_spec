@@ -25,6 +25,7 @@ from .families import family_metrics, family_population, theme_metrics
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .equivalence import Equivalence, class_summary
+from .fixed_prior import FixedPrior, fnprior_log_prior, with_log_prior
 from .likelihood import (CompiledSkeleton, LikelihoodTable, compute_likelihoods, predictive_logpdf,
                          scale_population)
 from .constraints import Spec, apply_truncation, check_grid, constrained_candidates_path, prepare, satisfied, unscale_y
@@ -165,7 +166,8 @@ def _scaled_grammar(g: Grammar, scale: float) -> Grammar:
 def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig, expand=False,
                   sensitivity=False, kinds=("laplace", "bic"), J=30, n_starts=10, seed_base=12345,
                   scaling="pooled", tau=3.0, grow_rounds=0, pooled=False, themes=False, theme_top_k=10,
-                  theme_min_mass=0.02, scale_invariant=False, spec=None, classes=True):
+                  theme_min_mass=0.02, scale_invariant=False, spec=None, classes=True, prior=None,
+                  prior_exclude=()):
     global _ACCEPT, _EQUIV
     t0 = time.time()
     seed = seed_base + 1_000_003 * rep + int(1000 * noise) * 7919 + n * 104729 + SETTING_SEED[setting]
@@ -228,6 +230,11 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         table = table.extend(extra)
         skeletons += sks
         counts = np.vstack([counts, np.array([counts_array(s.expr, grammar) for s in sks])])
+    if prior == "fnprior":
+        # fixed corpus-derived base measure (hsr.fixed_prior); candidate growth above used the grammar
+        lp = fnprior_log_prior([s.key for s in skeletons], exclude=prior_exclude)
+        counts = with_log_prior(counts, lp)
+        grammar = FixedPrior(grammar, "fnprior")
     key_to_idx = {s.key: i for i, s in enumerate(skeletons)}
     true_idx_all = np.array([key_to_idx[k] for k in pop.true_keys])
     # columns outside C may only be used by the oracle
@@ -319,6 +326,8 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
             for label, opts in SENSITIVITY.items():
                 g2 = grammar
                 c2 = cfg
+                if "alpha_scale" in opts and isinstance(grammar, FixedPrior):
+                    continue
                 if "alpha_scale" in opts:
                     g2 = _scaled_grammar(grammar, opts["alpha_scale"])
                 else:
@@ -378,6 +387,9 @@ def main(argv=None):
     ap.add_argument("--kappa", type=float, default=50.0, help="prior sample size of the corpus prior")
     ap.add_argument("--corpus-heldout", action="store_true",
                     help="drop every benchmark-family key (parents, variants, specialisations) from the corpus")
+    ap.add_argument("--prior", default="grammar", choices=["grammar", "fnprior"],
+                    help="DP base measure: the learned grammar (default) or fnprior trained on the BioModels "
+                         "corpus with every benchmark-family key held out (hsr.fixed_prior)")
     args = ap.parse_args(argv)
 
     grammar, prior_label = None, "default"
@@ -388,6 +400,11 @@ def main(argv=None):
         grammar = Grammar(alpha=corpus_alpha(load_corpus(args.corpus, exclude), Grammar(), kappa=args.kappa))
         prior_label = f"corpus{'_heldout' if args.corpus_heldout else ''}_k{args.kappa:g}"
         print("grammar prior", prior_label, {k: np.round(v, 2).tolist() for k, v in grammar.alpha.items()}, flush=True)
+    prior_exclude = ()
+    if args.prior == "fnprior":
+        from .families import FAMILIES, family_keys
+        prior_exclude = tuple(k for fam in FAMILIES for k in family_keys(fam))
+        prior_label = "fnprior_biomodels_heldout"
     spec = Spec.parse(args.constrain)
     if spec is not None and spec.exact and args.candidates == ap.get_default("candidates"):
         args.candidates = constrained_candidates_path(spec)
@@ -399,7 +416,8 @@ def main(argv=None):
             rows = run_replicate(args.setting, args.n, args.noise, rep, cands, cfg, expand=args.expand,
                                  sensitivity=args.sensitivity, J=args.J, n_starts=args.starts, scaling=args.scaling, tau=args.tau,
                                  grow_rounds=args.grow, pooled=args.pooled, themes=args.themes,
-                                 scale_invariant=args.scale_invariant, spec=spec)
+                                 scale_invariant=args.scale_invariant, spec=spec,
+                                 prior=None if args.prior == "grammar" else args.prior, prior_exclude=prior_exclude)
             for r in rows:
                 r["grammar_prior"] = prior_label
                 fh.write(json.dumps(r) + "\n")
