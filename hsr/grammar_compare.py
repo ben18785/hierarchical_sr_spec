@@ -490,12 +490,14 @@ def heldout_table(folds: dict, logpriors: dict) -> list:
 def make_transfer(gen_map: dict, test_corpus, corpus=CORPUS, candidates=CANDIDATES) -> dict:
     """One 'fold': train on every BioModels model, test on the forms of another
     corpus (e.g. the R curve-fitting libraries). Same format as make_folds, so
-    the same scoring code applies; the support also contains the test forms."""
+    the same scoring code applies; the support also contains the test forms.
+    A test model with several distinct forms contributes each once."""
     base = make_folds(corpus, candidates, k=2, seed=0, gen_map=gen_map)
     train = [key for f in base["folds"] for key in f["test"]]
     with open(test_corpus) as fh:
         T = json.load(fh)
-    test = [ks[0] for ks in T["per_model"].values()]
+    # every distinct form of every test model (model-form pairs, as in make_folds)
+    test = [key for ks in T["per_model"].values() for key in sorted(set(ks))]
     support = sorted(set(base["support"]) | set(test))
     return {"support": support, "folds": [{"train": train, "test": test, "test_models": list(T["per_model"])}],
             "k": 1, "seed": 0, "generalise_literals": True, "test_corpus": os.path.basename(test_corpus)}

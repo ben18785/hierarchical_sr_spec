@@ -4,5 +4,5 @@ grammar_compare:
   k: 5            # folds, split by BioModels model
   seeds: [0, 1, 2]  # fold seeds (results reported per seed and averaged)
 
-# R library holding nlraa and drc for rule curvelib_eval ("" = default library)
+# R library holding nlraa, drc (rule curvelib_eval) and linpk, frair, FSA, deSolve (rule biocat_eval) ("" = default library)
 r_lib: "~/Library/R_hsr"

@@ -63,7 +63,8 @@ CURATED = [
 _FUNCS = {"exp": "exp", "ln": "log", "log": "log", "sqrt": "sqrt", "sin": "sin", "cos": "cos",
           "tanh": "tanh", "pow": "Pow", "abs": None, "piecewise": None, "delay": None,
           "floor": None, "ceil": None, "factorial": None, "log10": "_log10"}
-_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+# numbers are matched first so that the exponent of 2.5e-3 is not read as an identifier
+_TOKEN = re.compile(r"(?P<num>(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)|(?P<id>[A-Za-z_][A-Za-z0-9_]*)")
 
 
 # ---------------------------------------------------------------- reduction
@@ -74,8 +75,10 @@ def _to_sympy(formula: str):
     out = []
     pos = 0
     f = formula.replace("^", "**")
-    for m in _IDENT.finditer(f):
-        name = m.group(0)
+    for m in _TOKEN.finditer(f):
+        if m.group("num"):
+            continue
+        name = m.group("id")
         out.append(f[pos:m.start()])
         rest = f[m.end():].lstrip()
         if rest.startswith("("):

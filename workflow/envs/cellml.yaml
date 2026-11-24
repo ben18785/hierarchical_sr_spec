@@ -1,0 +1,9 @@
+# libcellml in its own environment for rule cellml_equations (parsing, import
+# resolution, analysis and code generation of CellML models).
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - libcellml==0.7.2

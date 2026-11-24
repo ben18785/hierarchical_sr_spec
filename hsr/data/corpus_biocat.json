@@ -1,0 +1,869 @@
+{
+"freq": {
+"-c0*exp(c1*x1) + c0": 3,
+"-c0*exp(c1*x1) + c0*exp(c2*x1)": 1,
+"-c0*exp(c1*x1**c2) + c0": 1,
+"c0*(-c1*exp(c2*x1) + c1 - c3*exp(c4*x1) + c3)": 1,
+"c0*(c1 - exp(c2*x1))**c3": 1,
+"c0*(c1*exp(c2*x1) + c3)**3": 1,
+"c0*(c1*exp(c2*x1) + c3)**c4": 1,
+"c0*exp(-c1*exp(c2*x1) + c1)": 1,
+"c0*exp(c1*exp(c2*x1))": 2,
+"c0*exp(c1*x1)": 3,
+"c0*exp(c1*x1) + c2": 2,
+"c0*exp(c1*x1) + c2*exp(c3*x1)": 1,
+"c0*exp(c1/x1)": 1,
+"c0*log(x1) + c1": 1,
+"c0*x1": 1,
+"c0*x1 + c1": 1,
+"c0*x1**2/(c1 + x1**2)": 1,
+"c0*x1**2/(c1*x1**2 + c2 + x1)": 1,
+"c0*x1**c1": 1,
+"c0*x1**c1/(c2 + x1**c1)": 4,
+"c0*x1**c1/(c2 + x1**c1) + c3": 2,
+"c0*x1*exp(c1*x1)": 1,
+"c0*x1*exp(c2*x1)/(c1 + x1)": 1,
+"c0*x1/(c1 + x1)": 6,
+"c0*x1/(c1 + x1) + c2": 2,
+"c0*x1/(c1 + x1**c2)": 1,
+"c0*x1/(c1*x1**2 + c2 + x1)": 2,
+"c0/(c1 + exp(c2*x1))": 1,
+"c0/(c1 + x1)": 7,
+"c1*exp(c0*x1) + c2*exp(c4*x1) + c3*exp(c5*x1)": 2
+},
+"per_model": {
+"aiba": [
+"c0*x1*exp(c2*x1)/(c1 + x1)"
+],
+"allometric": [
+"c0*x1**c1"
+],
+"andrews": [
+"c0*x1/(c1*x1**2 + c2 + x1)"
+],
+"arditi_ginzburg_predator": [
+"c0/(c1 + x1)"
+],
+"arrhenius": [
+"c0*exp(c1/x1)"
+],
+"beddington_deangelis_predator": [
+"c0/(c1 + x1)"
+],
+"beddington_deangelis_prey": [
+"c0*x1/(c1 + x1)"
+],
+"beverton_holt_sr": [
+"c0*x1/(c1 + x1)"
+],
+"chapman_richards": [
+"c0*(c1 - exp(c2*x1))**c3"
+],
+"competitive_inhibition": [
+"c0/(c1 + x1)"
+],
+"contois": [
+"c0/(c1 + x1)"
+],
+"crowley_martin_predator": [
+"c0/(c1 + x1)"
+],
+"crowley_martin_prey": [
+"c0*x1/(c1 + x1)"
+],
+"exponential_growth": [
+"c0*exp(c1*x1)"
+],
+"gompertz": [
+"c0*exp(c1*exp(c2*x1))"
+],
+"gompertz_laird": [
+"c0*exp(-c1*exp(c2*x1) + c1)"
+],
+"gompertz_zwietering": [
+"c0*exp(c1*exp(c2*x1))"
+],
+"haldane": [
+"c0*x1/(c1*x1**2 + c2 + x1)"
+],
+"hassell_III": [
+"c0*x1**2/(c1*x1**2 + c2 + x1)"
+],
+"hassell_varley_predator": [
+"c0*x1**c1/(c2 + x1**c1)"
+],
+"hill": [
+"c0*x1**c1/(c2 + x1**c1)"
+],
+"holling_I": [
+"c0*x1"
+],
+"holling_II": [
+"c0*x1/(c1 + x1)"
+],
+"holling_III": [
+"c0*x1**2/(c1 + x1**2)"
+],
+"ivlev": [
+"-c0*exp(c1*x1) + c0"
+],
+"logistic": [
+"c0/(c1 + exp(c2*x1))"
+],
+"michaelis_menten": [
+"c0*x1/(c1 + x1)"
+],
+"mixed_inhibition": [
+"c0/(c1 + x1)"
+],
+"monod": [
+"c0*x1/(c1 + x1)"
+],
+"monomolecular": [
+"c0*exp(c1*x1) + c2"
+],
+"moser": [
+"c0*x1**c1/(c2 + x1**c1)"
+],
+"pd_emax": [
+"c0*x1/(c1 + x1) + c2"
+],
+"pd_imax": [
+"c0*x1/(c1 + x1) + c2"
+],
+"pd_linear": [
+"c0*x1 + c1"
+],
+"pd_loglinear": [
+"c0*log(x1) + c1"
+],
+"pd_sigmoid_emax": [
+"c0*x1**c1/(c2 + x1**c1) + c3"
+],
+"pd_sigmoid_imax": [
+"c0*x1**c1/(c2 + x1**c1) + c3"
+],
+"pk1_iv_bolus": [
+"c0*exp(c1*x1)"
+],
+"pk1_iv_infusion": [
+"-c0*exp(c1*x1) + c0"
+],
+"pk1_oral": [
+"-c0*exp(c1*x1) + c0*exp(c2*x1)"
+],
+"pk2_iv_bolus": [
+"c0*exp(c1*x1) + c2*exp(c3*x1)"
+],
+"pk2_iv_infusion": [
+"c0*(-c1*exp(c2*x1) + c1 - c3*exp(c4*x1) + c3)"
+],
+"pk2_oral": [
+"c1*exp(c0*x1) + c2*exp(c4*x1) + c3*exp(c5*x1)"
+],
+"pk3_iv_bolus": [
+"c1*exp(c0*x1) + c2*exp(c4*x1) + c3*exp(c5*x1)"
+],
+"q10": [
+"c0*exp(c1*x1)"
+],
+"real_flexible": [
+"c0*x1**c1/(c2 + x1**c1)"
+],
+"richards": [
+"c0*(c1*exp(c2*x1) + c3)**c4"
+],
+"ricker_sr": [
+"c0*x1*exp(c1*x1)"
+],
+"shepherd_sr": [
+"c0*x1/(c1 + x1**c2)"
+],
+"teissier": [
+"-c0*exp(c1*x1) + c0"
+],
+"uncompetitive_inhibition": [
+"c0/(c1 + x1)"
+],
+"von_bertalanffy_length": [
+"c0*exp(c1*x1) + c2"
+],
+"von_bertalanffy_weight": [
+"c0*(c1*exp(c2*x1) + c3)**3"
+],
+"weibull_growth": [
+"-c0*exp(c1*x1**c2) + c0"
+]
+},
+"source": "Curated catalogue of PK/PD, enzyme and microbial kinetics, functional-response, growth, stock-recruitment and temperature models (hsr/data/sources/bio_catalogue.csv); verified numerically against R packages or the defining ODE where possible",
+"stats": {
+"checked": 36,
+"expressible": 54,
+"forms": 55,
+"in_corpus": 54,
+"verified": 36
+},
+"verification": {
+"aiba": {
+"check": "none",
+"domain": "microbial growth",
+"formula": "mumax*x/(Ks + x)*exp(-x/Ki)",
+"in_corpus": true,
+"key": "c0*x1*exp(c2*x1)/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Aiba S, Shoda M, Nagatani M (1968) Biotechnol Bioeng 10:845-864",
+"verified": false
+},
+"allometric": {
+"check": "none",
+"domain": "allometry",
+"formula": "a*x**b",
+"in_corpus": true,
+"key": "c0*x1**c1",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Huxley JS (1932) Problems of Relative Growth, Methuen; Kleiber M (1932) Hilgardia 6:315-353",
+"verified": false
+},
+"andrews": {
+"check": "none",
+"domain": "microbial growth",
+"formula": "mumax*x/(Ks + x + x**2/Ki)",
+"in_corpus": true,
+"key": "c0*x1/(c1*x1**2 + c2 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Andrews JF (1968) Biotechnol Bioeng 10:707-723",
+"verified": false
+},
+"arditi_ginzburg_predator": {
+"check": "none",
+"domain": "functional response",
+"formula": "a*(N0/x)/(1 + a*h*N0/x)",
+"in_corpus": true,
+"key": "c0/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Arditi R, Ginzburg LR (1989) J Theor Biol 139:311-326",
+"verified": false
+},
+"arrhenius": {
+"check": "none",
+"domain": "temperature",
+"formula": "A*exp(-Ea/x)",
+"in_corpus": true,
+"key": "c0*exp(c1/x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Arrhenius S (1889) Z Phys Chem 4:226-248; Gillooly JF et al. (2001) Science 293:2248-2251",
+"verified": false
+},
+"beddington_deangelis_predator": {
+"check": "none",
+"domain": "functional response",
+"formula": "a*N0/(1 + a*h*N0 + c*x)",
+"in_corpus": true,
+"key": "c0/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Beddington JR (1975); DeAngelis DL et al. (1975)",
+"verified": false
+},
+"beddington_deangelis_prey": {
+"check": "none",
+"domain": "functional response",
+"formula": "a*x/(1 + a*h*x + c*P)",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Beddington JR (1975) J Anim Ecol 44:331-340; DeAngelis DL, Goldstein RA, O'Neill RV (1975) Ecology 56:881-892",
+"verified": false
+},
+"beverton_holt_sr": {
+"check": "library",
+"domain": "stock-recruitment",
+"formula": "a*x/(1 + b*x)",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": 4.138963251022198e-15,
+"n_points": 75,
+"note": "",
+"reference": "Beverton RJH, Holt SJ (1957) Fish Invest Ser II 19",
+"verified": true
+},
+"chapman_richards": {
+"check": "ode",
+"domain": "growth",
+"formula": "A*(1 - exp(-k*x))**p",
+"in_corpus": true,
+"key": "c0*(c1 - exp(c2*x1))**c3",
+"max_rel_err": 1.49626899252909e-11,
+"n_points": 72,
+"note": "",
+"reference": "Chapman DG (1961) Proc Fourth Berkeley Symp Math Stat Probab 4:153-168; Pienaar LV, Turnbull KJ (1973) For Sci 19:2-22",
+"verified": true
+},
+"competitive_inhibition": {
+"check": "none",
+"domain": "enzyme kinetics",
+"formula": "Vmax*S0/(Km*(1 + x/Ki) + S0)",
+"in_corpus": true,
+"key": "c0/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Cornish-Bowden A (2012) Fundamentals of Enzyme Kinetics, 4th ed., ch. 6",
+"verified": false
+},
+"contois": {
+"check": "none",
+"domain": "microbial growth",
+"formula": "mumax*S0/(Ks*x + S0)",
+"in_corpus": true,
+"key": "c0/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Contois DE (1959) J Gen Microbiol 21:40-50",
+"verified": false
+},
+"crowley_martin_predator": {
+"check": "none",
+"domain": "functional response",
+"formula": "a*N0/((1 + a*h*N0)*(1 + c*x))",
+"in_corpus": true,
+"key": "c0/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Crowley PH, Martin EK (1989) J N Am Benthol Soc 8:211-221",
+"verified": false
+},
+"crowley_martin_prey": {
+"check": "none",
+"domain": "functional response",
+"formula": "a*x/((1 + a*h*x)*(1 + c*P))",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Crowley PH, Martin EK (1989) J N Am Benthol Soc 8:211-221",
+"verified": false
+},
+"exponential_growth": {
+"check": "ode",
+"domain": "growth",
+"formula": "N0*exp(r*x)",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)",
+"max_rel_err": 5.203315193517887e-11,
+"n_points": 72,
+"note": "",
+"reference": "Malthus TR (1798); Tjorve E, Tjorve KMC (2010) J Theor Biol 267:417-425",
+"verified": true
+},
+"gompertz": {
+"check": "library",
+"domain": "growth",
+"formula": "Linf*exp(-exp(-gi*(x - ti)))",
+"in_corpus": true,
+"key": "c0*exp(c1*exp(c2*x1))",
+"max_rel_err": 2.775907517975331e-15,
+"n_points": 75,
+"note": "",
+"reference": "Gompertz B (1825) Phil Trans R Soc 115:513-583; Ricker WE (1979) in Fish Physiology vol. 8; Ogle DH et al. FSA",
+"verified": true
+},
+"gompertz_laird": {
+"check": "ode",
+"domain": "growth",
+"formula": "V0*exp(a/b*(1 - exp(-b*x)))",
+"in_corpus": true,
+"key": "c0*exp(-c1*exp(c2*x1) + c1)",
+"max_rel_err": 4.6572071644786525e-11,
+"n_points": 72,
+"note": "",
+"reference": "Laird AK (1964) Br J Cancer 18:490-502",
+"verified": true
+},
+"gompertz_zwietering": {
+"check": "ode",
+"domain": "growth",
+"formula": "A*exp(-exp(mu*exp(1)/A*(lam - x) + 1))",
+"in_corpus": true,
+"key": "c0*exp(c1*exp(c2*x1))",
+"max_rel_err": 2.4157176259365087e-11,
+"n_points": 66,
+"note": "",
+"reference": "Zwietering MH, Jongenburger I, Rombouts FM, van 't Riet K (1990) Appl Environ Microbiol 56:1875-1881",
+"verified": true
+},
+"haldane": {
+"check": "none",
+"domain": "enzyme kinetics",
+"formula": "Vmax*x/(Km + x + x**2/Ki)",
+"in_corpus": true,
+"key": "c0*x1/(c1*x1**2 + c2 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Haldane JBS (1930) Enzymes, Longmans; Cornish-Bowden A (2012), ch. 5",
+"verified": false
+},
+"hassell_III": {
+"check": "library",
+"domain": "functional response",
+"formula": "b*x**2*T/(1 + c*x + b*h*x**2)",
+"in_corpus": true,
+"key": "c0*x1**2/(c1*x1**2 + c2 + x1)",
+"max_rel_err": 3.4773375612526846e-15,
+"n_points": 75,
+"note": "",
+"reference": "Hassell MP, Lawton JH, Beddington JR (1977) J Anim Ecol 46:249-262",
+"verified": true
+},
+"hassell_varley_predator": {
+"check": "none",
+"domain": "functional response",
+"formula": "a*N0*x**(-m)/(1 + a*h*N0*x**(-m))",
+"in_corpus": true,
+"key": "c0*x1**c1/(c2 + x1**c1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Hassell MP, Varley GC (1969) Nature 223:1133-1137; Arditi R, Akcakaya HR (1990) Oecologia 83:358-361",
+"verified": false
+},
+"hill": {
+"check": "library",
+"domain": "enzyme kinetics",
+"formula": "Vmax*x**n/(K**n + x**n)",
+"in_corpus": true,
+"key": "c0*x1**c1/(c2 + x1**c1)",
+"max_rel_err": 3.8249466372844455e-15,
+"n_points": 75,
+"note": "",
+"reference": "Hill AV (1910) J Physiol 40:iv-vii; Cornish-Bowden A (2012), ch. 12",
+"verified": true
+},
+"holling_I": {
+"check": "library",
+"domain": "functional response",
+"formula": "a*x*T",
+"in_corpus": true,
+"key": "c0*x1",
+"max_rel_err": 5.602055839865072e-15,
+"n_points": 75,
+"note": "",
+"reference": "Holling CS (1959) Can Entomol 91:385-398; Pritchard DW et al. (2017) Methods Ecol Evol 8:1528-1534 (frair)",
+"verified": true
+},
+"holling_II": {
+"check": "library",
+"domain": "functional response",
+"formula": "a*x*T/(1 + a*h*x)",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": 4.265233362719688e-15,
+"n_points": 75,
+"note": "",
+"reference": "Holling CS (1959) Can Entomol 91:385-398",
+"verified": true
+},
+"holling_III": {
+"check": "library",
+"domain": "functional response",
+"formula": "b*x**2*T/(1 + b*h*x**2)",
+"in_corpus": true,
+"key": "c0*x1**2/(c1 + x1**2)",
+"max_rel_err": 4.6119161922085456e-15,
+"n_points": 75,
+"note": "",
+"reference": "Holling CS (1959) Can Entomol 91:293-320; Hassell MP (1978) Dynamics of Arthropod Predator-Prey Systems, Princeton",
+"verified": true
+},
+"ivlev": {
+"check": "library",
+"domain": "functional response",
+"formula": "Fmax*(1 - exp(-a*x))",
+"in_corpus": true,
+"key": "-c0*exp(c1*x1) + c0",
+"max_rel_err": 4.398341242196147e-15,
+"n_points": 75,
+"note": "",
+"reference": "Ivlev VS (1961) Experimental Ecology of the Feeding of Fishes, Yale University Press",
+"verified": true
+},
+"logistic": {
+"check": "ode",
+"domain": "growth",
+"formula": "K/(1 + (K - N0)/N0*exp(-r*x))",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*x1))",
+"max_rel_err": 4.671651954168965e-11,
+"n_points": 72,
+"note": "",
+"reference": "Verhulst PF (1838) Corresp Math Phys 10:113-121; Tsoularis A, Wallace J (2002) Math Biosci 179:21-55",
+"verified": true
+},
+"michaelis_menten": {
+"check": "library",
+"domain": "enzyme kinetics",
+"formula": "Vmax*x/(Km + x)",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": 4.9169138608899295e-15,
+"n_points": 75,
+"note": "",
+"reference": "Michaelis L, Menten ML (1913) Biochem Z 49:333-369; Cornish-Bowden A (2012) Fundamentals of Enzyme Kinetics, 4th ed., Wiley-Blackwell",
+"verified": true
+},
+"mixed_inhibition": {
+"check": "none",
+"domain": "enzyme kinetics",
+"formula": "Vmax*S0/(Km*(1 + x/Kic) + S0*(1 + x/Kiu))",
+"in_corpus": true,
+"key": "c0/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Cornish-Bowden A (2012) Fundamentals of Enzyme Kinetics, 4th ed., ch. 6",
+"verified": false
+},
+"monod": {
+"check": "library",
+"domain": "microbial growth",
+"formula": "mumax*x/(Ks + x)",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": 4.4087471348295266e-15,
+"n_points": 75,
+"note": "",
+"reference": "Monod J (1949) Annu Rev Microbiol 3:371-394",
+"verified": true
+},
+"monomolecular": {
+"check": "ode",
+"domain": "growth",
+"formula": "A*(1 - b*exp(-k*x))",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2",
+"max_rel_err": 8.010148100368042e-12,
+"n_points": 71,
+"note": "",
+"reference": "Mitscherlich EA (1909) Landw Jahrb 38:537-552; Tjorve E, Tjorve KMC (2010)",
+"verified": true
+},
+"moser": {
+"check": "library",
+"domain": "microbial growth",
+"formula": "mumax*x**n/(Ks + x**n)",
+"in_corpus": true,
+"key": "c0*x1**c1/(c2 + x1**c1)",
+"max_rel_err": 5.400351829470686e-15,
+"n_points": 75,
+"note": "",
+"reference": "Moser H (1958) The Dynamics of Bacterial Populations Maintained in the Chemostat, Carnegie Institution",
+"verified": true
+},
+"pd_emax": {
+"check": "library",
+"domain": "pharmacodynamics",
+"formula": "E0 + Emax*x/(EC50 + x)",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1) + c2",
+"max_rel_err": 4.2676819787023234e-15,
+"n_points": 75,
+"note": "",
+"reference": "Holford NHG, Sheiner LB (1981) Clin Pharmacokinet 6:429-453",
+"verified": true
+},
+"pd_imax": {
+"check": "library",
+"domain": "pharmacodynamics",
+"formula": "E0*(1 - Imax*x/(IC50 + x))",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1) + c2",
+"max_rel_err": 3.2522415845509605e-15,
+"n_points": 75,
+"note": "",
+"reference": "Gabrielsson J, Weiner D (2016) Pharmacokinetic and Pharmacodynamic Data Analysis, 5th ed., Swedish Pharmaceutical Press",
+"verified": true
+},
+"pd_linear": {
+"check": "none",
+"domain": "pharmacodynamics",
+"formula": "E0 + Sl*x",
+"in_corpus": true,
+"key": "c0*x1 + c1",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Holford NHG, Sheiner LB (1981) Clin Pharmacokinet 6:429-453",
+"verified": false
+},
+"pd_loglinear": {
+"check": "none",
+"domain": "pharmacodynamics",
+"formula": "m*log(x) + b",
+"in_corpus": true,
+"key": "c0*log(x1) + c1",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Holford NHG, Sheiner LB (1981) Clin Pharmacokinet 6:429-453",
+"verified": false
+},
+"pd_sigmoid_emax": {
+"check": "library",
+"domain": "pharmacodynamics",
+"formula": "E0 + Emax*x**n/(EC50**n + x**n)",
+"in_corpus": true,
+"key": "c0*x1**c1/(c2 + x1**c1) + c3",
+"max_rel_err": 2.7350884307669475e-15,
+"n_points": 75,
+"note": "",
+"reference": "Holford NHG, Sheiner LB (1981) Clin Pharmacokinet 6:429-453; Hill AV (1910) J Physiol 40:iv-vii",
+"verified": true
+},
+"pd_sigmoid_imax": {
+"check": "library",
+"domain": "pharmacodynamics",
+"formula": "E0*(1 - Imax*x**n/(IC50**n + x**n))",
+"in_corpus": true,
+"key": "c0*x1**c1/(c2 + x1**c1) + c3",
+"max_rel_err": 3.2751579226442118e-15,
+"n_points": 75,
+"note": "",
+"reference": "Gabrielsson J, Weiner D (2016) Pharmacokinetic and Pharmacodynamic Data Analysis, 5th ed.",
+"verified": true
+},
+"pk1_iv_bolus": {
+"check": "library",
+"domain": "pharmacokinetics",
+"formula": "D/V*exp(-k10*x)",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)",
+"max_rel_err": 2.1652468484679304e-15,
+"n_points": 75,
+"note": "",
+"reference": "Gibaldi M, Perrier D (1982) Pharmacokinetics, 2nd ed., Marcel Dekker, ch. 1",
+"verified": true
+},
+"pk1_iv_infusion": {
+"check": "library",
+"domain": "pharmacokinetics",
+"formula": "R0/(k10*V)*(1 - exp(-k10*x))",
+"in_corpus": true,
+"key": "-c0*exp(c1*x1) + c0",
+"max_rel_err": 1.3322676295501878e-15,
+"n_points": 75,
+"note": "",
+"reference": "Gibaldi M, Perrier D (1982) Pharmacokinetics, 2nd ed., ch. 2",
+"verified": true
+},
+"pk1_oral": {
+"check": "library",
+"domain": "pharmacokinetics",
+"formula": "D*ka/(V*(ka - k10))*(exp(-k10*x) - exp(-ka*x))",
+"in_corpus": true,
+"key": "-c0*exp(c1*x1) + c0*exp(c2*x1)",
+"max_rel_err": 3.1086244689504383e-15,
+"n_points": 75,
+"note": "",
+"reference": "Gibaldi M, Perrier D (1982) Pharmacokinetics, 2nd ed., ch. 1; Bateman H (1910) Proc Camb Phil Soc 15:423",
+"verified": true
+},
+"pk2_iv_bolus": {
+"check": "library",
+"domain": "pharmacokinetics",
+"formula": "D/V*((al - k21)/(al - be)*exp(-al*x) + (k21 - be)/(al - be)*exp(-be*x))",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2*exp(c3*x1)",
+"max_rel_err": 8.049116928532385e-16,
+"n_points": 75,
+"note": "",
+"reference": "Gibaldi M, Perrier D (1982) Pharmacokinetics, 2nd ed., ch. 2; Abuhelwa AY, Foster DJR, Upton RN (2015) J Pharmacol Toxicol Methods 73:42-48",
+"verified": true
+},
+"pk2_iv_infusion": {
+"check": "library",
+"domain": "pharmacokinetics",
+"formula": "R0/V*((k21 - al)/(al*(be - al))*(1 - exp(-al*x)) + (k21 - be)/(be*(al - be))*(1 - exp(-be*x)))",
+"in_corpus": true,
+"key": "c0*(-c1*exp(c2*x1) + c1 - c3*exp(c4*x1) + c3)",
+"max_rel_err": 5.422125338416829e-15,
+"n_points": 75,
+"note": "",
+"reference": "Gibaldi M, Perrier D (1982) Pharmacokinetics, 2nd ed., ch. 2; Abuhelwa et al. (2015)",
+"verified": true
+},
+"pk2_oral": {
+"check": "library",
+"domain": "pharmacokinetics",
+"formula": "D*ka/V*((k21 - al)/((ka - al)*(be - al))*exp(-al*x) + (k21 - be)/((ka - be)*(al - be))*exp(-be*x) + (k21 - ka)/((al - ka)*(be - ka))*exp(-ka*x))",
+"in_corpus": true,
+"key": "c1*exp(c0*x1) + c2*exp(c4*x1) + c3*exp(c5*x1)",
+"max_rel_err": 1.1102230246251565e-15,
+"n_points": 75,
+"note": "",
+"reference": "Gibaldi M, Perrier D (1982) Pharmacokinetics, 2nd ed., ch. 2; Abuhelwa et al. (2015)",
+"verified": true
+},
+"pk3_iv_bolus": {
+"check": "library",
+"domain": "pharmacokinetics",
+"formula": "D/V*((k21 - al)*(k31 - al)/((al - be)*(al - ga))*exp(-al*x) + (k21 - be)*(k31 - be)/((be - al)*(be - ga))*exp(-be*x) + (k21 - ga)*(k31 - ga)/((ga - al)*(ga - be))*exp(-ga*x))",
+"in_corpus": true,
+"key": "c1*exp(c0*x1) + c2*exp(c4*x1) + c3*exp(c5*x1)",
+"max_rel_err": 6.661338147750939e-16,
+"n_points": 75,
+"note": "",
+"reference": "Gibaldi M, Perrier D (1982) Pharmacokinetics, 2nd ed., ch. 2 and appendix C; Abuhelwa et al. (2015)",
+"verified": true
+},
+"q10": {
+"check": "none",
+"domain": "temperature",
+"formula": "R0*Q10**((x - T0)/10)",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Hoff JH van 't (1884) Etudes de dynamique chimique",
+"verified": false
+},
+"real_flexible": {
+"check": "library",
+"domain": "functional response",
+"formula": "b*x**(q + 1)*T/(1 + b*h*x**(q + 1))",
+"in_corpus": true,
+"key": "c0*x1**c1/(c2 + x1**c1)",
+"max_rel_err": 4.156312094311262e-15,
+"n_points": 75,
+"note": "",
+"reference": "Real LA (1977) Am Nat 111:289-300",
+"verified": true
+},
+"richards": {
+"check": "library",
+"domain": "growth",
+"formula": "Linf/(1 + b1*exp(-k*(x - ti)))**(1/b1)",
+"in_corpus": true,
+"key": "c0*(c1*exp(c2*x1) + c3)**c4",
+"max_rel_err": 4.809245382527769e-15,
+"n_points": 75,
+"note": "",
+"reference": "Richards FJ (1959) J Exp Bot 10:290-300; Tjorve E, Tjorve KMC (2010) J Theor Biol 267:417-425",
+"verified": true
+},
+"ricker_sr": {
+"check": "library",
+"domain": "stock-recruitment",
+"formula": "a*x*exp(-b*x)",
+"in_corpus": true,
+"key": "c0*x1*exp(c1*x1)",
+"max_rel_err": 1.0547118733938987e-15,
+"n_points": 75,
+"note": "",
+"reference": "Ricker WE (1954) J Fish Res Board Can 11:559-623",
+"verified": true
+},
+"rogers_II": {
+"check": "library",
+"domain": "functional response",
+"formula": "x - LambertW(a*h*x*exp(-a*(T - h*x)))/(a*h)",
+"in_corpus": false,
+"key": null,
+"max_rel_err": 1.3322676295501878e-15,
+"n_points": 75,
+"note": "not expressible in the grammar",
+"reference": "Rogers D (1972) J Anim Ecol 41:369-383; Bolker BM (2008) Ecological Models and Data in R, Princeton",
+"verified": true
+},
+"shepherd_sr": {
+"check": "library",
+"domain": "stock-recruitment",
+"formula": "a*x/(1 + (b*x)**c)",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1**c2)",
+"max_rel_err": 1.1102230246251565e-15,
+"n_points": 75,
+"note": "",
+"reference": "Shepherd JG (1982) J Cons Int Explor Mer 40:67-75",
+"verified": true
+},
+"teissier": {
+"check": "library",
+"domain": "microbial growth",
+"formula": "mumax*(1 - exp(-x/Ks))",
+"in_corpus": true,
+"key": "-c0*exp(c1*x1) + c0",
+"max_rel_err": 4.951170634769125e-15,
+"n_points": 75,
+"note": "",
+"reference": "Teissier G (1942) Rev Sci 80:209-214; Okpokwasili GC, Nweke CO (2006) Afr J Biotechnol 5:305-317",
+"verified": true
+},
+"uncompetitive_inhibition": {
+"check": "none",
+"domain": "enzyme kinetics",
+"formula": "Vmax*S0/(Km + S0*(1 + x/Ki))",
+"in_corpus": true,
+"key": "c0/(c1 + x1)",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Cornish-Bowden A (2012) Fundamentals of Enzyme Kinetics, 4th ed., ch. 6",
+"verified": false
+},
+"von_bertalanffy_length": {
+"check": "library",
+"domain": "growth",
+"formula": "Linf*(1 - exp(-K*(x - t0)))",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2",
+"max_rel_err": 3.6637359812630166e-15,
+"n_points": 75,
+"note": "",
+"reference": "von Bertalanffy L (1938) Hum Biol 10:181-213; Beverton RJH, Holt SJ (1957) Fish Invest Ser II 19",
+"verified": true
+},
+"von_bertalanffy_weight": {
+"check": "ode",
+"domain": "growth",
+"formula": "Winf*(1 - exp(-K*(x - t0)))**3",
+"in_corpus": true,
+"key": "c0*(c1*exp(c2*x1) + c3)**3",
+"max_rel_err": 7.285727576800127e-12,
+"n_points": 52,
+"note": "",
+"reference": "von Bertalanffy L (1957) Q Rev Biol 32:217-231; Beverton RJH, Holt SJ (1957)",
+"verified": true
+},
+"weibull_growth": {
+"check": "none",
+"domain": "growth",
+"formula": "A*(1 - exp(-(x/l)**k))",
+"in_corpus": true,
+"key": "-c0*exp(c1*x1**c2) + c0",
+"max_rel_err": null,
+"n_points": 0,
+"note": "",
+"reference": "Yang RC, Kozak A, Smith JHG (1978) Can J For Res 8:424-431",
+"verified": false
+}
+},
+"versions": "R=4.5.1;linpk=1.1.2;drc=4.0.0;frair=0.5.203;FSA=0.10.1;deSolve=1.42;lamW=2.2.7"
+}

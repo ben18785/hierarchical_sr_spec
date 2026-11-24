@@ -16,16 +16,19 @@ GC = config["grammar_compare"]
 SEEDS = GC["seeds"]
 
 
+TRANSFER = ["curvelib", "sabiork", "cellml", "biocat"]
+
+
 rule all:
     input:
         "results/grammar/table.md",
-        "results/grammar/transfer_curvelib/table.md",
+        expand("results/grammar/transfer_{name}/table.md", name=TRANSFER),
 
 
 rule grammar:
     input:
         "results/grammar/table.md",
-        "results/grammar/transfer_curvelib/table.md",
+        expand("results/grammar/transfer_{name}/table.md", name=TRANSFER),
 
 
 # ---------------------------------------------------------------- corpora
@@ -55,6 +58,111 @@ rule curvelib_corpus:
         HSR_ENV
     shell:
         "PYTHONPATH={ROOT} python workflow/scripts/curvelib_build.py {input.src} {input.ev} {output}"
+
+
+rule sabiork_fetch:
+    """Snapshot of every SABIO-RK kinetic-law entry (export API, JSON; ~80
+    requests at <= 40 per minute). The manifest records the date, URLs and
+    sha256 of each page; delete results/corpora/raw/sabiork to refresh."""
+    output:
+        "results/corpora/raw/sabiork/manifest.json",
+    params:
+        raw="results/corpora/raw/sabiork",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py sabiork_fetch {params.raw}"
+
+
+rule sabiork_corpus:
+    """Rate laws reduced to generalised one-variable skeletons, one model per publication (committed)."""
+    input:
+        man="results/corpora/raw/sabiork/manifest.json",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_sabiork.json",
+    params:
+        raw="results/corpora/raw/sabiork",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py sabiork_build {params.raw} {output} {threads}"
+
+
+rule cellml_fetch:
+    """Snapshot of the CellML files of every Physiome Model Repository exposure
+    (one archive per workspace at the exposed changeset; ~2 requests per
+    exposure at <= 40 per minute). Delete results/corpora/raw/cellml to refresh."""
+    output:
+        "results/corpora/raw/cellml/manifest.json",
+    params:
+        raw="results/corpora/raw/cellml",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py cellml_fetch {params.raw}"
+
+
+rule cellml_equations:
+    """Equations of every CellML file of the snapshot (libcellml: parse, resolve
+    imports locally, flatten, analyse, generate Python; one process per file)."""
+    input:
+        man="results/corpora/raw/cellml/manifest.json",
+        code="workflow/scripts/cellml_extract.py",
+    output:
+        "results/corpora/cellml_equations.json",
+    params:
+        raw="results/corpora/raw/cellml",
+    threads: 4
+    conda:
+        "envs/cellml.yaml"
+    shell:
+        "python workflow/scripts/cellml_extract.py all {params.raw} {output} {threads}"
+
+
+rule cellml_corpus:
+    """CellML equations reduced to generalised one-variable skeletons, one model per workspace (committed)."""
+    input:
+        eq="results/corpora/cellml_equations.json",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_cellml.json",
+    threads: 4
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py cellml_build {input.eq} {output} {threads}"
+
+
+rule biocat_eval:
+    """Evaluate independent implementations (linpk, drc, frair, FSA, or the
+    defining ODE with deSolve) of the curated catalogue's forms at fixed random
+    parameters; package versions are written alongside."""
+    input:
+        src="hsr/data/sources/bio_catalogue.csv",
+        code="workflow/scripts/biocat_eval.R",
+    output:
+        csv="results/corpora/biocat_eval.csv",
+        versions="results/corpora/biocat_eval.csv.versions",
+    params:
+        rlib=config.get("r_lib", ""),
+    shell:
+        "Rscript workflow/scripts/biocat_eval.R {input.src} {output.csv} '{params.rlib}'"
+
+
+rule biocat_corpus:
+    """Verified, canonicalised corpus of the curated catalogue (committed)."""
+    input:
+        src="hsr/data/sources/bio_catalogue.csv",
+        ev="results/corpora/biocat_eval.csv",
+        code=["hsr/corpus_sources.py", "hsr/corpus.py", "hsr/canonical.py", "hsr/grammar_compare.py"],
+    output:
+        "hsr/data/corpus_biocat.json",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py catalogue_build {input.src} {input.ev} {output}"
 
 
 rule transfer_folds:
