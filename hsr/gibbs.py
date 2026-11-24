@@ -170,11 +170,42 @@ def _log_w_pair(lg1, lg2):
         return a1 + a2 + np.log1p(-np.exp(r))
 
 
-def _sequential_allocation(rng, model, S, i, j, label_score, target=None):
+SHORTLIST_TOP = 10
+
+
+def _label_shortlist(model, S, full, prior_fn, allowed, k_top=None):
+    """Best-label function for sequential allocation, restricted to a shortlist
+    that depends only on the merged cluster S: the k_top labels with the
+    largest weight ``full`` for S, plus each member's best label on its own
+    (from the precomputed singleton marginals). Being a function of S alone,
+    the shortlist is the same when a split is proposed and when the reverse
+    of a merge is evaluated, so the proposal probabilities stay exact. Scoring
+    a sub-cluster then costs |shortlist| single marginals instead of a full
+    pass over all candidates.
+
+    ``prior_fn(m)`` gives the label-dependent log prior weight (C,) of a
+    cluster of size m; ``full`` is prior_fn(|S|) + M(S), -inf where not allowed."""
+    k_top = SHORTLIST_TOP if k_top is None else k_top
+    mem = sorted(S)
+    single = model.singletons()[mem] + prior_fn(1)[None, :]
+    single = np.where(allowed[None, :], single, -np.inf)
+    cand = set(np.argsort(-full)[:k_top].tolist()) | set(np.argmax(single, axis=1).tolist())
+    idx = np.array(sorted(e for e in cand if allowed[e]), int)
+    if len(idx) == 0:
+        idx = np.flatnonzero(allowed)[:1]
+
+    def best(T):
+        pr = prior_fn(len(T))[idx]
+        sc = pr + np.array([model.marginal(int(e), sorted(T)) for e in idx])
+        return int(idx[int(np.argmax(sc))])
+    return best
+
+
+def _sequential_allocation(rng, model, S, i, j, best_label, target=None):
     """Sequential allocation (Dahl 2003) of the members of S other than i and j
     to two sides seeded with i and j, in random order. Each member k goes to
     side s with probability proportional to |T_s| exp(M_{e_s}(T_s + k) - M_{e_s}(T_s)),
-    where e_s is the side's best label under ``label_score`` (refreshed when
+    where e_s is the side's best label, ``best_label(T_s)`` (refreshed when
     the side's size reaches 1, 2, 4, 8, ...), so placements follow the groups
     as they form rather than the two seeds alone.
 
@@ -182,7 +213,7 @@ def _sequential_allocation(rng, model, S, i, j, label_score, target=None):
     probability of proposing a given split (for the reverse of a merge).
     Returns (side sets, log proposal probability)."""
     T = [{int(i)}, {int(j)}]
-    lab = [int(np.argmax(label_score(T[0]))), int(np.argmax(label_score(T[1])))]
+    lab = [best_label(T[0]), best_label(T[1])]
     cur = [model.marginal(lab[0], sorted(T[0])), model.marginal(lab[1], sorted(T[1]))]
     nxt_refresh = [2, 2]
     logq = 0.0
@@ -199,7 +230,7 @@ def _sequential_allocation(rng, model, S, i, j, label_score, target=None):
         cur[side] = new[side]
         if len(T[side]) >= nxt_refresh[side]:
             nxt_refresh[side] *= 2
-            lab[side] = int(np.argmax(label_score(T[side])))
+            lab[side] = best_label(T[side])
             cur[side] = model.marginal(lab[side], sorted(T[side]))
     return T[0], T[1], logq
 
@@ -226,11 +257,17 @@ def _split_merge(rng, z, n_e, members, Mc, model, log_p, gamma, logsim, n_prop):
         allowed = n_e == 0
         allowed[ci] = True
         allowed[cj] = True
-        score = lambda T: _cluster_label_weights(model, T, log_p, gamma, allowed)
+        gp = gamma * np.exp(log_p)
+        with np.errstate(divide="ignore"):
+            lgp = np.log(gp)
+
+        def prior_fn(mm):
+            return lgp + (np.log(np.arange(1, mm)[:, None] + gp[None, :]).sum(axis=0) if mm > 1 else 0.0)
         if ci == cj:
             S = members[ci]
-            Si, Sj, logq = _sequential_allocation(rng, model, S, i, j, score)
             lgS = _cluster_label_weights(model, S, log_p, gamma, allowed)
+            best = _label_shortlist(model, S, lgS, prior_fn, allowed)
+            Si, Sj, logq = _sequential_allocation(rng, model, S, i, j, best)
             lg1 = _cluster_label_weights(model, Si, log_p, gamma, allowed)
             lg2 = _cluster_label_weights(model, Sj, log_p, gamma, allowed)
             log_a = _log_w_pair(lg1, lg2) - logsumexp(lgS) - logq
@@ -256,9 +293,10 @@ def _split_merge(rng, z, n_e, members, Mc, model, log_p, gamma, logsim, n_prop):
         else:
             Si, Sj = members[ci], members[cj]
             S = Si | Sj
-            _, _, logq = _sequential_allocation(rng, model, S, i, j, score,
-                                                target={k: (0 if k in Si else 1) for k in S})
             lgS = _cluster_label_weights(model, S, log_p, gamma, allowed)
+            best = _label_shortlist(model, S, lgS, prior_fn, allowed)
+            _, _, logq = _sequential_allocation(rng, model, S, i, j, best,
+                                                target={k: (0 if k in Si else 1) for k in S})
             lg1 = _cluster_label_weights(model, Si, log_p, gamma, allowed)
             lg2 = _cluster_label_weights(model, Sj, log_p, gamma, allowed)
             log_a = logsumexp(lgS) - _log_w_pair(lg1, lg2) + logq

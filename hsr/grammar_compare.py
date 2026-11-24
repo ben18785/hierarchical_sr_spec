@@ -522,6 +522,19 @@ def source_items(path, gen_map):
     return out
 
 
+def weight_sources(parts: dict, weighting="equal") -> list:
+    """Concatenate per-source training lists. 'pooled': every model-form pair
+    once; 'equal': each source replicated to the size of the largest, so every
+    source carries the same total weight."""
+    parts = {n: v for n, v in parts.items() if v}
+    if weighting == "equal":
+        big = max(len(v) for v in parts.values())
+        return [k for v in parts.values() for k in v * max(1, round(big / len(v)))]
+    if weighting == "pooled":
+        return [k for v in parts.values() for k in v]
+    raise ValueError(weighting)
+
+
 def make_loso(gen_map: dict, test: str, weighting="pooled", sources=None, candidates=CANDIDATES) -> dict:
     """Leave one source out: train on every other source, test on ``test``.
     weighting: 'pooled' (every model-form pair counts once) or 'equal' (each
@@ -530,13 +543,7 @@ def make_loso(gen_map: dict, test: str, weighting="pooled", sources=None, candid
     sources = sources or SOURCES
     items = {name: source_items(p, gen_map) for name, p in sources.items()}
     train_parts = {n: v for n, v in items.items() if n != test}
-    if weighting == "equal":
-        big = max(len(v) for v in train_parts.values())
-        train = [k for v in train_parts.values() for k in v * max(1, round(big / len(v)))]
-    elif weighting == "pooled":
-        train = [k for v in train_parts.values() for k in v]
-    else:
-        raise ValueError(weighting)
+    train = weight_sources(train_parts, weighting)
     with open(candidates) as fh:
         cand = json.load(fh)["keys"]
     support = sorted({gen_map.get(c, c) for c in cand} - {None} | {k for v in items.values() for k in v})

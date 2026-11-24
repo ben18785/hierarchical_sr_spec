@@ -184,3 +184,11 @@ def test_themes_split_merge_matches_enumeration(single_site):
     res = run_gibbs_themes(L, counts, g, kernel, cfg, tcfg)
     assert np.abs(res.assign_probs - Pz).max() < 0.02
     assert np.abs(res.theme_probs - Pt).max() < 0.02
+
+
+def test_themes_split_merge_exact_with_restricted_label_shortlist(monkeypatch):
+    """As the plain test, with the sequential-allocation label shortlist cut
+    to the members' own best labels."""
+    import hsr.gibbs as hg
+    monkeypatch.setattr(hg, "SHORTLIST_TOP", 0)
+    test_themes_split_merge_matches_enumeration(False)

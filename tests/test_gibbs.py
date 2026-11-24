@@ -285,3 +285,13 @@ def test_until_converged_extends_chains_and_reports_why_it_stopped():
     capped = run_gibbs(L, counts, g, GibbsConfig(n_sweeps=20, burn_in=10, n_chains=2, until_converged=True,
                                                  extend_by=5, max_sweeps=30, seed=4))
     assert capped.sweeps <= 30 and capped.stopped in ("converged", "cap")
+
+
+def test_split_merge_exact_with_restricted_label_shortlist(monkeypatch):
+    """With the label shortlist cut to the members' own best labels
+    (SHORTLIST_TOP = 0), sequential allocation uses fewer labels than exist;
+    the proposal is still a function of the merged cluster only, so the
+    split-merge chain (no single-site moves) stays exact."""
+    import hsr.gibbs as hg
+    monkeypatch.setattr(hg, "SHORTLIST_TOP", 0)
+    test_split_merge_matches_exact_posterior(False)

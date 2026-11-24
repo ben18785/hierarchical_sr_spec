@@ -45,7 +45,7 @@ from scipy.special import logsumexp
 
 from scipy.special import gammaln
 
-from .gibbs import GibbsConfig, GibbsResult, _log_similarity, _sequential_allocation, escobar_west_gamma
+from .gibbs import GibbsConfig, GibbsResult, _label_shortlist, _log_similarity, _sequential_allocation, escobar_west_gamma
 from .grammar import Grammar
 
 
@@ -183,14 +183,18 @@ def _split_merge_themes(rng, z, n_e, members, Mc, theme, m, model, kernel, rho, 
 
         with np.errstate(divide="ignore"):
             lpw = np.log(pw)
-        score = lambda T: np.where(allowed, lpw + model.marginal_all(sorted(T)), -np.inf)
+        prior_fn = lambda mm: lpw
         if ci == cj:
             S = members[ci]
-            Si, Sj, logq = _sequential_allocation(rng, model, S, i, j, score)
         else:
             Si, Sj = members[ci], members[cj]
             S = Si | Sj
-            _, _, logq = _sequential_allocation(rng, model, S, i, j, score,
+        best = _label_shortlist(model, S, np.where(allowed, lpw + model.marginal_all(sorted(S)), -np.inf),
+                                prior_fn, allowed)
+        if ci == cj:
+            Si, Sj, logq = _sequential_allocation(rng, model, S, i, j, best)
+        else:
+            _, _, logq = _sequential_allocation(rng, model, S, i, j, best,
                                                 target={k: (0 if k in Si else 1) for k in S})
         a, ca = scaled(S)
         a1, c1 = scaled(Si)

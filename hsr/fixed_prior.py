@@ -3,10 +3,14 @@
 With ``--prior fnprior`` the base measure of the Dirichlet process is the
 n-gram prior on functions of Bartlett & Desmond (fnprior, Kneser-Ney
 smoothing, start-of-tree context, constants coded separately from the
-variable), trained on the BioModels corpus: every model contributes its
-distinct forms once, after numeric literals are generalised to constants
-(hsr.grammar_compare.generalise). This prior won the held-out comparison of
-priors on the corpus (workflow/Snakefile, rule ``grammar``).
+variable), trained by default on all the biology corpora in
+hsr.grammar_compare.SOURCES (BioModels, SABIO-RK, CellML, R curve libraries,
+biology catalogue) with equal weight per source: within a source every model
+contributes its distinct forms once, after numeric literals are generalised to
+constants (hsr.grammar_compare.generalise), and each source is replicated to
+the size of the largest. This prior (with this weighting) won the held-out and
+leave-one-source-out comparisons of priors (workflow/Snakefile, rule
+``grammar``). ``corpus="biomodels"`` gives the earlier BioModels-only prior.
 
 The prior is fixed: the grammar's rule probabilities are no longer updated
 during sampling; the DP, pooled constants and themes are unchanged.
@@ -103,23 +107,49 @@ def _training_keys(corpus, exclude):
     return out
 
 
-def fnprior_model(corpus=CORPUS, exclude=()):
-    """Trained fnprior FunctionPrior (memoised per corpus and exclusion set)."""
-    key = (os.path.abspath(corpus), tuple(sorted(exclude)))
+def _combined_training_keys(exclude, weighting="equal"):
+    """Training keys from every source in hsr.grammar_compare.SOURCES, with the
+    given source weighting (keys matching ``exclude`` after generalisation are dropped)."""
+    from .grammar_compare import SOURCES, generalise, weight_sources
+    parts = {}
+    for name, path in SOURCES.items():
+        if os.path.abspath(path) == os.path.abspath(CORPUS):
+            parts[name] = _training_keys(path, exclude)
+            continue
+        ex = set()
+        for k in exclude:
+            try:
+                ex.add(generalise(k))
+            except Exception:
+                ex.add(k)
+        with open(path) as fh:
+            pm = json.load(fh)["per_model"]
+        # these corpora are stored with literals already generalised
+        parts[name] = [k for ks in pm.values() for k in sorted(set(ks)) if k not in ex]
+    return weight_sources(parts, weighting)
+
+
+def fnprior_model(corpus="combined", exclude=(), weighting="equal"):
+    """Trained fnprior FunctionPrior (memoised per corpus, weighting and
+    exclusion set). corpus: "combined" (all sources), "biomodels", or a path."""
+    if corpus == "biomodels":
+        corpus = CORPUS
+    key = (corpus if corpus == "combined" else os.path.abspath(corpus), weighting, tuple(sorted(exclude)))
     if key not in _MODELS:
         import tempfile
         from . import fnprior_tools as mod
-        keys = _training_keys(corpus, exclude)
+        keys = (_combined_training_keys(exclude, weighting) if corpus == "combined"
+                else _training_keys(corpus, exclude))
         with tempfile.TemporaryDirectory() as tmp:
             kp = mod.train(keys, False, 2, tmp, "corpus")
         _MODELS[key] = (kp, mod, len(keys))
     return _MODELS[key]
 
 
-def fnprior_log_prior(skeleton_keys, corpus=CORPUS, exclude=()):
+def fnprior_log_prior(skeleton_keys, corpus="combined", exclude=(), weighting="equal"):
     """log P(e) under fnprior for each key (floor for unscorable keys: the
     smallest finite value minus 10 nats)."""
-    kp, mod, _ = fnprior_model(corpus, exclude)
+    kp, mod, _ = fnprior_model(corpus, exclude, weighting)
     v = mod.score(kp, list(skeleton_keys))
     arr = np.array([np.nan if x is None else x for x in v], float)
     if np.any(~np.isfinite(arr)):
