@@ -1,0 +1,102 @@
+"""Reproducible analyses for hsr.
+
+    snakemake --use-conda --cores 4                 # everything
+    snakemake --use-conda --cores 4 grammar         # prior comparison only
+
+Heavy fits run on GitHub Actions (.github/workflows/benchmark.yml); rules here
+consume their artifacts by run ID (config/config.yaml) and build every table.
+"""
+import os
+
+configfile: "config/config.yaml"
+
+ROOT = os.path.abspath(os.path.join(workflow.basedir, ".."))
+HSR_ENV = "envs/hsr.yaml"
+GC = config["grammar_compare"]
+SEEDS = GC["seeds"]
+
+
+rule all:
+    input:
+        "results/grammar/table.md",
+
+
+rule grammar:
+    input:
+        "results/grammar/table.md",
+
+
+rule generalised:
+    """Literal-free generalisation of every corpus and candidate form (slow: sympy)."""
+    input:
+        corpus="hsr/data/corpus.json",
+        candidates="hsr/data/candidates.json",
+        code=["hsr/canonical.py"],
+    output:
+        "results/grammar/generalised.json",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py generalised {output}"
+
+
+rule folds:
+    input:
+        gen="results/grammar/generalised.json",
+        code=["hsr/grammar_compare.py", "workflow/scripts/grammar_steps.py"],
+    output:
+        "results/grammar/seed{seed}/folds.json",
+    params:
+        k=GC["k"],
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py folds {input.gen} {output} {params.k} {wildcards.seed}"
+
+
+rule grammar_scores:
+    input:
+        folds="results/grammar/seed{seed}/folds.json",
+        code="hsr/grammar_compare.py",
+    output:
+        "results/grammar/seed{seed}/ours.json",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py ours {input.folds} {output}"
+
+
+rule fnprior_scores:
+    input:
+        folds="results/grammar/seed{seed}/folds.json",
+        code="workflow/scripts/fnprior_score.py",
+    output:
+        "results/grammar/seed{seed}/fnprior.json",
+    conda:
+        "envs/fnprior.yaml"
+    shell:
+        "python workflow/scripts/fnprior_score.py {input.folds} {output}"
+
+
+rule grammar_table_seed:
+    input:
+        folds="results/grammar/seed{seed}/folds.json",
+        ours="results/grammar/seed{seed}/ours.json",
+        fnp="results/grammar/seed{seed}/fnprior.json",
+    output:
+        json="results/grammar/seed{seed}/table.json",
+        md="results/grammar/seed{seed}/table.md",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py table {input.folds} {output.json} {output.md} "
+        "{input.ours} {input.fnp}"
+
+
+rule grammar_table:
+    input:
+        expand("results/grammar/seed{seed}/table.md", seed=SEEDS),
+    output:
+        "results/grammar/table.md",
+    shell:
+        "for f in {input}; do echo \"## $(dirname $f | xargs basename)\"; cat $f; echo; done > {output}"

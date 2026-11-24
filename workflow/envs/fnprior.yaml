@@ -1,0 +1,13 @@
+# fnprior (Bartlett & Desmond n-gram prior on functions) in its own environment,
+# so that its pinned dependencies cannot change hsr's canonicalisation.
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - fnprior==0.5.0
+      - numpy==2.5.5
+      - scipy==1.18.1
+      - sympy==1.14.0
+      - pandas==3.1.1

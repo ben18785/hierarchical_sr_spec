@@ -4,3 +4,6 @@ __pycache__/
 .pytest_cache/
 results/raw/
 .DS_Store
+.snakemake/
+results/grammar/seed*/
+results/grammar/generalised.json
