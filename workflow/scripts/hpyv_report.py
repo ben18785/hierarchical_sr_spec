@@ -146,6 +146,11 @@ def main():
                 parts.append("lambda: " + ", ".join(f"{g} [{', '.join(f'{x:.2f}' for x in v)}]"
                                                     for g, v in h["lambda"].items()))
             L.append(f"- **{p}**: " + "; ".join(parts))
+    if "fnprior_kn" in C and "fnprior_max_p_y" in C["fnprior_kn"]:
+        c = C["fnprior_kn"]
+        L.append(f"\nfnprior's conditionals over its own vocabulary (including y, a second variable) sum to one "
+                 f"to within {c['fnprior_full_vocab_max_abs_sum_minus_1']:.1e} in every context; P(y) is at most "
+                 f"{c['fnprior_max_p_y']:.4f}, mass outside the one-variable space (the '(y)' deviation above).")
     with open(a.trees) as fh:
         chk = json.load(fh)["check"]
     L.append("\n## Tree coding\n")

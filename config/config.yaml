@@ -36,3 +36,7 @@ hpyv:
     hpy2_dhpy: {n: 2, source: true, graph: [s]}
     form_ad: {model: adaptor, mode: root, n: 2}
     tree_ad: {model: adaptor, mode: all, n: 2}
+    hpy3_depth: {n: 3, depth_cap: 6}
+    form_ad3: {model: adaptor, mode: root, n: 3}
+    tree_ad3: {model: adaptor, mode: all, n: 3}
+    tree_ad_depth: {model: adaptor, mode: all, n: 2, depth_cap: 6}

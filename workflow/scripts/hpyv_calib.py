@@ -82,6 +82,23 @@ def main(folds_path, trees_path, variant_path, out_path, sweeps=20, keep=10, n_s
     if var["name"].startswith("fnprior"):
         nd, key = fnprior_dist(kp)
         dists, keyf = [nd], key
+        # fnprior's own conditionals over its full vocabulary (with the second
+        # variable y) sum to one in every context; P(y) is mass outside the
+        # one-variable space
+        code = kp.coder.code
+        ops = [None] + list(tc.UNARY + tc.BINARY)
+        cd = lambda s: code["None"] if s is None else code[s]    # noqa: E731
+        dev, py = [], []
+        for g in ops:
+            for p in ops:
+                dev.append(abs(sum(kp.backoff_left.get_pbo(w, (cd(g), cd(p))) for w in kp.vocab_left) - 1))
+            for p in tc.BINARY:
+                for sib in tc.V:
+                    ctx = (cd(g), cd(p), cd(sib))
+                    dev.append(abs(sum(kp.backoff_right.get_pbo(w, ctx) for w in kp.vocab_right) - 1))
+                    py.append(kp.backoff_right.get_pbo(code["y"], ctx))
+        out["fnprior_full_vocab_max_abs_sum_minus_1"] = float(max(dev))
+        out["fnprior_max_p_y"] = float(max(py))
     else:
         spec = ContextSpec(**{k: var[k] for k in SPEC_ARGS if k in var})
         src = ["biomodels"] * len(trees)

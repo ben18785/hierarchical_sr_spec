@@ -459,11 +459,12 @@ rule hpyv_report:
         scores=expand("results/grammar/{run}/hpyv_{v}.json", run=HPYV_RUNS, v=HPYV_VARIANTS),
         calib=expand("results/grammar/hpyv/calib_{v}.json", v=HPYV_VARIANTS + ["fnprior_kn"]),
         trees="results/grammar/hpyv/trees.json",
+        notes="workflow/notes/hpy_variants.md",
         code="workflow/scripts/hpyv_report.py",
     output:
         "results/grammar/hpy_variants.md",
     conda:
         HSR_ENV
     shell:
-        "PYTHONPATH={ROOT} python workflow/scripts/hpyv_report.py {output} {input.trees} "
+        "PYTHONPATH={ROOT} python workflow/scripts/hpyv_report.py {output} {input.trees} --notes {input.notes} "
         "--tables {input.tables} --scores {input.scores} --calib {input.calib}"
