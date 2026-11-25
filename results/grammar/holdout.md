@@ -63,6 +63,79 @@ Novel: generalised form absent from the training sources.
 | cf | -15.70 / -28.48 | -15.91 / -29.01 | -14.16 / -36.98 | -14.27 / -36.47 | -15.35 / -41.07 | -15.49 / -42.18 | -14.59 / -37.44 | -14.72 / -38.30 |
 | default_prior | -17.67 / -31.32 | -17.67 / -31.32 | -16.14 / -47.12 | -16.14 / -47.12 | -17.40 / -44.97 | -17.40 / -44.97 | -16.58 / -41.42 | -16.58 / -41.42 |
 
+## Why novel forms score low
+
+Novel forms are larger than seen ones, and every prior pays per node. sym0 (symbol frequencies only) measures what size and symbol use alone cost.
+
+### Log P by node count (all hold-outs; seen / novel; pairs in brackets)
+
+equal weighting:
+
+| prior | 1-5 nodes | 6-9 nodes | 10-14 nodes | 15-20 nodes | 21-10000 nodes |
+|---|---|---|---|---|---|
+| pairs (seen / novel) | 154 / 0 | 175 / 9 | 122 / 17 | 14 / 11 | 26 / 15 |
+| form_ad3_depth | -2.99 /  | -3.80 / -16.83 | -4.98 / -17.88 | -8.63 / -23.04 | -8.48 / -40.89 |
+| tree_ad3 | -2.99 /  | -3.80 / -16.51 | -4.98 / -18.00 | -8.63 / -23.41 | -8.49 / -42.53 |
+| form_ad | -2.99 /  | -3.80 / -17.33 | -4.98 / -18.62 | -8.64 / -24.56 | -8.49 / -41.79 |
+| hpy3_depth | -3.05 /  | -3.94 / -14.01 | -6.44 / -14.24 | -10.16 / -19.49 | -17.79 / -46.16 |
+| hpy | -3.13 /  | -5.21 / -12.24 | -7.81 / -13.65 | -12.60 / -19.74 | -21.81 / -41.96 |
+| hpy2 | -3.13 /  | -5.21 / -12.24 | -7.81 / -13.63 | -12.60 / -19.68 | -21.81 / -42.09 |
+| fnprior_kn | -3.13 /  | -5.21 / -12.26 | -7.81 / -13.66 | -12.60 / -20.04 | -21.81 / -42.68 |
+| fnprior_kn_tuned | -3.13 /  | -5.21 / -12.25 | -7.81 / -13.80 | -12.60 / -20.31 | -21.81 / -43.41 |
+| hpy2_src | -3.32 /  | -5.76 / -12.25 | -8.60 / -14.64 | -13.78 / -20.84 | -21.19 / -42.99 |
+| sym0 | -6.53 /  | -11.97 / -17.67 | -17.54 / -21.49 | -25.98 / -27.08 | -39.84 / -51.61 |
+| uniform symbols | -11.39 /  | -18.60 / -21.09 | -27.50 / -29.72 | -42.14 / -42.44 | -64.72 / -78.49 |
+
+pooled weighting:
+
+| prior | 1-5 nodes | 6-9 nodes | 10-14 nodes | 15-20 nodes | 21-10000 nodes |
+|---|---|---|---|---|---|
+| pairs (seen / novel) | 154 / 0 | 175 / 9 | 122 / 17 | 14 / 11 | 26 / 15 |
+| form_ad3_depth | -3.08 /  | -4.07 / -14.59 | -5.49 / -15.79 | -8.87 / -20.78 | -9.49 / -38.98 |
+| tree_ad3 | -3.08 /  | -4.07 / -14.43 | -5.48 / -16.01 | -8.80 / -21.31 | -9.49 / -40.06 |
+| form_ad | -3.08 /  | -4.07 / -15.18 | -5.49 / -16.46 | -8.90 / -22.45 | -9.51 / -40.42 |
+| hpy3_depth | -3.16 /  | -4.16 / -12.74 | -7.15 / -14.11 | -10.40 / -20.34 | -21.13 / -43.84 |
+| hpy | -3.31 /  | -5.73 / -12.73 | -7.91 / -14.21 | -13.02 / -21.09 | -22.61 / -42.34 |
+| hpy2 | -3.30 /  | -5.73 / -12.71 | -7.91 / -14.22 | -13.02 / -21.14 | -22.59 / -42.76 |
+| fnprior_kn | -3.31 /  | -5.73 / -12.82 | -7.91 / -14.19 | -13.02 / -21.44 | -22.59 / -42.99 |
+| fnprior_kn_tuned | -3.30 /  | -5.73 / -12.80 | -7.91 / -14.24 | -13.02 / -21.64 | -22.59 / -43.53 |
+| hpy2_src | -3.63 /  | -6.13 / -11.53 | -8.30 / -13.72 | -13.87 / -19.86 | -21.55 / -39.48 |
+| sym0 | -6.47 /  | -12.32 / -18.05 | -17.42 / -22.41 | -25.83 / -27.87 | -40.43 / -52.50 |
+| uniform symbols | -11.39 /  | -18.60 / -21.09 | -27.50 / -29.72 | -42.14 / -42.44 | -64.72 / -78.49 |
+
+### Novelty at fixed size, relative to sym0, and without redundant forms (all hold-outs)
+
+per node: OLS slope of log P on node count; novel penalty: OLS coefficient of the novel indicator at fixed node count (log P = a + b nodes + g novel, over model-form pairs); vs sym0: log P minus sym0's log P, seen / novel; novel (non-redundant): mean log P of novel pairs whose constants are identifiable.
+
+| prior | weighting | seen | novel | gap | per node | novel penalty | vs sym0 seen / novel | novel (non-redundant) |
+|---|---|---|---|---|---|---|---|---|
+| form_ad3_depth | equal | -4.23 | -25.43 | 21.20 | -0.64 | -15.34 | 9.30 / 5.28 | -24.49 |
+| form_ad3_depth | pooled | -4.53 | -23.33 | 18.79 | -0.67 | -12.70 | 9.09 / 8.16 | -22.26 |
+| tree_ad3 | equal | -4.23 | -25.96 | 21.74 | -0.69 | -15.48 | 9.30 / 4.74 | -24.87 |
+| tree_ad3 | pooled | -4.53 | -23.79 | 19.26 | -0.70 | -12.89 | 9.10 / 7.69 | -22.59 |
+| form_ad | equal | -4.23 | -26.34 | 22.11 | -0.62 | -16.44 | 9.30 / 4.36 | -25.11 |
+| form_ad | pooled | -4.54 | -24.42 | 19.88 | -0.67 | -13.82 | 9.09 / 7.07 | -23.04 |
+| hpy3_depth | equal | -5.19 | -24.52 | 19.33 | -1.09 | -9.44 | 8.33 / 6.18 | -23.61 |
+| hpy3_depth | pooled | -5.67 | -23.77 | 18.10 | -1.11 | -7.98 | 7.96 / 7.72 | -21.89 |
+| hpy | equal | -6.29 | -22.86 | 16.57 | -1.10 | -6.59 | 7.23 / 7.84 | -21.34 |
+| hpy | pooled | -6.61 | -23.53 | 16.91 | -1.10 | -6.87 | 7.02 / 7.96 | -21.60 |
+| hpy2 | equal | -6.29 | -22.88 | 16.59 | -1.10 | -6.59 | 7.23 / 7.82 | -21.33 |
+| hpy2 | pooled | -6.61 | -23.66 | 17.05 | -1.12 | -6.91 | 7.02 / 7.83 | -21.71 |
+| fnprior_kn | equal | -6.29 | -23.14 | 16.84 | -1.11 | -6.72 | 7.23 / 7.57 | -21.53 |
+| fnprior_kn | pooled | -6.61 | -23.80 | 17.19 | -1.12 | -7.03 | 7.02 / 7.69 | -21.79 |
+| fnprior_kn_tuned | equal | -6.29 | -23.45 | 17.16 | -1.13 | -6.93 | 7.23 / 7.25 | -21.82 |
+| fnprior_kn_tuned | pooled | -6.61 | -24.01 | 17.40 | -1.13 | -7.14 | 7.02 / 7.48 | -21.98 |
+| hpy2_src | equal | -6.75 | -23.72 | 16.97 | -1.09 | -7.02 | 6.78 / 6.99 | -22.15 |
+| hpy2_src | pooled | -6.92 | -22.07 | 15.15 | -1.04 | -5.70 | 6.71 / 9.42 | -20.68 |
+| sym0 | equal | -13.52 | -30.70 | 17.18 | -1.64 | -2.31 | 0.00 / 0.00 | -28.95 |
+| sym0 | pooled | -13.63 | -31.49 | 17.86 | -1.67 | -2.65 | 0.00 / 0.00 | -29.86 |
+| uniform symbols | equal | -21.66 | -44.99 | 23.32 | -2.56 | 0.00 | -8.14 / -14.28 | -40.97 |
+| uniform symbols | pooled | -21.66 | -44.99 | 23.32 | -2.56 | 0.00 | -8.04 / -13.50 | -40.97 |
+
+Redundant novel forms (constants not identifiable; Jacobian rank test): rnls 3 of 14 distinct (3 of 14 pairs), ratelaws 1 of 1 distinct (3 of 3 pairs), ecocat2 7 of 32 distinct (7 of 35 pairs), all 11 of 45 distinct (13 of 52 pairs).
+
+Redundant novel keys: `(c0**x1*c1 + c2)/(c0**x1*c3 + c4 + c1/c0**x1)`; `c0*(c1 + c2*x1)*(c3 + x1)/(c4 + x1)`; `c0*(c1*x1 + c2)**c3/x1`; `c0*exp((c1 + c2*(c3 + x1))*(c3 + x1)**2)`; `c0*exp(c1*x1)/(c0*exp(c1*x1) + c2) + c3`; `c0*exp(c3*c4/x1 + c4)/(c1 - exp(c2)*exp(c2*c3/x1))`; `c0*x1/sqrt(c1*x1**2 + c2) + c3`; `c2*exp(c3/(c8 + x1))/(c4*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))`; `c3*(c5*x1 + c6)/(c3*(c1*(c0*x1 + c7) + c2) + c4)`; `c5*exp(c4*(c2 + log(x1))**2) + c6**(x1**c7)*c8/(c6**(x1**c7)*c8 + c9) + exp(c1*(c0 + x1)**c3)`; `c5*exp(c4*(c2 + log(x1))**2) + c6**x1*c7/(c6**x1*c7 + c8) + exp(c1*(c0 + x1)**c3)`.
+
 ## Raw log P per distinct form
 
 | prior | family | rnls equal | rnls pooled | ratelaws equal | ratelaws pooled | ecocat2 equal | ecocat2 pooled | all equal | all pooled |

@@ -59,10 +59,24 @@ def test_holdout_report_seen_novel():
          "folds": [{"train": ["a"], "test": ["a", "b", "b", "c"], "test_sources": ["h1", "h1", "h1", "h2"]}]}
     lp = {"p": np.log(np.array([0.5, 0.25, 0.25]))}
     out, counts = hr.summarise(F, lp, {"p": "tree"})
-    assert counts["h1"] == {"pairs": 3, "distinct": 2, "novel_pairs": 2, "novel_distinct": 1}
+    assert counts["h1"] == {"pairs": 3, "distinct": 2, "novel_pairs": 2, "novel_distinct": 1,
+                            "redundant_novel_pairs": 0, "redundant_novel_distinct": 0}
     assert counts["all"]["pairs"] == 4
     s = out["p"]["h1"]
     assert np.isclose(s["raw"], np.mean(np.log([0.5, 0.25, 0.25])))
     assert np.isclose(s["raw_distinct"], np.mean(np.log([0.5, 0.25])))
     assert np.isclose(s["raw_seen"], np.log(0.5)) and np.isclose(s["raw_novel"], np.log(0.25))
     assert np.isclose(out["p"]["h2"]["raw_seen"] or 0, 0) and out["p"]["h2"]["raw_seen"] is None
+
+
+def test_redundant_constants_detected():
+    import importlib.util
+    import pathlib
+    p = pathlib.Path(__file__).parents[1] / "workflow" / "scripts" / "holdout_report.py"
+    spec = importlib.util.spec_from_file_location("holdout_report", p)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    assert m.redundant("c0*x1 + c1*x1")
+    assert m.redundant("c0*c1*x1/(c2 + x1)")
+    assert not m.redundant("c0*x1/(c1 + x1)")
+    assert not m.redundant("c0*exp(c1*x1)")

@@ -15,6 +15,17 @@ distinct forms once) and over distinct forms; "seen" forms are generalised
 keys present in the training data, "novel" ones are not. Forms a prior gives
 zero probability are left out of its means and counted.
 
+Diagnostics of the seen/novel gap (section "Why novel forms score low"):
+  size       mean log P by node count, and per prior an OLS fit
+             log P = a + b * nodes + g * novel over model-form pairs, so g is
+             the novelty penalty at fixed size
+  vs sym0    log P minus sym0's log P (sym0 depends only on size and symbol
+             use), seen / novel
+  redundant  novel forms whose constants are not identifiable: the Jacobian
+             of f(x; c) in c, on a grid of x at random c, is rank deficient
+             (e.g. c0*x1 + c1*x1), the signature of a form the canonicaliser
+             failed to simplify; seen / novel means are repeated without them
+
     python holdout_report.py out.md out.json trees.json run_dir [run_dir ...] --variants v1 v2 ...
 """
 import json
@@ -43,13 +54,64 @@ def _scores(run_dir, variants, trees, support):
     return lp, fam
 
 
+def redundant(key, n_x=40, n_draws=3, seed=0, tol=1e-8):
+    """True if the constants of form ``key`` are not identifiable: the
+    Jacobian of f(x; c) with respect to c is rank deficient at every one of
+    ``n_draws`` random constant vectors (generic points), on a grid of x."""
+    import sympy as sp
+    from hsr.candidates import skeleton_from_key
+    from hsr.canonical import consts_of
+    try:
+        expr = skeleton_from_key(key).expr
+    except Exception:
+        return False
+    cs = sorted(consts_of(expr), key=str)
+    if len(cs) < 2:
+        return False
+    x = [v for v in expr.free_symbols if str(v) == "x1"]
+    if not x:
+        return False
+    try:
+        J = sp.lambdify([x[0]] + cs, [sp.diff(expr, c) for c in cs], "numpy")
+    except Exception:
+        return False
+    rng = np.random.default_rng(seed)
+    xs = np.linspace(0.2, 3.0, n_x)
+    deficient = 0
+    with np.errstate(all="ignore"):
+        for _ in range(n_draws):
+            cv = rng.uniform(0.5, 2.0, len(cs))
+            try:
+                M = np.array([np.broadcast_to(np.asarray(col, float), xs.shape) for col in J(xs, *cv)]).T
+            except Exception:
+                return False
+            M = M[np.all(np.isfinite(M), axis=1)]
+            if M.shape[0] < len(cs):
+                return False
+            sv = np.linalg.svd(M / (np.linalg.norm(M, axis=0) + 1e-300), compute_uv=False)
+            deficient += sv[-1] < tol * sv[0]
+    return deficient == n_draws
+
+
+def _ols_novel(y, nodes, novel):
+    """(per-node slope, novelty penalty at fixed size) from
+    y = a + b * nodes + g * novel over finite y."""
+    ok = np.isfinite(y) & np.isfinite(nodes)
+    if ok.sum() < 4 or novel[ok].all() or not novel[ok].any():
+        return None, None
+    X = np.column_stack([np.ones(ok.sum()), nodes[ok], novel[ok].astype(float)])
+    b = np.linalg.lstsq(X, y[ok], rcond=None)[0]
+    return float(b[1]), float(b[2])
+
+
 def _mean(a):
     a = a[np.isfinite(a)]
     return float(a.mean()) if a.size else None
 
 
-def summarise(F, lp, fam):
+def summarise(F, lp, fam, nodes_of=None, redund=frozenset()):
     """{prior: {group: stats}} for each hold-out and "all"."""
+    nodes_of = nodes_of or {}
     fold = F["folds"][0]
     sup = F["support"]
     idx = {s: i for i, s in enumerate(sup)}
@@ -62,7 +124,10 @@ def summarise(F, lp, fam):
         dist = sorted(set(keys))
         counts[g] = {"pairs": len(keys), "distinct": len(dist),
                      "novel_pairs": sum(k not in train for k in keys),
-                     "novel_distinct": sum(k not in train for k in dist)}
+                     "novel_distinct": sum(k not in train for k in dist),
+                     "redundant_novel_pairs": sum(k not in train and k in redund for k in keys),
+                     "redundant_novel_distinct": sum(k not in train and k in redund for k in dist)}
+    sym0 = lp.get("sym0")
     for name, v in lp.items():
         finite = np.isfinite(v)
         z = v - np.logaddexp.reduce(v[finite])
@@ -80,11 +145,70 @@ def summarise(F, lp, fam):
                             "renorm_distinct": _mean(rend), "raw_distinct_seen": _mean(rawd[seend]),
                             "raw_distinct_novel": _mean(rawd[~seend]),
                             "n_zero": int((~np.isfinite(raw)).sum())}
+            nodes = np.array([nodes_of.get(k, np.nan) for k in keys], float)
+            red = np.array([k in redund for k in keys], bool)
+            slope, pen = _ols_novel(raw, nodes, ~seen)
+            o = out[name][g]
+            o["per_node"], o["novel_penalty_fixed_size"] = slope, pen
+            o["raw_novel_nonredundant"] = _mean(raw[~seen & ~red])
+            if sym0 is not None:
+                ex = raw - np.array([sym0[idx[k]] for k in keys])
+                o["vs_sym0_seen"], o["vs_sym0_novel"] = _mean(ex[seen]), _mean(ex[~seen])
+            if g == "all":
+                o["by_size"] = {}
+                for lo, hi in SIZE_BINS:
+                    m = (nodes >= lo) & (nodes <= hi)
+                    o["by_size"][f"{lo}-{hi}"] = {"n_seen": int((m & seen).sum()), "n_novel": int((m & ~seen).sum()),
+                                                 "seen": _mean(raw[m & seen]), "novel": _mean(raw[m & ~seen])}
     return out, counts
+
+
+SIZE_BINS = [(1, 5), (6, 9), (10, 14), (15, 20), (21, 10_000)]
 
 
 def _f(x):
     return "" if x is None else f"{x:.2f}"
+
+
+def why(L, res, ws, w0, priors, groups):
+    tree = [p for p in priors if res[w0]["stats"][p]["family"] == "tree"]
+    L.append("## Why novel forms score low\n")
+    L.append("Novel forms are larger than seen ones, and every prior pays per node. sym0 (symbol frequencies "
+             "only) measures what size and symbol use alone cost.\n")
+    L.append("### Log P by node count (all hold-outs; seen / novel; pairs in brackets)\n")
+    bins = list(res[w0]["stats"][tree[0]]["all"]["by_size"])
+    for w in ws:
+        L.append(f"{w} weighting:\n")
+        L.append("| prior | " + " | ".join(f"{b} nodes" for b in bins) + " |")
+        L.append("|---|" + "---|" * len(bins))
+        bs = res[w]["stats"][tree[0]]["all"]["by_size"]
+        L.append("| pairs (seen / novel) | " + " | ".join(f"{bs[b]['n_seen']} / {bs[b]['n_novel']}" for b in bins) + " |")
+        for p in tree:
+            bs = res[w]["stats"][p]["all"]["by_size"]
+            L.append(f"| {p} | " + " | ".join(f"{_f(bs[b]['seen'])} / {_f(bs[b]['novel'])}" for b in bins) + " |")
+        L.append("")
+    L.append("### Novelty at fixed size, relative to sym0, and without redundant forms (all hold-outs)\n")
+    L.append("per node: OLS slope of log P on node count; novel penalty: OLS coefficient of the novel indicator "
+             "at fixed node count (log P = a + b nodes + g novel, over model-form pairs); vs sym0: log P minus "
+             "sym0's log P, seen / novel; novel (non-redundant): mean log P of novel pairs whose constants are "
+             "identifiable.\n")
+    L.append("| prior | weighting | seen | novel | gap | per node | novel penalty | vs sym0 seen / novel | "
+             "novel (non-redundant) |")
+    L.append("|---|---|---|---|---|---|---|---|---|")
+    for p in tree:
+        for w in ws:
+            a = res[w]["stats"][p]["all"]
+            gap = None if a["raw_seen"] is None or a["raw_novel"] is None else a["raw_seen"] - a["raw_novel"]
+            L.append(f"| {p} | {w} | {_f(a['raw_seen'])} | {_f(a['raw_novel'])} | {_f(gap)} | {_f(a['per_node'])} | "
+                     f"{_f(a['novel_penalty_fixed_size'])} | {_f(a.get('vs_sym0_seen'))} / "
+                     f"{_f(a.get('vs_sym0_novel'))} | {_f(a['raw_novel_nonredundant'])} |")
+    L.append("")
+    c = res[w0]["counts"]
+    L.append("Redundant novel forms (constants not identifiable; Jacobian rank test): " + ", ".join(
+        f"{g} {c[g]['redundant_novel_distinct']} of {c[g]['novel_distinct']} distinct "
+        f"({c[g]['redundant_novel_pairs']} of {c[g]['novel_pairs']} pairs)" for g in groups) + ".\n")
+    if res[w0]["redundant_novel"]:
+        L.append("Redundant novel keys: " + "; ".join(f"`{k}`" for k in res[w0]["redundant_novel"]) + ".\n")
 
 
 def main(out_md, out_json, trees_path, *rest):
@@ -98,9 +222,14 @@ def main(out_md, out_json, trees_path, *rest):
             F = json.load(fh)
         w = "equal" if F["test_corpus"].endswith("; equal)") else "pooled"
         lp, fam = _scores(d, variants, trees, F["support"])
-        stats, counts = summarise(F, lp, fam)
+        fold = F["folds"][0]
+        train = set(fold["train"])
+        nodes_of = {k: len(trees[k]) for k in set(fold["test"]) if trees.get(k)}
+        redund = frozenset(k for k in set(fold["test"]) if k not in train and redundant(k))
+        stats, counts = summarise(F, lp, fam, nodes_of, redund)
         F_models = F.get("holdout_models", {})
         res[w] = {"stats": stats, "counts": counts, "train_sizes": F["train_sizes"],
+                  "redundant_novel": sorted(redund),
                   "support": len(F["support"]), "n_train": len(F["folds"][0]["train"])}
     with open(out_json, "w") as fh:
         json.dump(res, fh, indent=1)
@@ -151,6 +280,7 @@ def main(out_md, out_json, trees_path, *rest):
         L.append(f"| {p} | " + " | ".join(f"{_f(res[w]['stats'][p][g]['raw_seen'])} / "
                                          f"{_f(res[w]['stats'][p][g]['raw_novel'])}" for g, w in cols) + " |")
     L.append("")
+    why(L, res, ws, w0, priors, groups)
     table("Raw log P per distinct form", "raw_distinct")
     table("Renormalised log P per model-form pair", "renorm",
           f"uniform over support: {-np.log(res[w0]['support']):.2f}.")
