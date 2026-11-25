@@ -67,6 +67,8 @@ def test_run_replicate_smoke(tiny_candidates, setting):
     for r in rows:
         assert 0 <= r["recovery"] <= 1
         assert np.isfinite(r["lpd_in"]) and np.isfinite(r["lpd_out"])
+        if r["method"] in ("hier", "no_pool_bma", "complete_pool"):
+            assert 0.0 <= r["dec_frac_changed"] <= 1.0
     if setting == "mixture":
         # form C is not in the tiny set, so it is appended for the oracle only
         assert rows[0]["true_forms_in_C"][canonicalise("C*x1/(C+x1*x1)").key] is False

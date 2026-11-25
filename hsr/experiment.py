@@ -22,6 +22,7 @@ from .candidates import CandidateSet, default_n_jobs, edit_graph, expand_candida
 from .canonical import canonicalise, counts_array
 from .families import SETTINGS as FAMILY_SETTINGS
 from .families import family_metrics, family_population, theme_metrics
+from .decompose import evidence_decomposition
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .equivalence import Equivalence, class_summary
@@ -269,11 +270,13 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
         cnt = counts[in_C]
         sk_C = skeletons[:n_C]
         tabC = table  # columns 0..n_C-1 coincide with C
+        lp0 = grammar.log_prob(cnt, grammar.prior_mean())
+        dec = lambda P: evidence_decomposition(P, L, lp0)
 
         res = run_gibbs(L, cnt, grammar, cfg)
         pop_w = {sk_C[e].key: float(res.pop_weight[e]) for e in range(n_C)}
         rows.append(evaluate(f"hier", res.assign_probs, pop, sk_C, tabC, sx, sy, true_idx_C, pop_w,
-                             gibbs_summary(res, [s.key for s in sk_C])) | {"kind": kind})
+                             gibbs_summary(res, [s.key for s in sk_C])) | {"kind": kind} | dec(res.assign_probs))
 
         if (pooled or themes) and kind == "laplace":
             tab_in = LikelihoodTable(table.laplace[:, :n_C], table.bic[:, :n_C], table.phi[:n_C],
@@ -283,7 +286,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
             resp = run_gibbs(L, cnt, grammar, cfg, model=pm)
             pop_wp = {sk_C[e].key: float(resp.pop_weight[e]) for e in range(n_C)}
             rows.append(evaluate("hier_pooled", resp.assign_probs, pop, sk_C, table, sx, sy, true_idx_C, pop_wp,
-                                 gibbs_summary(resp, [s.key for s in sk_C])) | {"kind": kind})
+                                 gibbs_summary(resp, [s.key for s in sk_C])) | {"kind": kind} | dec(resp.assign_probs))
 
         if themes and kind == "laplace":
             kernel = EditKernel(n_C, edges, log_w=grammar.log_prob(cnt, grammar.prior_mean()))
@@ -297,7 +300,7 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
             if hasattr(pop, "parent_key"):
                 ext |= theme_metrics(pop, theme_keys)
             rows.append(evaluate("hier_themes", rest.assign_probs, pop, sk_C, table, sx, sy, true_idx_C, pop_wt,
-                                 ext) | {"kind": kind})
+                                 ext) | {"kind": kind} | dec(rest.assign_probs))
 
         z = baselines.no_pooling(L, cnt, grammar)
         rows.append(evaluate("no_pool", one_hot(z, n_C), pop, sk_C, tabC, sx, sy, true_idx_C,
@@ -305,13 +308,13 @@ def run_replicate(setting, n, noise, rep, cands: CandidateSet, cfg: GibbsConfig,
 
         P = baselines.no_pooling_posterior(L, cnt, grammar)
         w_np = {sk_C[e].key: float(P[:, e].mean()) for e in range(n_C)}
-        rows.append(evaluate("no_pool_bma", P, pop, sk_C, tabC, sx, sy, true_idx_C, w_np) | {"kind": kind})
+        rows.append(evaluate("no_pool_bma", P, pop, sk_C, tabC, sx, sy, true_idx_C, w_np) | {"kind": kind} | dec(P))
 
         # one form for all datasets, constants per dataset (posterior over forms)
         Pc = baselines.complete_pooling_posterior(L, cnt, grammar)
         w_cp = {sk_C[e].key: float(Pc[e]) for e in np.flatnonzero(Pc > 1e-6)}
         rows.append(evaluate("complete_pool", np.tile(Pc, (J, 1)), pop, sk_C, tabC, sx, sy, true_idx_C, w_cp)
-                    | {"kind": kind})
+                    | {"kind": kind} | dec(np.tile(Pc, (J, 1))))
         # one curve (form and constants) for all datasets
         P1 = baselines.single_curve_posterior(table1.matrix(kind)[0], cnt, grammar)
         w_1 = {sk_C[e].key: float(P1[e]) for e in np.flatnonzero(P1 > 1e-6)}
