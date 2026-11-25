@@ -1,0 +1,355 @@
+package	version	license	views	keyword
+AGHmatrix	3.0.3	GPL-3	Agriculture	species
+AGPRIS	2.0	GPL-3	Agriculture	agricult
+ALUES	0.2.1	MIT + file LICENSE	Agriculture	agricult
+AMR	3.1.0	GPL-2 | file LICENSE	Epidemiology	microb
+ATQ	0.2.3	GPL (>= 3)	Epidemiology	epidemi
+AgriDiversiX	0.1.0	GPL-3	Agriculture	agricult
+AgroR	1.3.7	GPL (>= 2)	Agriculture	agricult
+AgroReg	1.2.11	GPL (>= 2)	Agriculture	agricult
+AgroTech	1.0.2	GPL (>= 2)	Agriculture	pest
+AlphaSimR	2.1.0	MIT + file LICENSE	Agriculture	breeding
+AquaBEHER	1.4.0	GPL (>= 3)	Agriculture	soil
+BElikelihood	1.1	GPL (>= 3)	Pharmacokinetics	drug
+BGGE	0.6.5	GPL-3	Agriculture	genotyp
+BayesianFitForecast	1.1.1	CC0	Epidemiology	epidemi
+Bernadette	1.1.6	GPL (>= 3)	Epidemiology	epidemi
+BiodiversityR	2.18-1	GPL-3	Environmetrics	communit
+COVID19	3.0.4	MIT + file LICENSE	Epidemiology	vaccin
+Colossus	1.6.3	GPL (>= 3)	Epidemiology	population
+CovidMutations	0.1.3	Artistic-2.0	Epidemiology	disease
+CropScapeR	1.1.5	GPL (>= 2)	Agriculture	crop
+DMMF	0.5.2.0	GPL (>= 2)	Agriculture	soil
+DSAIDE	1.0.0	GPL-3	Epidemiology	infect
+DSSAT	0.0.9	GPL (>= 3)	Agriculture	crop
+Dasst	0.3.4	GPL (>= 2)	Agriculture	crop
+Distance	2.0.1	GPL (>= 2)	Environmetrics	abundance
+EMbC	2.0.4	GPL-3 | file LICENSE	Tracking	ecolog
+EVI	0.2.0-0	GPL (>= 3)	Epidemiology	epidemi
+Epi	2.66	GPL-2	Epidemiology	epidemi
+EpiContactTrace	0.18.0	EUPL	Epidemiology	epidemi
+EpiCurve	2.4-2	LGPL-3	Epidemiology	epidemi
+EpiDynamics	0.3.1	GPL (>= 2)	Epidemiology	epidemi
+EpiEstim	2.2-5	GPL (>= 2)	Epidemiology	epidemi
+EpiForsk	0.2.2	MIT + file LICENSE	Epidemiology	epidemi
+EpiInvert	0.3.1	GPL (>= 2)	Epidemiology	epidemi
+EpiModel	2.7.0	GPL-3	Epidemiology	infect
+EpiNow2	1.9.0	MIT + file LICENSE	Epidemiology	infect
+EpiReport	1.0.4	EUPL	Epidemiology	epidemi
+EpiSignalDetection	0.1.3	EUPL	Epidemiology	outbreak
+EpiStats	1.6-2	LGPL-3	Epidemiology	epidemi
+Evapotranspiration	1.16	GPL (>= 2)	Agriculture	crop
+FAO56	1.0	GPL (>= 2)	Agriculture	crop
+FAOSTAT	2.4.2	GPL (>= 2)	Agriculture	agricult
+FD	1.0-12.6	GPL-2	Environmetrics	ecolog
+FLightR	0.5.6	GPL-3	Tracking	animal
+FWRGB	0.1.0	GPL-3	Agriculture	plant
+FedData	4.3.0	MIT + file LICENSE	Agriculture	soil
+FielDHub	1.5.0	MIT + file LICENSE	Agriculture	agricult
+FieldSimR	1.4.0	GPL (>= 3)	Agriculture	plant
+Hmsc	3.3-7	GPL-3 | file LICENSE	Environmetrics	species
+IBCF.MTME	1.6-0	LGPL-3	Agriculture	plant
+LWFBrook90R	0.6.3	GPL-3	Agriculture	soil
+MeTo	0.1.1	GPL (>= 2)	Agriculture	soil
+MoBPS	1.13.1	GPL (>= 3)	Agriculture	breeding
+NMdata	0.2.7	MIT + file LICENSE	Pharmacokinetics	pharmacokinet
+Nematode	0.3.2	GPL (>= 3)	Agriculture	ecolog
+NonCompart	0.8.5	GPL-3	Pharmacokinetics	pharmacokinet
+OBIC	4.4.2	GPL-3	Agriculture	soil
+PBIBD	1.4	GPL (>= 2)	Agriculture	agricult
+PFIM	8.0.1	GPL-3	Pharmacokinetics	population
+PK	1.3-6	GPL-2	Pharmacokinetics	pharmacokinet
+PKNCA	0.12.1	AGPL-3	Pharmacokinetics	pharmacokinet
+PKPDsim	1.4.1	MIT + file LICENSE	Pharmacokinetics	pharmacokinet
+PKconverter	1.5	GPL (>= 2)	Pharmacokinetics	pharmacokinet
+PesticideLoadIndicator	1.3.1	MIT + file LICENSE	Agriculture	pest
+PopED	0.7.0	LGPL (>= 3)	Pharmacokinetics	population
+PopVar	1.3.2	GPL-3	Agriculture	breeding
+QBMS	2.0.0	GPL (>= 3)	Agriculture	breeding
+QI	0.1.0	GPL (>= 3)	Agriculture	soil
+QTLRel	1.15	GPL (>= 2)	Agriculture	population
+R0	1.3-1	GPL (>= 2)	Epidemiology	epidemi
+Rcapture	1.4-4	GPL-2	Environmetrics	capture-recapture
+Recocrop	0.4-2	GPL (>= 3)	Agriculture	plant
+Rquefts	1.2-8	GPL (>= 3)	Agriculture	soil
+Rwofost	0.8-7	GPL (>= 3)	Agriculture	crop
+SDLfilter	2.3.3	GPL-2 | file LICENSE	Tracking	animal
+SIMplyBee	0.4.1	MIT + file LICENSE	Agriculture	population
+STCCGEV	1.0.0	MIT + file LICENSE	Agriculture	crop
+SiMRiv	1.0.7	GPL (>= 2)	Tracking	species
+SimInf	11.2.0	GPL-3	Epidemiology	disease
+SoilR	1.2.107	GPL-3	Agriculture	soil
+SoilTaxonomy	0.2.8	GPL (>= 3)	Agriculture	soil
+SoilTesting	0.1.0	GPL (>= 3)	Agriculture	plant
+SpATS	1.0-20	GPL	Agriculture	field trial
+SpatialEpi	1.2.8	GPL-2	Epidemiology	epidemi
+TSDFGS	3.0.0	GPL (>= 3)	Agriculture	breeding
+TrackReconstruction	1.3	GPL (>= 2)	Tracking	animal
+UnifiedDoseFinding	0.1.10	GPL-2	Pharmacokinetics	dose
+WCM	0.2.2	GPL (>= 3)	Agriculture	leaf
+ZeBook	1.2	LGPL-3	Agriculture	agricult
+acdcR	1.0.0	GPL (>= 2)	Agriculture	agricult
+actel	1.4.0	GPL-3	Tracking	animal
+ade4	1.7-24	GPL (>= 2)	Environmetrics	ecolog
+adegenet	2.1.11	GPL (>= 2)	Epidemiology	population
+adehabitatHR	0.4.22	GPL (>= 2)	Tracking	animal
+adehabitatLT	0.3.29	GPL (>= 2)	Tracking	animal
+aedseo	1.2.0	MIT + file LICENSE	Epidemiology	epidemi
+agriTutorial	0.1.5	GPL (>= 2)	Agriculture	agricult
+agricolae	1.3-8	GPL	Agriculture	agricult
+agridat	1.27	MIT + file LICENSE	Agriculture	agricult
+agrifeature	1.0.3	GPL-3	Agriculture	agricult
+agriutilities	1.2.3	MIT + file LICENSE	Agriculture	agricult
+agrostab	0.1.0	GPL-2	Agriculture	agricult
+amt	0.3.1.0	GPL-3	Tracking	animal
+analogue	0.18.1	GPL-2	Environmetrics	species
+ape	5.8-1	GPL-2 | GPL-3	Environmetrics	tree
+apisensr	2.0.1	GPL-2	Epidemiology	epidemi
+aqp	2.3.3	GPL (>= 3)	Agriculture,Environmetrics	soil
+argo	3.0.3	GPL-2	Epidemiology	epidemi
+argosfilter	0.71	GPL (>= 2)	Tracking	animal
+aridagri	2.1.0	GPL-3	Agriculture	agricult
+bayesammi	1.0.0	GPL-2	Agriculture	crop
+bayesmove	0.2.4	GPL-3	Tracking	animal
+bayesnec	2.1.3.1	GPL-2	Pharmacokinetics	dose
+bcpa	1.3.2	Unlimited	Tracking	animal
+bets.covid19	1.0.0	CC BY 4.0	Epidemiology	epidemi
+bigleaf	0.8.2	GPL (>= 2)	Agriculture	physiolog
+biogrowth	1.0.8	GPL-3	Environmetrics	population
+biometryassist	1.5.1	MIT + file LICENSE	Agriculture	agronom
+biotools	4.3	GPL (>= 2)	Agriculture	agricult
+bkmr	0.2.2	GPL-2	Epidemiology	health
+boral	2.0.3	GPL-2	Environmetrics	ecolog
+caffsim	0.2.2	GPL-3 | file LICENSE	Pharmacokinetics	population
+caribou	1.1-1	GPL-2	Tracking	abundance
+cdlTools	1.13	Unlimited	Agriculture	crop
+cercospoRa	0.0.2	MIT + file LICENSE	Epidemiology	epidemi
+cfr	0.2.0	MIT + file LICENSE	Epidemiology	disease
+cholera	0.9.1	GPL (>= 2)	Epidemiology	outbreak
+cleanepi	1.1.2	MIT + file LICENSE	Epidemiology	epidemi
+climatrends	1.2	MIT + file LICENSE	Agriculture	ecolog
+clinDR	2.5.3	GPL (>= 2)	Pharmacokinetics	clinical
+clinPK	0.13.0	MIT + file LICENSE	Pharmacokinetics	clinical
+cmprsk	2.2-12	GPL (>= 2)	Epidemiology	incidence
+coarseDataTools	0.7.2	GPL (>= 2)	Epidemiology	infect
+cocorresp	0.4-6	GPL-2	Environmetrics	species
+contactdata	1.1.0	MIT + file LICENSE	Epidemiology	epidemi
+coronavirus	0.4.1	MIT + file LICENSE	Epidemiology	health
+covid19.analytics	2.1.3.3	GPL (>= 2)	Epidemiology	disease
+covid19dbcand	0.1.1	CC0	Epidemiology	drug
+covid19sf	0.1.2	MIT + file LICENSE	Epidemiology	health
+crawl	2.3.1	CC0	Tracking	animal
+cropDemand	1.0.3	CC BY 4.0	Agriculture	crop
+cropZoning	1.0.3	CC BY 4.0	Agriculture	crop
+cropdatape	1.0.0	MIT + file LICENSE	Agriculture	agricult
+cropgrowdays	0.2.2	MIT + file LICENSE	Agriculture	crop
+csmbuilder	0.1.1	GPL-3	Agriculture	crop
+ctmcmove	1.2.10	GPL-2	Tracking	animal
+ctmm	1.3.0	GPL-3	Tracking	animal
+dataquieR	2.8.15	BSD_2_clause + file LICENSE	Epidemiology	epidemi
+dbparser	2.3.0	MIT + file LICENSE	Epidemiology	drug
+degday	0.4.0	GPL (>= 3)	Agriculture	plant
+desplot	1.11	MIT + file LICENSE	Agriculture	agricult
+dismo	1.3-16	GPL (>= 3)	Agriculture	species
+diyar	0.5.1	GPL-3	Epidemiology	epidemi
+dr4pl	2.0.0	GPL (>= 2)	Pharmacokinetics	dose
+drc	4.0-0	GPL-2	Agriculture	dose
+drcte	1.0.65	GPL (>= 2)	Agriculture	agricult
+dsm	2.3.4	GPL (>= 2)	Environmetrics	animal
+ecoCopula	1.0.6	LGPL (>= 2.1)	Environmetrics	species
+ecodist	2.1.3	GPL (>= 2)	Environmetrics	ecolog
+endtoend	2.29	GPL (>= 2)	Epidemiology	transmission
+epiCo	1.0.1	MIT + file LICENSE	Epidemiology	disease
+epiDisplay	3.7.0.0	GPL (>= 2)	Epidemiology	epidemi
+epiR	3.0.1	GPL (>= 2)	Epidemiology	epidemi
+epibasix	1.5	GPL (>= 2)	Epidemiology	epidemi
+epichains	0.1.1	MIT + file LICENSE	Epidemiology	transmission
+epicontacts	1.1.4	GPL (>= 2)	Epidemiology	epidemi
+epidatr	1.4.0	MIT + file LICENSE	Epidemiology	epidemi
+epidm	1.0.6	GPL (>= 3)	Epidemiology	epidemi
+epifitter	1.0.0	MIT + file LICENSE	Agriculture,Epidemiology	plant
+epiflows	0.2.2	MIT + file LICENSE	Epidemiology	disease
+epigrowthfit	0.16.1	GPL-3	Epidemiology	epidemi
+epikit	0.2.0	GPL-3	Epidemiology	epidemi
+epimdr	0.6-5	GPL-3	Epidemiology	epidemi
+epinet	2.1.11	GPL-2	Epidemiology	epidemi
+epiparameter	0.4.1	MIT + file LICENSE	Epidemiology	epidemi
+epiparameterDB	0.1.0	CC0	Epidemiology	epidemi
+epiphy	0.5.0	MIT + file LICENSE	Agriculture,Epidemiology	plant
+episensr	2.2.0	GPL-2	Epidemiology	epidemi
+epitab	0.2.2	GPL-2	Epidemiology	epidemi
+epitools	0.5-10.1	GPL (>= 2)	Epidemiology	epidemi
+epitrix	0.4.1	MIT + file LICENSE	Epidemiology	epidemi
+epiworldR	0.14.0.0	MIT + file LICENSE	Epidemiology	disease
+epiworldRShiny	0.2.3	MIT + file LICENSE	Epidemiology	epidemi
+excessmort	0.8.2	Artistic-2.0	Epidemiology	mortality
+finalsize	0.2.1	MIT + file LICENSE	Epidemiology	epidemi
+fruclimadapt	0.4.5	GPL (>= 3)	Agriculture	tree
+fso	2.1-4	GPL (>= 2)	Environmetrics	ecolog
+genSEIR	0.1.1	GPL (>= 2)	Epidemiology	epidemi
+genesysr	2.2.0	Apache License 2.0	Agriculture	plant
+geneticae	1.0.1	GPL-2	Agriculture	agronom
+geodata	0.6-9	GPL (>= 3)	Agriculture	crop
+gge	1.11	MIT + file LICENSE	Agriculture	genotyp
+ggsurveillance	0.5.2	GPL (>= 3)	Epidemiology	outbreak
+gjam	2.7	GPL (>= 2)	Environmetrics	species
+gosset	2.0.0	MIT + file LICENSE	Agriculture	agricult
+gpbStat	0.4.4	GPL-2	Agriculture	plant
+grapesAgri1	1.1.0	GPL-3	Agriculture	agricult
+growthPheno	3.1.20	GPL (>= 2)	Agriculture	plant
+hagis	4.0.0	MIT + file LICENSE	Agriculture	plant
+heritability	1.5	GPL-3	Agriculture	plant
+hmsidwR	1.1.2	MIT + file LICENSE	Epidemiology	health
+incidence	1.7.6	MIT + file LICENSE	Epidemiology	incidence
+incidence2	2.6.4	MIT + file LICENSE	Epidemiology	incidence
+inctools	1.0.15	GPL-3	Epidemiology	incidence
+inti	0.7.5	GPL-3 | file LICENSE	Agriculture	plant
+kgc	1.0.0.2	BSD_2_clause + file LICENSE	Agriculture	health
+labdsv	2.3-1	GPL (>= 2)	Environmetrics	ecolog
+landsepi	1.5.3	GPL (>= 2) | file LICENSE	Agriculture	epidemi
+linelist	2.0.1	MIT + file LICENSE	Epidemiology	epidemi
+linelistBayes	1.0	GPL-3	Epidemiology	epidemi
+linpk	1.1.2	GPL-3	Pharmacokinetics	pharmacokinet
+lme4breeding	1.1.5	GPL (>= 2)	Agriculture	breeding
+lue	0.2.1	GPL-2	Agriculture	biomass
+m2b	1.1.0	GPL-3	Tracking	forest
+malariaAtlas	1.7.0	MIT + file LICENSE	Epidemiology	malaria
+manureshed	0.1.5	MIT + file LICENSE	Agriculture	agricult
+mappoly	0.4.2	GPL-3	Agriculture	population
+marcher	0.0.3	GPL-2	Tracking	animal
+marked	1.2.8	GPL (>= 2)	Environmetrics	mark-recapture
+mefa	3.2-10	GPL-2	Environmetrics	ecolog
+mem	2.19	GPL (>= 2)	Epidemiology	epidemi
+memapp	2.16	GPL (>= 2)	Epidemiology	epidemi
+metacom	1.5.3	GPL-2	Environmetrics	ecolog
+metan	1.19.0	GPL-3	Agriculture	crop
+meteor	0.4-5	GPL-3	Agriculture	ecolog
+mma	10.8-1	GPL (>= 2)	Epidemiology	epidemi
+modelSSE	0.1-3	GPL-3	Epidemiology	infect
+momentuHMM	1.5.8	GPL-3	Tracking	animal
+move	4.2.7	GPL (>= 3)	Tracking	animal
+move2	0.5.0	GPL (>= 3)	Tracking	animal
+moveHMM	1.12	GPL-3	Tracking	animal
+moveWindSpeed	0.2.4	GPL	Tracking	bird
+mpspline2	0.1.9	GPL	Agriculture	soil
+mrds	3.0.1	GPL (>= 2)	Environmetrics	mark-recapture
+mrgsolve	2.0.1	GPL (>= 2)	Pharmacokinetics	biolog
+mvabund	4.2.8	LGPL (>= 2.1)	Environmetrics	abundance
+mvngGrAd	0.1.6	GPL (>= 2)	Agriculture	plant
+nbTransmission	1.2.0	MIT + file LICENSE	Epidemiology	transmission
+ncappc	1.0.0	GPL-3	Pharmacokinetics	population
+ncar	0.7.3	GPL-3	Pharmacokinetics	pharmacokinet
+nhanesA	1.4.1	GPL (>= 2)	Epidemiology	health
+nlmixr2	7.0.1	GPL (>= 3)	Pharmacokinetics	population
+nlraa	1.9.10	GPL-3	Agriculture	agricult
+nmw	0.6.0	GPL-3	Pharmacokinetics	population
+nonmem2rx	0.1.12	GPL (>= 3)	Pharmacokinetics	population
+nosoi	1.1.2	GPL-3	Epidemiology	transmission
+npde	3.5	GPL (>= 2)	Pharmacokinetics	pharmacokinet
+o2geosocial	1.1.3	MIT + file LICENSE	Epidemiology	transmission
+ouch	2.20	GPL-3	Environmetrics	tree
+outbreaker2	1.1.4	MIT + file LICENSE	Epidemiology	disease
+outbreaks	1.9.0	GPL (>= 2)	Epidemiology	disease
+paar	1.0.2	MIT + file LICENSE	Agriculture	agricult
+pacu	0.1.74	GPL (>= 3)	Agriculture	agricult
+pastecs	1.4.2	GPL-2	Environmetrics	ecolog
+pcpr	1.0.0	GPL (>= 3)	Epidemiology	epidemi
+pedometrics	0.12.1	GPL (>= 2)	Agriculture	soil
+pestr	0.8.4	MIT + file LICENSE	Agriculture	pest
+pgirmess	2.0.3	GPL (>= 2)	Environmetrics	ecolog
+pharmr	2.2.0	LGPL (>= 3)	Pharmacokinetics	pharmacometr
+photosynthesis	2.1.5	MIT + file LICENSE	Agriculture	plant
+phylepic	0.3.0	MIT + file LICENSE	Epidemiology	epidemi
+pkdata	0.1.0	GPL (>= 3)	Pharmacokinetics	pharmacokinet
+pkr	0.1.8	GPL-3	Pharmacokinetics	pharmacokinet
+plantTracker	1.2.1	MIT + file LICENSE	Agriculture	demograph
+plantecophys	1.4-6	GPL	Agriculture	leaf
+pliman	3.1.1	GPL (>= 3)	Agriculture	plant
+pmxTools	1.6	GPL-2	Pharmacokinetics	pharmacometr
+pmxcode	0.3.2	MIT + file LICENSE	Pharmacokinetics	pharmacometr
+pmxpartab	0.5.0	GPL-3	Pharmacokinetics	pharmacometr
+polymapR	1.1.7	GPL	Agriculture	species
+polyqtlR	0.1.1	GPL-3	Agriculture	population
+popEpi	0.5.0	MIT + file LICENSE	Epidemiology	epidemi
+popbio	2.8	GPL-3	Environmetrics	population
+poppr	2.9.8	GPL-2 | GPL-3	Agriculture	population
+posologyr	1.2.8	AGPL-3	Pharmacokinetics	dose
+powerSurvEpi	0.1.5	GPL (>= 2)	Epidemiology	epidemi
+prabclus	2.3-5	GPL	Environmetrics	abundance
+qPRAentry	0.1.1	GPL (>= 3)	Agriculture	pest
+qpNCA	1.1.6	GPL-3	Pharmacokinetics	pharmacokinet
+r4pde	0.2.3	MIT + file LICENSE	Agriculture	plant
+rCTOOL	3.1.0	MIT + file LICENSE	Agriculture	soil
+rMVP	1.4.6	Apache License 2.0	Agriculture	population
+rPAex	1.0.5	GPL	Agriculture	agricult
+rapsimng	0.6.0	MIT + file LICENSE	Agriculture	agricult
+rarms	1.0.0	GPL (>= 2)	Agriculture	agricult
+read.abares	3.0.0	MIT + file LICENSE	Agriculture	agricult
+replicateBE	1.1.3	GPL (>= 3)	Pharmacokinetics	drug
+resevol	0.4.1.1	GPL (>= 2)	Agriculture	agricult
+riskCommunicator	1.0.1	GPL-3	Epidemiology	epidemi
+rnassqs	0.6.3	MIT + file LICENSE	Agriculture	agricult
+rplanes	0.1.0	MIT + file LICENSE	Epidemiology	epidemi
+rrBLUP	4.6.3	GPL-3	Agriculture	plant
+ruminate	0.3.2	BSD_2_clause + file LICENSE	Pharmacokinetics	pharmacometr
+rxode2	5.1.8	GPL (>= 3)	Pharmacokinetics	pharmacometr
+saemix	3.5	GPL (>= 2)	Pharmacokinetics	population
+satellite	1.0.6	MIT + file LICENSE	Agriculture	crop
+scaRabee	1.1-5	GPL-3	Pharmacokinetics	pharmacokinet
+seas	0.7-0	GPL (>= 2)	Environmetrics	ecolog
+secr	5.6.1	GPL (>= 2)	Environmetrics	capture-recapture
+segclust2d	0.3.3	GPL-3	Tracking	ecolog
+selection.index	2.0.1	GPL (>= 3)	Agriculture	plant
+sftrack	0.5.5	MIT + file LICENSE	Tracking	organism
+sharpshootR	2.5	GPL (>= 3)	Agriculture	soil
+simecol	0.9-3	GPL (>= 2)	Environmetrics	ecolog
+simulist	0.7.0	MIT + file LICENSE	Epidemiology	disease
+singleRcapture	1.1.0	MIT + file LICENSE	Environmetrics	capture-recapture
+siplab	1.6	GPL (>= 2)	Environmetrics	plant
+sjSDM	1.1.0	GPL-3	Environmetrics	species
+smam	0.7.3	GPL (>= 3.0)	Tracking	animal
+socialmixr	0.7.0	MIT + file LICENSE	Epidemiology	infect
+soilFlux	0.1.5	MIT + file LICENSE	Agriculture	soil
+soilKey	0.9.403	MIT + file LICENSE	Agriculture	soil
+soilassessment	1.3.1	GPL	Agriculture	soil
+soiltestcorr	2.2.1	MIT + file LICENSE	Agriculture	soil
+soiltexture	1.5.3	AGPL (>= 3)	Agriculture,Environmetrics	soil
+soilwater	1.0.5	GPL (>= 2)	Agriculture	soil
+sorcering	1.2.4	GPL (>= 2)	Agriculture	soil
+spOccupancy	0.8.2	GPL (>= 3)	Environmetrics	species
+spatsoc	0.2.13	GPL-3 | file LICENSE	Tracking	animal
+spectralR	0.1.4	GPL-3	Agriculture	habitat
+stability	1.0.0	GPL-2	Agriculture	genotyp
+statgenGWAS	1.0.14	GPL-3	Agriculture	plant
+statgenGxE	1.0.11	GPL	Agriculture	genotyp
+statgenIBD	1.0.11	GPL	Agriculture	plant
+statgenMPP	1.0.5	GPL (>= 3)	Agriculture	population
+statgenSTA	1.0.15	GPL	Agriculture	field trial
+superspreading	0.4.0	MIT + file LICENSE	Epidemiology	infect
+surveillance	1.26.1	GPL-2	Environmetrics,Epidemiology	epidemi
+tagtools	0.3.0	GPL (>= 3)	Tracking	biolog
+tealeaves	1.0.7	MIT + file LICENSE	Agriculture	leaf
+tidyrates	0.0.2	MIT + file LICENSE	Epidemiology	epidemi
+toolStability	0.1.3	GPL (>= 3)	Agriculture	genotyp
+track2KBA	1.1.3	LGPL-3	Tracking	animal
+trackdem	0.7.2	GPL-2	Tracking	demograph
+trajr	1.5.1	MIT + file LICENSE	Tracking	animal
+trendeval	0.1.1	MIT + file LICENSE	Epidemiology	outbreak
+tripEstimation	0.0-46	GPL-3	Tracking	animal
+tsiR	0.4.3	GPL-3	Epidemiology	infect
+ubiquity	2.1.0	BSD_2_clause + file LICENSE	Pharmacokinetics	pharmacokinet
+unmarked	1.5.2	GPL (>= 3)	Environmetrics	animal
+untb	1.7-7-1	GPL	Environmetrics	ecolog
+usdampr	1.0.1	GPL (>= 2)	Agriculture	agricult
+vaccineff	1.0.4	MIT + file LICENSE	Epidemiology	vaccin
+variability	0.1.0	GPL-3	Agriculture	plant
+vegan	2.7-8	GPL-2	Environmetrics	communit
+vpc	1.2.4	MIT + file LICENSE	Pharmacokinetics	pharmacometr
+waves	0.2.7	MIT + file LICENSE	Agriculture	plant
+weaana	0.3.0	MIT + file LICENSE	Agriculture	agricult
+wildlifeDI	1.0.1	GPL-3	Tracking	wildlife
+wnl	0.8.6	GPL-3	Pharmacokinetics	pharmacokinet
+xgxr	1.1.6	MIT + file LICENSE	Pharmacokinetics	pharmacometr
+xpose	0.4.23	LGPL-3	Pharmacokinetics	pharmacometr
+xpose.nlmixr2	0.4.2	GPL (>= 2)	Pharmacokinetics	pharmacometr
+xpose4	4.7.4	LGPL (>= 3)	Pharmacokinetics	population
