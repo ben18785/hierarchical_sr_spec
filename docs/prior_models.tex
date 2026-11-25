@@ -1,0 +1,456 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+
+\newtheorem{example}{Example}
+\newcommand{\PY}{\mathrm{PY}}
+\newcommand{\Unif}{\mathrm{Uniform}}
+
+\title{Priors over model forms: a description of each model}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent This note describes every prior over model forms that we compare. It assumes probability and
+statistics at the level of a late-stage undergraduate: conditional probability, the multinomial and
+Dirichlet distributions, and the idea of a Markov chain Monte Carlo (MCMC) sampler. Everything else is
+built up from there. Section~\ref{sec:setup} sets up the problem; Section~\ref{sec:trees} turns a model
+form into a tree and a tree probability into a product of simple choices;
+Sections~\ref{sec:smoothing}--\ref{sec:hpy} build the hierarchical Pitman--Yor model that underlies most
+of the priors; Sections~\ref{sec:variants}--\ref{sec:pcfg} describe each prior; and
+Section~\ref{sec:evaluation} says how they are compared.
+
+%=========================================================================
+\section{The problem}\label{sec:setup}
+
+A \emph{model form} is a mathematical expression in one variable $x$ whose constants are left free, for
+example the Michaelis--Menten form
+\[
+  f(x) = \frac{c_0\, x}{c_1 + x}.
+\]
+Two expressions are the same form if they differ only in the values of their constants. We write every
+form in a canonical way (a fixed simplification and ordering of terms, with constants renamed
+$c_0, c_1, \dots$ in order of appearance), so that each form has one string, its \emph{key}. Numerical
+literals are also replaced by free constants (so $2x$ and $0.693x$ are both the form $c_0 x$), except
+integer and half-integer exponents, which are part of the structure (so $x^2$ and $\sqrt{x}$ stay as
+they are).
+
+A \emph{prior over model forms} is a probability distribution $P$ over the (infinite) set of all forms.
+We want $P$ to put high probability on the forms that biologists and ecologists actually write down, so
+we \emph{learn} it from a training corpus: a list of forms extracted from published models in several
+sources (BioModels, CellML, ModelDB, SABIO-RK, and so on). Each published model contributes each of
+its distinct forms once.
+
+Two practical requirements shape everything below.
+\begin{enumerate}
+  \item The prior must give positive probability to forms that are \emph{not} in the corpus, because
+  the true form of a new system may be one nobody has published.
+  \item The prior must be \emph{proper}: the probabilities of all forms must add up to one. Otherwise
+  comparisons between priors are meaningless (a prior that gives every form probability $1$ would ``win''
+  every comparison).
+\end{enumerate}
+The simplest idea, the empirical distribution of corpus forms, fails requirement~1: it gives probability
+zero to every unseen form. All of the priors below instead build a form out of small pieces, and give
+probabilities to the pieces.
+
+%=========================================================================
+\section{Forms as trees, and tree probabilities as products}\label{sec:trees}
+
+\subsection{The tree coding}
+
+Every form is written as an \emph{expression tree}. The internal nodes are operators and the leaves are
+the variable or a constant. We use the coding of Bartlett, Desmond and Ferreira's \texttt{fnprior}
+(the symbol set they call the basis), with 13 symbols:
+\begin{center}
+\begin{tabular}{lll}
+  \toprule
+  kind & symbols & number of children (arity)\\
+  \midrule
+  leaves & \texttt{a} (any constant), \texttt{x} (the variable) & 0\\
+  unary operators & \texttt{sqrt}, \texttt{exp}, \texttt{log}, \texttt{sin}, \texttt{tanh}, \texttt{inv} ($1/\cdot$) & 1\\
+  binary operators & \texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, \texttt{pow} & 2\\
+  \bottomrule
+\end{tabular}
+\end{center}
+Every constant is coded by the same symbol \texttt{a}: the prior is over forms, not over constant
+values.
+
+\begin{example}\label{ex:mm}
+The Michaelis--Menten form $c_0 x/(c_1+x)$ is the tree
+\[
+  \texttt{*}\big(\texttt{a},\ \texttt{/}(\texttt{x},\ \texttt{+}(\texttt{a},\texttt{x}))\big),
+\]
+which, read from the top down and left to right (\emph{prefix order}), is the sequence of seven symbols
+\texttt{* a / x + a x}. Because each symbol's arity is known, this sequence determines the tree
+uniquely.
+\end{example}
+
+\subsection{A tree probability as a product of choices}
+
+Imagine generating a tree from the top down. We choose the root's symbol. If it has children, we then
+choose the first child's symbol, then (recursively) everything below the first child, then the second
+child's symbol, and so on. The tree is finished when every branch has ended in a leaf. Write the nodes
+in this order as $1, 2, \dots, m$, with symbol $s_i$ at node $i$. By the chain rule of probability,
+\begin{equation}\label{eq:chain}
+  P(T) = \prod_{i=1}^{m} P(s_i \mid s_1, \dots, s_{i-1}).
+\end{equation}
+This is exact, but each factor depends on the whole history, which we could never estimate. Every tree
+prior here makes the same kind of simplifying assumption: \emph{the choice at node $i$ depends on the
+history only through a short summary $u_i$, its context.} Then
+\begin{equation}\label{eq:product}
+  P(T) = \prod_{i=1}^{m} G_{u_i}(s_i),
+\end{equation}
+where, for each context $u$, $G_u$ is a probability distribution over the 13 symbols. A prior is then
+specified by (i) what goes into the context, and (ii) how the distributions $G_u$ are estimated from the
+corpus.
+
+\subsection{Contexts}
+
+The context of a node is built from a few named components:
+\begin{itemize}
+  \item $a_1$ (the parent's symbol), $a_2$ (the grandparent's), $a_3$ (the great-grandparent's); at the
+  root these are all a special ``none'' symbol, so the root has its own context;
+  \item $l$, the left sibling's symbol, for a second child;
+  \item $d$, the node's depth in the tree (the root has depth $0$), capped at 6;
+  \item $s$, the corpus source of the training form (used by one variant only).
+\end{itemize}
+First children (and the root) and second children are always kept apart: they have separate
+distributions even when their components agree. Following \texttt{fnprior}, with ``order'' $n$ a
+first child's context is its $n$ nearest ancestors $(a_n,\dots,a_1)$ and a second child's context is its
+$n-1$ nearest ancestors and its left sibling, $(a_{n-1},\dots,a_1,l)$. The left sibling matters: in
+$x - x$ or $x \cdot x$ the second argument is more predictable once the first is known.
+
+\begin{example}\label{ex:contexts}
+With $n=2$ the seven nodes of the Michaelis--Menten tree have these contexts:
+\begin{center}
+\begin{tabular}{clll}
+  \toprule
+  node & symbol & kind & context\\
+  \midrule
+  1 & \texttt{*} & root & (none, none)\\
+  2 & \texttt{a} & first child & (grandparent none, parent \texttt{*})\\
+  3 & \texttt{/} & second child & (parent \texttt{*}, left sibling \texttt{a})\\
+  4 & \texttt{x} & first child & (grandparent \texttt{*}, parent \texttt{/})\\
+  5 & \texttt{+} & second child & (parent \texttt{/}, left sibling \texttt{x})\\
+  6 & \texttt{a} & first child & (grandparent \texttt{/}, parent \texttt{+})\\
+  7 & \texttt{x} & second child & (parent \texttt{+}, left sibling \texttt{a})\\
+  \bottomrule
+\end{tabular}
+\end{center}
+so $P(T) = G_{\text{root}}(\texttt{*})\,G_{(\cdot,\texttt{*})}(\texttt{a})\,G_{(\texttt{*},\texttt{a})}(\texttt{/})
+\cdots G_{(\texttt{+},\texttt{a})}(\texttt{x})$.
+\end{example}
+
+\subsection{When is a tree prior proper?}\label{sec:proper}
+
+Equation~\eqref{eq:product} defines a probability for every finite tree, but the total over all finite
+trees need not be one: the generating process can, with positive probability, go on forever. A useful
+way to see this is through the theory of branching processes. Each node ``gives birth'' to $0$, $1$ or
+$2$ children according to its symbol. If the expected number of children per node is above one, the
+tree grows without end with positive probability, and that probability is missing from the finite
+trees. For example, choosing every symbol uniformly at random (probability $1/13$ each) gives an
+expected $(2\cdot 0 + 6\cdot 1 + 5\cdot 2)/13 = 16/13 > 1$ children per node; we found that only about
+60\% of this process's mass is on finite trees, so it is \emph{not} a proper prior. A prior learned from
+a corpus of finite trees puts enough mass on leaves that its expected number of children is below one,
+and we check numerically, for every prior and every training set, that its mass on finite trees is one
+(to six decimal places).
+
+%=========================================================================
+\section{Estimating a distribution from counts: smoothing}\label{sec:smoothing}
+
+Fix one context $u$. In the training corpus, nodes with context $u$ have symbols with counts
+$c_{w}$ ($w$ one of the 13 symbols), $c = \sum_w c_w$ in total. How should we estimate $G_u$?
+
+\paragraph{Maximum likelihood.} $\hat G_u(w) = c_w/c$. This gives probability zero to every symbol not
+seen in context $u$, and so (by the product~\eqref{eq:product}) probability zero to every tree that
+uses an unseen (context, symbol) pair. With hundreds of contexts and limited data this is fatal.
+
+\paragraph{Dirichlet prior.} Put a Dirichlet prior on $G_u$ with mean $H$ (some distribution over the
+symbols) and total concentration $\theta>0$, i.e.\ $G_u \sim \mathrm{Dirichlet}(\theta H)$. The
+posterior predictive probability of the next symbol is
+\begin{equation}\label{eq:dirichlet}
+  P(w \mid \text{counts}) = \frac{c_w + \theta H(w)}{c + \theta}.
+\end{equation}
+This is a weighted average of the observed frequencies $c_w/c$ and the prior mean $H(w)$, with weights
+$c/(c+\theta)$ and $\theta/(c+\theta)$. Every symbol now has positive probability. A small $\theta$ trusts
+the counts; a large $\theta$ trusts $H$.
+
+\paragraph{The Chinese restaurant picture.} Equation~\eqref{eq:dirichlet} has a well-known sequential
+description. Picture a restaurant whose customers are the training observations, seated in order. Each
+table serves one dish (a symbol). A new customer joins an existing table with probability proportional
+to the number of people already at it, or opens a new table with probability proportional to $\theta$,
+in which case the new table's dish is drawn from $H$. Summing over tables, the probability that the next
+customer eats $w$ is exactly~\eqref{eq:dirichlet}. The table picture looks like extra baggage here, but
+it is what makes the next two steps possible.
+
+%=========================================================================
+\section{The Pitman--Yor process}\label{sec:py}
+
+The Pitman--Yor process $\PY(d, \theta, H)$ adds a \emph{discount} $0 \le d < 1$ to the restaurant:
+\begin{itemize}
+  \item join an existing table $k$ with probability proportional to (its size $-\ d$);
+  \item open a new table with probability proportional to $\theta + d\,t$, where $t$ is the current
+  number of tables, and draw its dish from $H$.
+\end{itemize}
+With $t_w$ the number of tables serving $w$ (and $t = \sum_w t_w$), the predictive probability of $w$ is
+\begin{equation}\label{eq:py}
+  P(w \mid \text{seating}) = \frac{c_w - d\,t_w + (\theta + d\,t)\, H(w)}{\theta + c}.
+\end{equation}
+With $d=0$ this is the Dirichlet case~\eqref{eq:dirichlet}. With $d>0$, a fixed amount $d$ is taken from
+every table and given to the base $H$; the more distinct tables there are, the more mass goes to $H$.
+This matches a pattern seen in language and in our corpus alike: many symbols (or forms) are rare, and
+a discount moves mass from the frequently counted ones to the unseen ones more effectively than a
+Dirichlet does. Both $d$ and $\theta$ are learned from the data (Section~\ref{sec:inference}).
+
+%=========================================================================
+\section{Hierarchical Pitman--Yor: backing off to shorter contexts}\label{sec:hpy}
+
+What should the base $H$ be for context $u$? A natural choice is the distribution for a \emph{shorter}
+context: if $u = (\texttt{*}, \texttt{a})$ (``second child of a product whose first child is a
+constant''), its natural fallback is $(\texttt{a})$ or $(\texttt{*})$, which has more data. Write
+$\pi(u)$ for the context obtained by dropping one component of $u$ (which one is dropped first is
+fixed for each prior; by default the most distant ancestor goes first, as in \texttt{fnprior}). The
+hierarchical Pitman--Yor model (Teh, 2006) is
+\begin{align}
+  G_u &\sim \PY\big(d_{g(u)},\ \theta_{g(u)},\ G_{\pi(u)}\big) \quad \text{for every context } u, \label{eq:hpy}\\
+  G_{\emptyset} &\sim \PY\big(d_{0},\ \theta_{0},\ \Unif(13 \text{ symbols})\big), \notag
+\end{align}
+where $\emptyset$ is the empty context (all components dropped) and $g(u)$ is the \emph{group} of $u$:
+contexts with the same set of components and the same child position (first or second) share one pair
+$(d, \theta)$.
+
+In the restaurant picture, there is one restaurant per context. Each training node is a customer in the
+restaurant of its full context. Whenever a restaurant opens a new table, the dish for that table is drawn
+from the parent distribution $G_{\pi(u)}$; in the restaurant picture, this sends one customer to the
+parent restaurant. So the parent restaurant's customers are the \emph{tables} of its children, not the
+raw observations.
+
+The predictive probability is~\eqref{eq:py} applied recursively, with $H = $ the parent's predictive:
+\begin{equation}\label{eq:hpy-pred}
+  P(w \mid u) = \frac{c_{uw} - d\, t_{uw} + (\theta + d\, t_{u})\, P(w \mid \pi(u))}{\theta + c_u},
+\end{equation}
+ending in the uniform distribution. If no training node had context $u$ ($c_u=0$), this is simply the
+parent's prediction. So a tree whose contexts were never seen still gets a positive probability: each
+factor of~\eqref{eq:product} falls back to shorter and shorter contexts, and finally to the symbol
+frequencies of the empty context.
+
+\paragraph{Why table counts in the parent matter.} Suppose the symbol \texttt{x} appears 500 times, but
+always as the second child of \texttt{+} after an \texttt{a}. The full-context restaurant handles those
+500 well. The parent restaurant, which is used for \emph{other} contexts, receives only a few customers
+(one per table), so it does not conclude that \texttt{x} is overwhelmingly likely everywhere. The
+parent's counts measure in how many different situations a symbol is used, which is the right thing to
+use for unfamiliar contexts.
+
+\subsection{Inference}\label{sec:inference}
+
+The seating arrangement (which customers share tables, and so the $t_{uw}$) is not observed, and neither
+are the $d$'s and $\theta$'s. We sample them by MCMC:
+\begin{itemize}
+  \item \emph{Seating.} Gibbs sampling: remove each customer in turn and re-seat it from its conditional
+  distribution given everyone else (join a table with probability $\propto$ size $-\ d$, open a new one
+  with probability $\propto (\theta + d t)\times$ the parent's predictive; opening a table adds a
+  customer to the parent, recursively).
+  \item \emph{Hyperparameters.} Prior $d \sim \mathrm{Beta}(1,1)$ (uniform on $[0,1)$) and
+  $\theta \sim \mathrm{Gamma}(1,1)$ for each group; random-walk Metropolis updates using the
+  probability of the current seating.
+\end{itemize}
+We run 20 sweeps, discard the first 10, and keep a snapshot of the seating and hyperparameters after each
+of the last 10. The prior probability of a tree is the average of~\eqref{eq:product} over the 10
+snapshots, which approximates the posterior predictive probability given the corpus.
+
+%=========================================================================
+\section{The tree priors}\label{sec:variants}
+
+All of these share the coding of Section~\ref{sec:trees} and so define distributions over exactly the
+same set of trees; their probabilities can be compared directly.
+
+\subsection{Baselines}
+
+\paragraph{\texttt{uniform symbols}.} Every symbol at every node has probability $1/13$, so
+$\log P(T) = -m \log 13$ for a tree with $m$ nodes. It learns nothing and is improper
+(Section~\ref{sec:proper}); it is listed only as a reference point.
+
+\paragraph{\texttt{sym0}.} The hierarchical Pitman--Yor model with $n=0$: the context contains no
+symbols at all, only whether the node is a first child (or root) or a second child. So there are just two
+distributions, both learned from the corpus: how often each symbol is used as a first argument and as a
+second argument. A tree's probability then depends only on how many nodes it has and which symbols they
+are, not on how the symbols are arranged. This is the honest baseline: any gain of a richer prior over
+\texttt{sym0} comes from learning the structure of expressions, not just their vocabulary.
+
+\subsection{Context models}
+
+\paragraph{\texttt{hpy2}.} The hierarchical Pitman--Yor model with $n=2$, the contexts of
+Example~\ref{ex:contexts}. First children (and the root) are conditioned on (grandparent, parent) and
+back off to (parent) and then to the empty context; second children are conditioned on (parent, left
+sibling) and back off to (left sibling) and then to the empty context. This is the fully Bayesian
+counterpart of \texttt{fnprior} (next).
+
+\paragraph{\texttt{hpy}.} An earlier, separate implementation of the same model as \texttt{hpy2}. The two
+agree to within $0.01$ nats per form and are kept as a check.
+
+\paragraph{\texttt{fnprior\_kn} and \texttt{fnprior\_kn\_tuned}.} The prior of Bartlett, Desmond \&
+Ferreira (\texttt{fnprior} version~0.5.0), retrained on our corpus with their settings $n=2$,
+a separate root context and constants coded \texttt{a}. It uses \emph{interpolated Kneser--Ney
+smoothing}:
+\[
+  P(w \mid u) = \frac{\max(c_{uw} - D,\ 0)}{c_u} + \frac{D\, N_{1+}(u)}{c_u}\, P(w \mid \pi(u)),
+\]
+where $N_{1+}(u)$ is the number of distinct symbols seen in context $u$, $D=0.8$, and the lower-order
+distributions are estimated from ``continuation counts'' (the number of distinct longer contexts a
+symbol appears in) rather than raw counts. Comparing with~\eqref{eq:hpy-pred}: Kneser--Ney is exactly
+the hierarchical Pitman--Yor predictive with $\theta = 0$, $d = D$ fixed, and exactly one table per
+distinct (context, symbol) pair ($t_{uw} = 1$ whenever $c_{uw}>0$); the continuation counts are the
+table counts. So \texttt{fnprior} is a fixed-parameter, single-seating approximation to
+\texttt{hpy2}, and the two give nearly identical scores. \texttt{fnprior\_kn\_tuned} instead chooses $D$ by 10-fold
+cross-validation on the training data (\texttt{fnprior}'s own tuning routine; one discount for first
+children and one for second children). (\texttt{fnprior}'s
+vocabulary also includes a second variable, \texttt{y}; the small mass it gives to \texttt{y} is mass
+outside our one-variable space.)
+
+\paragraph{\texttt{hpy3\_depth}.} As \texttt{hpy2}, but with longer and richer contexts: $n=3$
+(a first child sees three ancestors, a second child two ancestors and its left sibling) and the node's
+depth (capped at 6) as a further component. Backing off drops the depth first, then the most distant
+ancestor, and so on. The depth lets the prior learn that expressions rarely nest deeply, so it matches
+the size distribution of the corpus better than \texttt{hpy2}.
+
+\paragraph{\texttt{hpy2\_src}.} As \texttt{hpy2}, with the corpus source $s$ of each training form as an
+extra, outermost context component: each source has its own restaurants, which back off to restaurants
+shared by all sources. This lets sources differ in style while sharing strength. A form from a source
+not in the training data is scored with the shared level, which is the correct prediction for a new
+source (a new source's own restaurant would be empty, and an empty restaurant predicts with its parent).
+
+\subsection{Adaptor priors: reusing whole forms and subtrees}\label{sec:adaptors}
+
+The context models build every tree from scratch, one symbol at a time. But the corpus contains the same
+forms over and over: Michaelis--Menten, the Hill function, the exponential. A context model can only
+give Michaelis--Menten the product of its seven symbol probabilities, which is much smaller than its
+actual frequency in the corpus. An \emph{adaptor} (Johnson, Griffiths \& Goldwater, 2007) adds a second
+layer that can reuse whole trees.
+
+At an adapted position $u$ the tree is drawn from
+\[
+  H_u \sim \PY\big(a,\ b,\ B_u\big), \qquad
+  B_u(T) = G_u(\text{root symbol of } T) \times \prod_{\text{children } i} P_{u_i}(T_i),
+\]
+where $G_u$ is a context model of the previous section (the \emph{base}), $u_i$ is the position of
+child $i$, and $P_{u_i}$ is that position's own adaptor $H_{u_i}$ if it is adapted, or the base
+$B_{u_i}$ if not. In the restaurant picture, the customers are now whole (sub)trees and each table
+serves a whole tree. A new tree either joins a table serving the same tree (\emph{reusing} it whole), or
+opens a new table, in which case it is built symbol by symbol from the base. The predictive probability
+of a tree $T$ at an adapted position is
+\begin{equation}\label{eq:adaptor}
+  P(T) = \frac{n_T - a\, K_T + (b + a K)\, B_u(T)}{b + n},
+\end{equation}
+where $n$ is the number of trees seen at that position, $K$ the number of tables, and $n_T$, $K_T$ the
+customers and tables of tree $T$.
+
+The two terms of~\eqref{eq:adaptor} explain the behaviour we see in the results. A form seen often gets
+roughly its corpus frequency $(n_T - aK_T)/(b+n)$, far more than the base alone would give. A form never
+seen gets only the base probability multiplied by the share kept for new tables,
+$(b + aK)/(b + n)$, which is well below one when the corpus repeats a modest number of forms many
+times. So adaptors win on familiar forms and pay a fixed toll on new ones.
+
+The table counts also change what the base learns: the base sees one customer per \emph{table}, roughly
+one per distinct form, rather than one per occurrence. So frequent forms do not dominate the base, which
+then models the variety of forms rather than their popularity.
+
+The adaptor's parameters $(a, b)$ are shared within three groups (the root, first children, second
+children), with priors $a \sim \mathrm{Beta}(1,1)$ and $b \sim \mathrm{Gamma}(1,1)$. Inference is again
+MCMC: each training tree's seating is removed and a new one proposed from the top down, accepted or
+rejected by a Metropolis--Hastings step (exact, because the proposal's probability is tracked); between
+these updates the base's seating and all hyperparameters are updated as in
+Section~\ref{sec:inference}. Predictions average over 10 snapshots, as before.
+
+\paragraph{\texttt{form\_ad}.} Only the root is adapted, with an \texttt{hpy2} base: a Pitman--Yor
+distribution over whole forms that falls back on \texttt{hpy2} for new forms.
+
+\paragraph{\texttt{form\_ad3\_depth}.} As \texttt{form\_ad}, with the \texttt{hpy3\_depth} base.
+
+\paragraph{\texttt{tree\_ad3}.} Every position is adapted (any subtree can be reused anywhere, e.g.\ a
+saturating term $x/(c+x)$ inside a larger form), with an $n=3$ base without depth.
+
+%=========================================================================
+\section{Grammar priors (PCFGs)}\label{sec:pcfg}
+
+The second family generates forms with a probabilistic context-free grammar (PCFG) instead of the
+\texttt{fnprior} tree coding. The grammar is
+\begin{align*}
+  E &\to E + F \mid E - F \mid F && \text{(sums)}\\
+  F &\to F \times T \mid F / T \mid T && \text{(products)}\\
+  T &\to (E) \mid R(E) \mid V \mid C \mid (E)^{C} && \text{(factors)}\\
+  R &\to \exp \mid \log \mid \sin \mid \mathrm{sqrt} \mid \tanh && \text{(functions)}
+\end{align*}
+with $V$ the variable and $C$ a constant. A form is generated by starting from $E$ and repeatedly
+replacing the left-most nonterminal by one of its options; its probability is the product of the
+probabilities of the options chosen. Each form is scored by one canonical derivation.
+
+For each nonterminal $N$ and context $u$ the option probabilities have a Dirichlet prior,
+$p_{u,N} \sim \mathrm{Dirichlet}(\alpha_N)$, with fixed $\alpha$ (e.g.\ $\alpha_E = (1,1,4)$, favouring
+$E \to F$). Given the counts of each option in the training derivations, the posterior mean probability
+is~\eqref{eq:dirichlet}. The schemes differ only in the context $u$:
+\begin{itemize}
+  \item \texttt{default\_prior}: no training at all; the prior mean of the Dirichlet, no context;
+  \item \texttt{cf}: context-free (one distribution per nonterminal), trained;
+  \item \texttt{parent}: the context is the nearest enclosing function (none, $\exp$, $\log$, \dots, or
+  the base of a power);
+  \item \texttt{position}: as \texttt{parent}, plus whether a factor is in a numerator or a denominator;
+  \item \texttt{term}: as \texttt{position}, plus whether a product is one of several terms of a sum;
+  \item \texttt{term\_root}: as \texttt{term}, plus whether the choice is made at the top level of the
+  expression (a start-of-tree context, like \texttt{fnprior}'s root context).
+\end{itemize}
+A context unseen in training uses the prior mean. In the \texttt{\_backoff20} versions each context's
+Dirichlet is centred on the trained context-free fit instead,
+$\alpha_{u,N} = 20\, \hat p_{\texttt{cf},N} + 0.1$, a one-level version of the back-off idea of
+Section~\ref{sec:hpy}.
+
+Unlike the tree priors, the grammar has no discount, no learned hyperparameters and only one level of
+back-off, so it cannot share strength as flexibly. It also generates a different set of objects
+(derivations, in which some different strings denote the same tree), so its raw probabilities are only
+approximately comparable with the tree priors'.
+
+%=========================================================================
+\section{Training data and how the priors are compared}\label{sec:evaluation}
+
+\paragraph{Training data.} Each source is a list of (model, form) pairs, each model contributing each
+of its distinct forms once. Sources differ greatly in size, so we train in two ways: \emph{pooled}
+(every pair counts once, so large sources dominate) and \emph{equal} (each source is replicated to the
+size of the largest, so each source carries the same total weight).
+
+\paragraph{Score.} A prior is scored on test forms it was not trained on by its own log probability
+$\log P(\text{form})$, averaged over test (model, form) pairs; higher is better and the unit is nats.
+Because the tree priors are proper distributions over the same space, a difference of $1$ nat means the
+better prior gives the test forms, on average, $e \approx 2.7$ times more probability. We do not
+renormalise over a finite list of candidate forms: renormalising rewards priors that are flat over that
+list, which is an artefact of the list.
+
+\paragraph{Seen and novel forms.} A test form is \emph{seen} if its key occurs in the training data and
+\emph{novel} otherwise. The two kinds test different things: seen forms test how well a prior
+reproduces the corpus's habits; novel forms test how sensibly it extrapolates. Novel forms are also
+larger on average, and every proper prior must give larger forms less probability, so comparisons of
+novel forms are made relative to \texttt{sym0} or at fixed tree size.
+
+\paragraph{Test designs.} Leave one source out (train on all sources but one, test on that one),
+hold-out sources (train on all twelve training sources, test on three sources never used for training),
+and, in preparation, a temporal split (train on models published before a cutoff year, test on those
+published after).
+
+%=========================================================================
+\section*{References}
+\begin{itemize}
+  \item D.~J.~Bartlett, H.~Desmond and P.~G.~Ferreira (2023). Priors for symbolic regression.
+  arXiv:2304.06333.
+  \item M.~Johnson, T.~L.~Griffiths and S.~Goldwater (2007). Adaptor grammars: a framework for
+  specifying compositional nonparametric Bayesian models. \emph{Advances in Neural Information
+  Processing Systems} 19.
+  \item S.~Goldwater, T.~L.~Griffiths and M.~Johnson (2006). Interpolating between types and tokens by
+  estimating power-law generators. \emph{Advances in Neural Information Processing Systems} 18.
+  \item Y.~W.~Teh (2006). A hierarchical Bayesian language model based on Pitman--Yor processes.
+  \emph{Proceedings of COLING/ACL}, 985--992.
+\end{itemize}
+
+\end{document}
