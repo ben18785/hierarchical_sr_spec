@@ -1,0 +1,1561 @@
+{
+"freq": {
+"(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7)/(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7 + c8)": 2,
+"(c0**x1*c1 + c2)/(c0**x1*c3 + c4 + c1/c0**x1)": 1,
+"(c0*log(x1) + c1)**2": 1,
+"-c0*exp(c1*x1) + c0": 2,
+"-c0*sin(c1*x1 + c2) + c0": 1,
+"1/(c0 - x1)": 1,
+"c0 - (c1*x1 + c2)**c3": 1,
+"c0 - (c1*x1**c2 + c3)**c4": 1,
+"c0 - exp(c1*x1)": 1,
+"c0*(c1 + c2*x1)*(c3 + x1)/(c4 + x1)": 1,
+"c0*(c1 + x1)**c2": 2,
+"c0*(c1 + x1)**c2*exp(c3*x1)": 1,
+"c0*(c1 - exp(c2*x1))*exp(c3*x1)": 1,
+"c0*(c1 - x1)*(c2 + x1)**c3": 1,
+"c0*(c1**x1*c2 + c3)/(c0 + c1**x1)": 1,
+"c0*(c1*x1 + c2 - sqrt(c3*x1 + (c1*x1 + c2)**2))": 1,
+"c0*(c1*x1 + c2)**c3": 1,
+"c0*(c1*x1 + c2)**c3/x1": 1,
+"c0*(c2 + x1)**2/(c1 + x1)": 1,
+"c0*(c2*exp(c1*x1) + c3)/(c0 + exp(c1*x1)) + c4*exp(c1*x1)": 1,
+"c0**(c1*x1**c2)*c3 + c0**(-(c4 - x1)**c2)": 1,
+"c0*c1*x1 - c0*sqrt(c2*x1 + (c1*x1 + c3)**2) + c4": 1,
+"c0*exp(-c1*exp(c2*x1) + c1 + c3*x1)": 1,
+"c0*exp(c0*c2 - c0*x1)/(c1 + exp(exp(c0*c2 - c0*x1)))": 1,
+"c0*exp(c1*exp(c2*x1))": 1,
+"c0*exp(c1*x1 - c1)": 1,
+"c0*exp(c1*x1)": 2,
+"c0*exp(c1*x1) + c2": 4,
+"c0*exp(c1*x1) + c2*exp(c3*x1) + c4": 1,
+"c0*exp(c1*x1)/(c0*exp(c1*x1) + c2)": 1,
+"c0*exp(c1*x1)/(c0*exp(c1*x1) + c2) + c3": 1,
+"c0*exp(c1*x1)/x1": 1,
+"c0*exp(c1*x1**2 + c2*x1)": 2,
+"c0*exp(c1*x1**2 + c2*x1) + c3": 1,
+"c0*exp(c1*x1**c2) + c3": 1,
+"c0*exp(c1/(c2 + x1))": 1,
+"c0*exp(c1/x1)": 2,
+"c0*exp(c2*x1)/(c1 + exp(c2*x1))": 2,
+"c0*exp(c2*x1)/(c1 + exp(c2*x1)) + c3": 1,
+"c0*log(c1*x1 + c2)": 1,
+"c0*log(x1) + c1": 1,
+"c0*tanh(c1*x1)": 1,
+"c0*tanh(c1*x1) + c2": 2,
+"c0*x1": 1,
+"c0*x1 + c1": 1,
+"c0*x1*(c1 + x1**c2)**c3": 1,
+"c0*x1**2 + c1*x1 + c2": 1,
+"c0*x1**c1": 5,
+"c0*x1**c1 + c2": 1,
+"c0*x1**c1/(c2 + exp(c3*x1**c4))": 1,
+"c0*x1*exp(c1*x1)": 1,
+"c0*x1/(c1 + x1)": 5,
+"c0*x1/(c1 + x1) + c2": 2,
+"c0*x1/(c1*x1**2 + c2 + x1)": 1,
+"c0*x1/sqrt(c1*x1**2 + c2) + c3": 1,
+"c0/(c1 + exp(c2*log(x1)))": 1,
+"c0/(c1 + exp(c2*x1))": 1,
+"c0/(c1 + x1)": 1,
+"c0/(c1 + x1) + c2": 1,
+"c0/(c1 + x1) + c2*x1 + c3": 1,
+"c0/(c1 + x1) + c2*x1**2 + c3*x1 + c4": 1,
+"c0/sqrt(c1 + x1) + c2*sqrt(c3 + x1) + c4": 1,
+"c0/sqrt(x1) + c1": 1,
+"c1*exp(c0*x1) + c4*exp(c3*(c2 + x1)**2) + c6*exp(c5*x1)": 1,
+"c1*exp(c0*x1) + c5*exp(c2*c4 + c4*x1 - exp(c2*c3 + c3*x1)) + c7*exp(c6*x1) + c8": 1,
+"c2*c8**x1/(c4 + c8**x1) + c7*exp(c6*(c3 + log(x1))**2) + exp(c1*(c0 + x1)**c5)": 1,
+"c5*exp(c4*(c2 + log(x1))**2) + c6**(x1**c7)*c8/(c6**(x1**c7)*c8 + c9) + exp(c1*(c0 + x1)**c3)": 1,
+"c5*exp(c4*(c2 + log(x1))**2) + c6**x1*c7/(c6**x1*c7 + c8) + exp(c1*(c0 + x1)**c3)": 1,
+"exp(c0*x1**2 + c1*x1)": 1
+},
+"per_model": {
+"Abbey1952": [
+"-c0*exp(c1*x1) + c0"
+],
+"Abe2009": [
+"c0*tanh(c1*x1) + c2"
+],
+"AlonsoMcKane2004": [
+"c0*(c1*x1 + c2)**c3/x1"
+],
+"Anderson1986": [
+"-c0*sin(c1*x1 + c2) + c0"
+],
+"AndersonMay1979": [
+"c0*x1"
+],
+"Arrhenius1889": [
+"c0*exp(c1/x1)"
+],
+"Arrhenius1921": [
+"c0*x1**c1"
+],
+"AsymptoticRegression": [
+"c0*exp(c1*x1) + c2"
+],
+"BallWoodrowBerry1987": [
+"c0*x1 + c1"
+],
+"Baly1935": [
+"c0*x1/(c1 + x1)",
+"c0*x1/(c1 + x1) + c2"
+],
+"Bannister1979": [
+"c0*x1*(c1 + x1**c2)**c3"
+],
+"Beard1971": [
+"c0*exp(c2*x1)/(c1 + exp(c2*x1))",
+"c0*exp(c2*x1)/(c1 + exp(c2*x1)) + c3"
+],
+"CapassoSerio1978": [
+"c0*x1/(c1 + x1)"
+],
+"DeMoivre1725": [
+"1/(c0 - x1)"
+],
+"DiekmannKretzschmar1991": [
+"c0*x1/(c1 + x1)"
+],
+"Duursma2013": [
+"c0*x1**c1 + c2"
+],
+"EilersPeeters1988": [
+"c0*x1/(c1*x1**2 + c2 + x1)"
+],
+"Farber1996": [
+"c0 - (c1*x1**c2 + c3)**c4"
+],
+"Fisher1943": [
+"c0*exp(c1*x1)/x1"
+],
+"Fishman1987": [
+"c0*exp(c1/x1)"
+],
+"FurumotoMickey1967": [
+"c0 - (c1*x1 + c2)**c3"
+],
+"GetzPickering1983": [
+"c0*x1/(c1 + x1)"
+],
+"Gitay1991": [
+"(c0*log(x1) + c1)**2"
+],
+"Gleason1922": [
+"c0*log(x1) + c1"
+],
+"Gompertz1825": [
+"c0*exp(c1*exp(c2*x1))",
+"c0*exp(c1*x1)"
+],
+"Haas1983": [
+"c0 - exp(c1*x1)"
+],
+"HeligmanPollard1980": [
+"(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7)/(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7 + c8)",
+"c2*c8**x1/(c4 + c8**x1) + c7*exp(c6*(c3 + log(x1))**2) + exp(c1*(c0 + x1)**c5)",
+"c5*exp(c4*(c2 + log(x1))**2) + c6**(x1**c7)*c8/(c6**(x1**c7)*c8 + c9) + exp(c1*(c0 + x1)**c3)",
+"c5*exp(c4*(c2 + log(x1))**2) + c6**x1*c7/(c6**x1*c7 + c8) + exp(c1*(c0 + x1)**c3)"
+],
+"InverseGompertz": [
+"c0*exp(c0*c2 - c0*x1)/(c1 + exp(exp(c0*c2 - c0*x1)))"
+],
+"InverseWeibull": [
+"c0*x1**c1/(c2 + exp(c3*x1**c4))"
+],
+"JassbyPlatt1976": [
+"c0*tanh(c1*x1)",
+"c0*tanh(c1*x1) + c2"
+],
+"Kaipiainen2009": [
+"c0*x1/(c1 + x1) + c2"
+],
+"Kannisto1992": [
+"c0*exp(c1*x1)/(c0*exp(c1*x1) + c2)",
+"c0*exp(c1*x1)/(c0*exp(c1*x1) + c2) + c3"
+],
+"Kirschbaum1995": [
+"c0*exp(c1*x1**2 + c2*x1)"
+],
+"Kostaki1992": [
+"(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7)/(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7 + c8)"
+],
+"Leuning1995": [
+"c0/(c1 + x1) + c2"
+],
+"LindseyNewman1956": [
+"c0*(c2 + x1)**2/(c1 + x1)"
+],
+"LiuLevinIwasa1986": [
+"c0*x1**c1"
+],
+"LloydTaylor1994": [
+"c0*exp(c1/(c2 + x1))"
+],
+"LogQuadratic1988": [
+"c0*exp(c1*x1**2 + c2*x1)",
+"c0*exp(c1*x1**2 + c2*x1) + c3"
+],
+"Lomolino2000": [
+"c0/(c1 + exp(c2*log(x1)))"
+],
+"MacArthur1957": [
+"c0*(c1*x1 + c2)**c3"
+],
+"Makeham1860": [
+"c0*exp(c1*x1) + c2"
+],
+"Mandelbrot1977": [
+"c0*(c1 + x1)**c2"
+],
+"Martinelle1987": [
+"c0*(c2*exp(c1*x1) + c3)/(c0 + exp(c1*x1)) + c4*exp(c1*x1)"
+],
+"May1978": [
+"c0*log(c1*x1 + c2)"
+],
+"Medlyn2011": [
+"c0/sqrt(x1) + c1"
+],
+"MichaelisMenten": [
+"c0*x1/(c1 + x1)"
+],
+"Motomura1932": [
+"c0*exp(c1*x1 - c1)"
+],
+"Opperman1870": [
+"c0/sqrt(c1 + x1) + c2*sqrt(c3 + x1) + c4"
+],
+"ParetoII": [
+"c0/(c1 + x1)"
+],
+"Perks1932": [
+"c0*(c1**x1*c2 + c3)/(c0 + c1**x1)"
+],
+"Platt1980": [
+"c0*(c1 - exp(c2*x1))*exp(c3*x1)"
+],
+"PowerSAD": [
+"c0*x1**c1"
+],
+"PradoMoraes1997": [
+"c0*exp(c1*x1) + c2"
+],
+"PrioulChartier1977": [
+"c0*(c1*x1 + c2 - sqrt(c3*x1 + (c1*x1 + c2)**2))",
+"c0*c1*x1 - c0*sqrt(c2*x1 + (c1*x1 + c3)**2) + c4"
+],
+"QuadraticMortality": [
+"c0*x1**2 + c1*x1 + c2"
+],
+"RogersPlanck1983": [
+"c1*exp(c0*x1) + c5*exp(c2*c4 + c4*x1 - exp(c2*c3 + c3*x1)) + c7*exp(c6*x1) + c8"
+],
+"Scholey2019": [
+"c0*(c1 + x1)**c2",
+"c0*(c1 + x1)**c2*exp(c3*x1)"
+],
+"Siler1979": [
+"c0*exp(c1*x1) + c2*exp(c3*x1) + c4"
+],
+"Smith1936": [
+"c0*x1/sqrt(c1*x1**2 + c2) + c3"
+],
+"Steele1962": [
+"c0*x1*exp(c1*x1)"
+],
+"Steffensen1930": [
+"(c0**x1*c1 + c2)/(c0**x1*c3 + c4 + c1/c0**x1)"
+],
+"StrehlerMildvan1960": [
+"c0*exp(-c1*exp(c2*x1) + c1 + c3*x1)"
+],
+"Thiele1871": [
+"c1*exp(c0*x1) + c4*exp(c3*(c2 + x1)**2) + c6*exp(c5*x1)"
+],
+"Tuomi2008": [
+"exp(c0*x1**2 + c1*x1)"
+],
+"VanDerMaen1943": [
+"c0/(c1 + x1) + c2*x1 + c3",
+"c0/(c1 + x1) + c2*x1**2 + c3*x1 + c4"
+],
+"VaupelMantonStallard1979": [
+"c0*exp(c2*x1)/(c1 + exp(c2*x1))"
+],
+"Verhulst1838": [
+"c0/(c1 + exp(c2*x1))"
+],
+"Webb1974": [
+"-c0*exp(c1*x1) + c0",
+"c0*exp(c1*x1) + c2"
+],
+"Weibull1951": [
+"c0*exp(c1*x1**c2) + c3",
+"c0*x1**c1"
+],
+"Wittstein1883": [
+"c0**(c1*x1**c2)*c3 + c0**(-(c4 - x1)**c2)"
+],
+"YanHunt1999": [
+"c0*(c1 - x1)*(c2 + x1)**c3"
+],
+"Ye2007": [
+"c0*(c1 + c2*x1)*(c3 + x1)/(c4 + x1)"
+],
+"Zipf1949": [
+"c0*x1**c1"
+],
+"vantHoff1898": [
+"c0*exp(c1*x1)"
+]
+},
+"source": "Ecology and demography catalogue (hold-out; hsr/data/sources/ecocat2_curves.csv): mortality laws, species-abundance and species-accumulation curves, photosynthesis-irradiance, soil respiration, stomatal conductance, transmission, microbial dose-response and phenology functions; verified numerically against R implementations where one exists; one model per original publication",
+"stats": {
+"distinct_keys": 69,
+"expressible": 101,
+"models": 75,
+"packages": [
+"",
+"MortalityLaws",
+"REddyProc",
+"chillR",
+"photosynthesisLRC",
+"phytotools",
+"plantecophys",
+"sads",
+"vegan"
+],
+"rows": 102,
+"rows_in_corpus": 101,
+"verified": 82
+},
+"verification": {
+"dr_betapoisson": {
+"formula": "1 - (1 + x/beta)**(-alpha)",
+"function": "",
+"in_corpus": true,
+"key": "c0 - (c1*x1 + c2)**c3",
+"max_rel_err": null,
+"model": "FurumotoMickey1967",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"dr_betapoisson_n50": {
+"formula": "1 - (1 + x*(2**(1/alpha) - 1)/N50)**(-alpha)",
+"function": "",
+"in_corpus": true,
+"key": "c0 - (c1*x1 + c2)**c3",
+"max_rel_err": null,
+"model": "FurumotoMickey1967",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"dr_exponential": {
+"formula": "1 - exp(-r*x)",
+"function": "",
+"in_corpus": true,
+"key": "c0 - exp(c1*x1)",
+"max_rel_err": null,
+"model": "Haas1983",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"dr_weibullgamma": {
+"formula": "1 - (1 + x**b/beta)**(-alpha)",
+"function": "",
+"in_corpus": true,
+"key": "c0 - (c1*x1**c2 + c3)**c4",
+"max_rel_err": null,
+"model": "Farber1996",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"gs_ballberry": {
+"formula": "g0 + g1*x*rh/ca",
+"function": "fitBB (BallBerry)",
+"in_corpus": true,
+"key": "c0*x1 + c1",
+"max_rel_err": 4.4329199765257196e-15,
+"model": "BallWoodrowBerry1987",
+"n_points": 75,
+"note": "",
+"package": "plantecophys",
+"verified": true
+},
+"gs_leuning": {
+"formula": "g0 + aleaf*g1/ca/(1 + x/D0)",
+"function": "fitBB (BBLeuning)",
+"in_corpus": true,
+"key": "c0/(c1 + x1) + c2",
+"max_rel_err": 4.2952043205652426e-15,
+"model": "Leuning1995",
+"n_points": 75,
+"note": "",
+"package": "plantecophys",
+"verified": true
+},
+"gs_medlyn": {
+"formula": "g0 + 1.6*(1 + g1/sqrt(x))*(aleaf/ca)",
+"function": "fitBB (BBOpti)",
+"in_corpus": true,
+"key": "c0/sqrt(x1) + c1",
+"max_rel_err": 2.4002064197274508e-15,
+"model": "Medlyn2011",
+"n_points": 75,
+"note": "",
+"package": "plantecophys",
+"verified": true
+},
+"gs_medlynfull": {
+"formula": "g0 + 1.6*(1 + g1/x**(1 - gk))*(aleaf/ca)",
+"function": "fitBB (BBOptiFull)",
+"in_corpus": true,
+"key": "c0*x1**c1 + c2",
+"max_rel_err": 4.136831923444718e-15,
+"model": "Duursma2013",
+"n_points": 75,
+"note": "",
+"package": "plantecophys",
+"verified": true
+},
+"lrc_eq1": {
+"formula": "phi_I0*x*Pgmax/(phi_I0*x + Pgmax) - Rd",
+"function": "eq1",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1) + c2",
+"max_rel_err": 3.994175286615155e-15,
+"model": "Baly1935",
+"n_points": 75,
+"note": "",
+"package": "photosynthesisLRC",
+"verified": true
+},
+"lrc_eq11": {
+"formula": "phi_I0_Icomp*(1 - beta*x)/(1 + gamma*x)*(x - Icomp)",
+"function": "eq11",
+"in_corpus": true,
+"key": "c0*(c1 + c2*x1)*(c3 + x1)/(c4 + x1)",
+"max_rel_err": 3.023550364401434e-15,
+"model": "Ye2007",
+"n_points": 75,
+"note": "",
+"package": "photosynthesisLRC",
+"verified": true
+},
+"lrc_eq2": {
+"formula": "Pgmax*x/(x + I50) - Rd",
+"function": "eq2",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1) + c2",
+"max_rel_err": 4.0274683966185046e-15,
+"model": "Kaipiainen2009",
+"n_points": 75,
+"note": "",
+"package": "photosynthesisLRC",
+"verified": true
+},
+"lrc_eq3": {
+"formula": "phi_I0*x*Pgmax/sqrt(Pgmax**2 + phi_I0**2*x**2) - Rd",
+"function": "eq3",
+"in_corpus": true,
+"key": "c0*x1/sqrt(c1*x1**2 + c2) + c3",
+"max_rel_err": 4.687624959916941e-15,
+"model": "Smith1936",
+"n_points": 75,
+"note": "",
+"package": "photosynthesisLRC",
+"verified": true
+},
+"lrc_eq4": {
+"formula": "Pgmax*tanh(phi_I0*x/Pgmax) - Rd",
+"function": "eq4",
+"in_corpus": true,
+"key": "c0*tanh(c1*x1) + c2",
+"max_rel_err": 4.90400121407032e-15,
+"model": "Abe2009",
+"n_points": 75,
+"note": "",
+"package": "photosynthesisLRC",
+"verified": true
+},
+"lrc_eq5": {
+"formula": "Pgmax*tanh(x/Isat) - Rd",
+"function": "eq5",
+"in_corpus": true,
+"key": "c0*tanh(c1*x1) + c2",
+"max_rel_err": 4.2616510614334075e-15,
+"model": "JassbyPlatt1976",
+"n_points": 75,
+"note": "",
+"package": "photosynthesisLRC",
+"verified": true
+},
+"lrc_eq6": {
+"formula": "((phi_I0*x + Pgmax) - sqrt((phi_I0*x + Pgmax)**2 - 4*phi_I0*Pgmax*theta*x))/(2*theta) - Rd",
+"function": "eq6",
+"in_corpus": true,
+"key": "c0*c1*x1 - c0*sqrt(c2*x1 + (c1*x1 + c3)**2) + c4",
+"max_rel_err": 4.058606511834789e-15,
+"model": "PrioulChartier1977",
+"n_points": 75,
+"note": "",
+"package": "photosynthesisLRC",
+"verified": true
+},
+"lrc_eq8": {
+"formula": "Pgmax*(1 - exp(-phi_I0*x/Pgmax)) - Rd",
+"function": "eq8",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2",
+"max_rel_err": 5.14478077796347e-15,
+"model": "Webb1974",
+"n_points": 75,
+"note": "",
+"package": "photosynthesisLRC",
+"verified": true
+},
+"lrc_eq9": {
+"formula": "Pgmax*(1 - exp(-k*(x - Icomp))) - Rd",
+"function": "eq9",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2",
+"max_rel_err": 3.3614781552437027e-15,
+"model": "PradoMoraes1997",
+"n_points": 75,
+"note": "",
+"package": "photosynthesisLRC",
+"verified": true
+},
+"ml_beard": {
+"formula": "A*exp(B*x)/(1 + K*A*exp(B*x))",
+"function": "beard",
+"in_corpus": true,
+"key": "c0*exp(c2*x1)/(c1 + exp(c2*x1))",
+"max_rel_err": 7.828206258739881e-15,
+"model": "Beard1971",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_beard_makeham": {
+"formula": "A*exp(B*x)/(1 + K*A*exp(B*x)) + C",
+"function": "beard_makeham",
+"in_corpus": true,
+"key": "c0*exp(c2*x1)/(c1 + exp(c2*x1)) + c3",
+"max_rel_err": 5.1613064099503445e-15,
+"model": "Beard1971",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_demoivre": {
+"formula": "1/(N - x)",
+"function": "demoivre",
+"in_corpus": true,
+"key": "1/(c0 - x1)",
+"max_rel_err": 3.560480098252507e-15,
+"model": "DeMoivre1725",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_ggompertz": {
+"formula": "A*exp(B*x)/(1 + A*G/B*(exp(B*x) - 1))",
+"function": "ggompertz",
+"in_corpus": true,
+"key": "c0*exp(c2*x1)/(c1 + exp(c2*x1))",
+"max_rel_err": 5.371950781598364e-15,
+"model": "VaupelMantonStallard1979",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_gompertz": {
+"formula": "A*exp(B*x)",
+"function": "gompertz",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)",
+"max_rel_err": 3.883184550085852e-15,
+"model": "Gompertz1825",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_gompertz0": {
+"formula": "exp((x - M)/sigma)/sigma",
+"function": "gompertz0",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)",
+"max_rel_err": 4.720891288141967e-15,
+"model": "Gompertz1825",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_gompertz_logquad": {
+"formula": "K*exp(B1*x - B2*x**2)",
+"function": "gompertz_logquad",
+"in_corpus": true,
+"key": "c0*exp(c1*x1**2 + c2*x1)",
+"max_rel_err": 3.3895192443526316e-15,
+"model": "LogQuadratic1988",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_hp": {
+"formula": "eta/(1 + eta)",
+"function": "HP",
+"in_corpus": true,
+"key": "(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7)/(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7 + c8)",
+"max_rel_err": 8.382314211266691e-15,
+"model": "HeligmanPollard1980",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_hp2": {
+"formula": "A**((x + B)**C) + G*H**x/(1 + G*H**x) + D*exp(-E*log(x/F_)**2)",
+"function": "HP2",
+"in_corpus": true,
+"key": "c5*exp(c4*(c2 + log(x1))**2) + c6**x1*c7/(c6**x1*c7 + c8) + exp(c1*(c0 + x1)**c3)",
+"max_rel_err": 5.966731834762054e-15,
+"model": "HeligmanPollard1980",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_hp3": {
+"formula": "A**((x + B)**C) + G*H**x/(1 + K*G*H**x) + D*exp(-E*log(x/F_)**2)",
+"function": "HP3",
+"in_corpus": true,
+"key": "c2*c8**x1/(c4 + c8**x1) + c7*exp(c6*(c3 + log(x1))**2) + exp(c1*(c0 + x1)**c5)",
+"max_rel_err": 8.562482306836677e-15,
+"model": "HeligmanPollard1980",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_hp4": {
+"formula": "A**((x + B)**C) + G*H**(x**K)/(1 + G*H**(x**K)) + D*exp(-E*log(x/F_)**2)",
+"function": "HP4",
+"in_corpus": true,
+"key": "c5*exp(c4*(c2 + log(x1))**2) + c6**(x1**c7)*c8/(c6**(x1**c7)*c8 + c9) + exp(c1*(c0 + x1)**c3)",
+"max_rel_err": 1.0615224722883149e-14,
+"model": "HeligmanPollard1980",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_invgompertz": {
+"formula": "exp(-(x - M)/sigma)/(sigma*(exp(exp(-(x - M)/sigma)) - 1))",
+"function": "invgompertz",
+"in_corpus": true,
+"key": "c0*exp(c0*c2 - c0*x1)/(c1 + exp(exp(c0*c2 - c0*x1)))",
+"max_rel_err": 9.539611930511614e-14,
+"model": "InverseGompertz",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_invweibull": {
+"formula": "(x/M)**(-M/sigma - 1)/(sigma*(exp((x/M)**(-M/sigma)) - 1))",
+"function": "invweibull",
+"in_corpus": true,
+"key": "c0*x1**c1/(c2 + exp(c3*x1**c4))",
+"max_rel_err": 4.1480694696413425e-15,
+"model": "InverseWeibull",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_kannisto": {
+"formula": "A*exp(B*x)/(1 + A*exp(B*x))",
+"function": "kannisto",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)/(c0*exp(c1*x1) + c2)",
+"max_rel_err": 2.6432172643274887e-15,
+"model": "Kannisto1992",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_kannisto_makeham": {
+"formula": "A*exp(B*x)/(1 + A*exp(B*x)) + C",
+"function": "kannisto_makeham",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)/(c0*exp(c1*x1) + c2) + c3",
+"max_rel_err": 1.8556006738684483e-15,
+"model": "Kannisto1992",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_kostaki_high": {
+"formula": "eta/(1 + eta)",
+"function": "kostaki",
+"in_corpus": true,
+"key": "(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7)/(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7 + c8)",
+"max_rel_err": 5.827758717097316e-15,
+"model": "Kostaki1992",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_kostaki_low": {
+"formula": "eta/(1 + eta)",
+"function": "kostaki",
+"in_corpus": true,
+"key": "(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7)/(c0**((c1 + x1)**c2) + c5*exp(c4*log(c3*x1)**2) + c6**x1*c7 + c8)",
+"max_rel_err": 3.5524069862047585e-15,
+"model": "Kostaki1992",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_makeham": {
+"formula": "A*exp(B*x) + C",
+"function": "makeham",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2",
+"max_rel_err": 4.697263095108564e-15,
+"model": "Makeham1860",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_makeham0": {
+"formula": "exp((x - M)/sigma)/sigma + C",
+"function": "makeham0",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2",
+"max_rel_err": 4.334889876265674e-15,
+"model": "Makeham1860",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_makeham_logquad": {
+"formula": "A0 + K*exp(B1*x - B2*x**2)",
+"function": "makeham_logquad",
+"in_corpus": true,
+"key": "c0*exp(c1*x1**2 + c2*x1) + c3",
+"max_rel_err": 3.2581445836305435e-15,
+"model": "LogQuadratic1988",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_martinelle": {
+"formula": "(A*exp(B*x) + C)/(1 + D*exp(B*x)) + K*exp(B*x)",
+"function": "martinelle",
+"in_corpus": true,
+"key": "c0*(c2*exp(c1*x1) + c3)/(c0 + exp(c1*x1)) + c4*exp(c1*x1)",
+"max_rel_err": 6.410280514402672e-15,
+"model": "Martinelle1987",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_neggompertz": {
+"formula": "A*exp(-B*x)",
+"function": "neggompertz",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)",
+"max_rel_err": 2.67821864737082e-15,
+"model": "Gompertz1825",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_opperman": {
+"formula": "A/sqrt(x + 1) - B + C*sqrt(x + 1)",
+"function": "opperman",
+"in_corpus": true,
+"key": "c0/sqrt(c1 + x1) + c2*sqrt(c3 + x1) + c4",
+"max_rel_err": 2.3875256715405644e-15,
+"model": "Opperman1870",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_pareto2": {
+"formula": "A/(x + C)",
+"function": "pareto_2",
+"in_corpus": true,
+"key": "c0/(c1 + x1)",
+"max_rel_err": 3.996045972343051e-15,
+"model": "ParetoII",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_perks": {
+"formula": "(A + B*C**x)/(1 + D*C**x)",
+"function": "perks",
+"in_corpus": true,
+"key": "c0*(c1**x1*c2 + c3)/(c0 + c1**x1)",
+"max_rel_err": 4.6776384895974745e-15,
+"model": "Perks1932",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_quadratic": {
+"formula": "A + B*x + C*x**2",
+"function": "quadratic",
+"in_corpus": true,
+"key": "c0*x1**2 + c1*x1 + c2",
+"max_rel_err": 6.428573247919725e-15,
+"model": "QuadraticMortality",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_rogersplanck": {
+"formula": "A0 + A1*exp(-A*x) + A2*exp(B*(x - U) - exp(-C*(x - U))) + A3*exp(D*x)",
+"function": "rogersplanck",
+"in_corpus": true,
+"key": "c1*exp(c0*x1) + c5*exp(c2*c4 + c4*x1 - exp(c2*c3 + c3*x1)) + c7*exp(c6*x1) + c8",
+"max_rel_err": 3.807781066558134e-15,
+"model": "RogersPlanck1983",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_scholey": {
+"formula": "A*(x + C)**(-B)*exp(-D*x)",
+"function": "scholey",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**c2*exp(c3*x1)",
+"max_rel_err": 4.595791274794775e-15,
+"model": "Scholey2019",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_scholey_sp": {
+"formula": "A*(x + C)**(-B)",
+"function": "scholey_shifted_power",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**c2",
+"max_rel_err": 4.081746487249377e-15,
+"model": "Scholey2019",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_siler": {
+"formula": "A*exp(-B*x) + C + D*exp(E*x)",
+"function": "siler",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2*exp(c3*x1) + c4",
+"max_rel_err": 4.827751888192449e-15,
+"model": "Siler1979",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_steffensen": {
+"formula": "(A + B*C**x)/(B*C**(-x) + 1 + D*C**x)",
+"function": "steffensen",
+"in_corpus": true,
+"key": "(c0**x1*c1 + c2)/(c0**x1*c3 + c4 + c1/c0**x1)",
+"max_rel_err": 4.6003990167079215e-15,
+"model": "Steffensen1930",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_strehler": {
+"formula": "A*exp(B*x)*exp(-(V/B)*(1 - exp(-B*x)))",
+"function": "strehler_mildvan",
+"in_corpus": true,
+"key": "c0*exp(-c1*exp(c2*x1) + c1 + c3*x1)",
+"max_rel_err": 3.948693038192524e-15,
+"model": "StrehlerMildvan1960",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_thiele": {
+"formula": "A*exp(-B*x) + C*exp(-D*(x - E)**2/2) + F_*exp(G*x)",
+"function": "thiele",
+"in_corpus": true,
+"key": "c1*exp(c0*x1) + c4*exp(c3*(c2 + x1)**2) + c6*exp(c5*x1)",
+"max_rel_err": 4.0966143650806675e-15,
+"model": "Thiele1871",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_vandermaen": {
+"formula": "A + B*x + C*x**2 + I/(N - x)",
+"function": "vandermaen",
+"in_corpus": true,
+"key": "c0/(c1 + x1) + c2*x1**2 + c3*x1 + c4",
+"max_rel_err": 3.903331690653723e-15,
+"model": "VanDerMaen1943",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_vandermaen2": {
+"formula": "A + B*x + I/(N - x)",
+"function": "vandermaen2",
+"in_corpus": true,
+"key": "c0/(c1 + x1) + c2*x1 + c3",
+"max_rel_err": 4.780087877014429e-15,
+"model": "VanDerMaen1943",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_weibull": {
+"formula": "(x/M)**(M/sigma - 1)/sigma",
+"function": "weibull",
+"in_corpus": true,
+"key": "c0*x1**c1",
+"max_rel_err": 2.6339676257394285e-14,
+"model": "Weibull1951",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"ml_wittstein": {
+"formula": "A**(-(B*x)**N)/B + A**(-(M - x)**N)",
+"function": "wittstein",
+"in_corpus": true,
+"key": "c0**(c1*x1**c2)*c3 + c0**(-(c4 - x1)**c2)",
+"max_rel_err": 4.0501769420653645e-15,
+"model": "Wittstein1883",
+"n_points": 75,
+"note": "",
+"package": "MortalityLaws",
+"verified": true
+},
+"pe_jfun": {
+"formula": "(alpha*x + Jmax - sqrt((alpha*x + Jmax)**2 - 4*alpha*theta*x*Jmax))/(2*theta)",
+"function": "Jfun",
+"in_corpus": true,
+"key": "c0*(c1*x1 + c2 - sqrt(c3*x1 + (c1*x1 + c2)**2))",
+"max_rel_err": 4.071773739627775e-15,
+"model": "PrioulChartier1977",
+"n_points": 72,
+"note": "",
+"package": "plantecophys",
+"verified": true
+},
+"ph_gdh_fall": {
+"formula": "(Tu - Tb)*(1 + cos(pi/2 + pi/2*(x - Tu)/(Tc - Tu)))",
+"function": "GDH",
+"in_corpus": true,
+"key": "-c0*sin(c1*x1 + c2) + c0",
+"max_rel_err": 6.47318345655255e-14,
+"model": "Anderson1986",
+"n_points": 75,
+"note": "",
+"package": "chillR",
+"verified": true
+},
+"ph_gdh_rise": {
+"formula": "(Tu - Tb)/2*(1 + cos(pi + pi*(x - Tb)/(Tu - Tb)))",
+"function": "GDH",
+"in_corpus": false,
+"key": null,
+"max_rel_err": 1.0363829158528042e-14,
+"model": "Anderson1986",
+"n_points": 75,
+"note": "not expressible in the grammar",
+"package": "chillR",
+"verified": true
+},
+"ph_k1": {
+"formula": "A1*exp(-E1/x)",
+"function": "k1fct",
+"in_corpus": true,
+"key": "c0*exp(c1/x1)",
+"max_rel_err": 5.088258544373571e-14,
+"model": "Fishman1987",
+"n_points": 75,
+"note": "",
+"package": "chillR",
+"verified": true
+},
+"ph_triangle": {
+"formula": "(x - Tb)**2/(2*(x - Tmin))",
+"function": "",
+"in_corpus": true,
+"key": "c0*(c2 + x1)**2/(c1 + x1)",
+"max_rel_err": null,
+"model": "LindseyNewman1956",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"ph_xs": {
+"formula": "A0/A1*exp(-(E0 - E1)/x)",
+"function": "xsfct",
+"in_corpus": true,
+"key": "c0*exp(c1/x1)",
+"max_rel_err": 2.9731140903475074e-14,
+"model": "Fishman1987",
+"n_points": 75,
+"note": "",
+"package": "chillR",
+"verified": true
+},
+"ph_yanhunt": {
+"formula": "Rmax*((Tmax - x)/(Tmax - Topt))*((x - Tmin)/(Topt - Tmin))**((Topt - Tmin)/(Tmax - Topt))",
+"function": "",
+"in_corpus": true,
+"key": "c0*(c1 - x1)*(c2 + x1)**c3",
+"max_rel_err": null,
+"model": "YanHunt1999",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"pi_bannister": {
+"formula": "Pmax*x/(Ik**m + x**m)**(1/m)",
+"function": "",
+"in_corpus": true,
+"key": "c0*x1*(c1 + x1**c2)**c3",
+"max_rel_err": null,
+"model": "Bannister1979",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"pi_steele": {
+"formula": "Pmax*x/Iopt*exp(1 - x/Iopt)",
+"function": "",
+"in_corpus": true,
+"key": "c0*x1*exp(c1*x1)",
+"max_rel_err": null,
+"model": "Steele1962",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"pt_ep": {
+"formula": "x/(x**2/(alpha*Eopt**2) + (1/ps - 2/(alpha*Eopt))*x + 1/alpha)",
+"function": "fitEP",
+"in_corpus": true,
+"key": "c0*x1/(c1*x1**2 + c2 + x1)",
+"max_rel_err": 4.9305834024105285e-15,
+"model": "EilersPeeters1988",
+"n_points": 75,
+"note": "",
+"package": "phytotools",
+"verified": true
+},
+"pt_jp": {
+"formula": "alpha*Ek*tanh(x/Ek)",
+"function": "fitJP",
+"in_corpus": true,
+"key": "c0*tanh(c1*x1)",
+"max_rel_err": 2.939003513074898e-15,
+"model": "JassbyPlatt1976",
+"n_points": 75,
+"note": "",
+"package": "phytotools",
+"verified": true
+},
+"pt_pgh": {
+"formula": "Ps*(1 - exp(-alpha*x/Ps))*exp(-beta*x/Ps)",
+"function": "fitPGH",
+"in_corpus": true,
+"key": "c0*(c1 - exp(c2*x1))*exp(c3*x1)",
+"max_rel_err": 7.082783754927479e-15,
+"model": "Platt1980",
+"n_points": 75,
+"note": "",
+"package": "phytotools",
+"verified": true
+},
+"pt_webb": {
+"formula": "alpha*Ek*(1 - exp(-x/Ek))",
+"function": "fitWebb",
+"in_corpus": true,
+"key": "-c0*exp(c1*x1) + c0",
+"max_rel_err": 4.552730253746588e-15,
+"model": "Webb1974",
+"n_points": 75,
+"note": "",
+"package": "phytotools",
+"verified": true
+},
+"rep_logsig": {
+"formula": "Amax*tanh(alpha*x/Amax)",
+"function": "LogisticSigmoidLRCFitter_predictGPP",
+"in_corpus": true,
+"key": "c0*tanh(c1*x1)",
+"max_rel_err": 4.1124720079684465e-15,
+"model": "JassbyPlatt1976",
+"n_points": 72,
+"note": "",
+"package": "REddyProc",
+"verified": true
+},
+"rep_nonrect": {
+"formula": "(alpha*x + Amax - sqrt((alpha*x + Amax)**2 - 4*alpha*x*conv*Amax))/(2*conv)",
+"function": "NonrectangularLRCFitter_predictGPP",
+"in_corpus": true,
+"key": "c0*(c1*x1 + c2 - sqrt(c3*x1 + (c1*x1 + c2)**2))",
+"max_rel_err": 3.2263609927747773e-15,
+"model": "PrioulChartier1977",
+"n_points": 72,
+"note": "",
+"package": "REddyProc",
+"verified": true
+},
+"rep_rect": {
+"formula": "Amax*alpha*x/(alpha*x + Amax)",
+"function": "RectangularLRCFitter_predictGPP",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": 4.87972605549885e-15,
+"model": "Baly1935",
+"n_points": 72,
+"note": "",
+"package": "REddyProc",
+"verified": true
+},
+"sads_bs": {
+"formula": "(S - 1)*(1 - x/N)**(S - 2)/N",
+"function": "dbs",
+"in_corpus": true,
+"key": "c0*(c1*x1 + c2)**c3",
+"max_rel_err": 4.406325126928774e-15,
+"model": "MacArthur1957",
+"n_points": 270,
+"note": "",
+"package": "sads",
+"verified": true
+},
+"sads_gs": {
+"formula": "k*(1 - k)**(x - 1)/(1 - (1 - k)**S)",
+"function": "dgs",
+"in_corpus": true,
+"key": "c0*exp(c1*x1 - c1)",
+"max_rel_err": 4.55517685150601e-15,
+"model": "Motomura1932",
+"n_points": 90,
+"note": "",
+"package": "sads",
+"verified": true
+},
+"sads_ls": {
+"formula": "X**x/(x*log(1/(1 - X)))",
+"function": "dls",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)/x1",
+"max_rel_err": 3.996424952190045e-15,
+"model": "Fisher1943",
+"n_points": 90,
+"note": "",
+"package": "sads",
+"verified": true
+},
+"sads_mand": {
+"formula": "(x + v)**(-s)/H",
+"function": "dmand",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**c2",
+"max_rel_err": 7.149969126926334e-15,
+"model": "Mandelbrot1977",
+"n_points": 150,
+"note": "",
+"package": "sads",
+"verified": true
+},
+"sads_mzsm": {
+"formula": "theta*(1 - x/J)**(theta - 1)/(x*Z)",
+"function": "dmzsm",
+"in_corpus": true,
+"key": "c0*(c1*x1 + c2)**c3/x1",
+"max_rel_err": 4.276218574685511e-15,
+"model": "AlonsoMcKane2004",
+"n_points": 150,
+"note": "",
+"package": "sads",
+"verified": true
+},
+"sads_power": {
+"formula": "x**(-s)/zeta(s)",
+"function": "dpower",
+"in_corpus": true,
+"key": "c0*x1**c1",
+"max_rel_err": 3.671581507604904e-15,
+"model": "PowerSAD",
+"n_points": 90,
+"note": "",
+"package": "sads",
+"verified": true
+},
+"sads_zipf": {
+"formula": "x**(-s)/H",
+"function": "dzipf",
+"in_corpus": true,
+"key": "c0*x1**c1",
+"max_rel_err": 3.986828716465323e-15,
+"model": "Zipf1949",
+"n_points": 150,
+"note": "",
+"package": "sads",
+"verified": true
+},
+"sr_arrhenius": {
+"formula": "A*exp(-Ea/(8.314*x))",
+"function": "",
+"in_corpus": true,
+"key": "c0*exp(c1/x1)",
+"max_rel_err": null,
+"model": "Arrhenius1889",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"sr_exp": {
+"formula": "R0*exp(b*x)",
+"function": "",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)",
+"max_rel_err": null,
+"model": "vantHoff1898",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"sr_gaussian": {
+"formula": "exp(b1*x + b2*x**2)",
+"function": "",
+"in_corpus": true,
+"key": "exp(c0*x1**2 + c1*x1)",
+"max_rel_err": null,
+"model": "Tuomi2008",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"sr_kirschbaum": {
+"formula": "exp(-a + b*x*(1 - x/(2*c)))",
+"function": "",
+"in_corpus": true,
+"key": "c0*exp(c1*x1**2 + c2*x1)",
+"max_rel_err": null,
+"model": "Kirschbaum1995",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"sr_lloydtaylor": {
+"formula": "RRef*exp(E0*(1/(TRef - T0) - 1/(x - T0)))",
+"function": "fLloydTaylor",
+"in_corpus": true,
+"key": "c0*exp(c1/(c2 + x1))",
+"max_rel_err": 8.514371340512583e-14,
+"model": "LloydTaylor1994",
+"n_points": 75,
+"note": "",
+"package": "REddyProc",
+"verified": true
+},
+"sr_q10": {
+"formula": "R10*Q10**((x - 10)/10)",
+"function": "",
+"in_corpus": true,
+"key": "c0*exp(c1*x1)",
+"max_rel_err": null,
+"model": "vantHoff1898",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"tr_asymptotic": {
+"formula": "beta*S*x/(c + S + x)",
+"function": "",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": null,
+"model": "DiekmannKretzschmar1991",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"tr_frequency": {
+"formula": "beta*S*x/(S + x)",
+"function": "",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": null,
+"model": "GetzPickering1983",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"tr_massaction": {
+"formula": "beta*S*x",
+"function": "",
+"in_corpus": true,
+"key": "c0*x1",
+"max_rel_err": null,
+"model": "AndersonMay1979",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"tr_negbin": {
+"formula": "k*S*log(1 + beta*x/k)",
+"function": "",
+"in_corpus": true,
+"key": "c0*log(c1*x1 + c2)",
+"max_rel_err": null,
+"model": "May1978",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"tr_power": {
+"formula": "beta*S**p*x**q",
+"function": "",
+"in_corpus": true,
+"key": "c0*x1**c1",
+"max_rel_err": null,
+"model": "LiuLevinIwasa1986",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"tr_reedfrost": {
+"formula": "S*(1 - (1 - p)**x)",
+"function": "",
+"in_corpus": true,
+"key": "-c0*exp(c1*x1) + c0",
+"max_rel_err": null,
+"model": "Abbey1952",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"tr_saturating": {
+"formula": "beta*S*x/(1 + h*x)",
+"function": "",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": null,
+"model": "CapassoSerio1978",
+"n_points": 0,
+"note": "",
+"package": "",
+"verified": false
+},
+"vg_arrhenius": {
+"formula": "k*x**z",
+"function": "SSarrhenius",
+"in_corpus": true,
+"key": "c0*x1**c1",
+"max_rel_err": 2.5734608941839605e-15,
+"model": "Arrhenius1921",
+"n_points": 75,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_asymp": {
+"formula": "Asym + (R0 - Asym)*exp(-exp(lrc)*x)",
+"function": "SSasymp",
+"in_corpus": true,
+"key": "c0*exp(c1*x1) + c2",
+"max_rel_err": 4.470406644461461e-15,
+"model": "AsymptoticRegression",
+"n_points": 75,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_gitay": {
+"formula": "(k + slope*log(x))**2",
+"function": "SSgitay",
+"in_corpus": true,
+"key": "(c0*log(x1) + c1)**2",
+"max_rel_err": 4.2971320531650055e-15,
+"model": "Gitay1991",
+"n_points": 75,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_gleason": {
+"formula": "k + slope*log(x)",
+"function": "SSgleason",
+"in_corpus": true,
+"key": "c0*log(x1) + c1",
+"max_rel_err": 1.8510837551848295e-15,
+"model": "Gleason1922",
+"n_points": 75,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_gompertz": {
+"formula": "Asym*exp(-b2*b3**x)",
+"function": "SSgompertz",
+"in_corpus": true,
+"key": "c0*exp(c1*exp(c2*x1))",
+"max_rel_err": 4.682127966142909e-15,
+"model": "Gompertz1825",
+"n_points": 75,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_logis": {
+"formula": "Asym/(1 + exp((xmid - x)/scal))",
+"function": "SSlogis",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*x1))",
+"max_rel_err": 4.559452883392305e-15,
+"model": "Verhulst1838",
+"n_points": 75,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_lomolino": {
+"formula": "Asym/(1 + slope**log(xmid/x))",
+"function": "SSlomolino",
+"in_corpus": true,
+"key": "c0/(c1 + exp(c2*log(x1)))",
+"max_rel_err": 4.7717609615672385e-15,
+"model": "Lomolino2000",
+"n_points": 75,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_mandelbrot": {
+"formula": "J*c*(x + beta)**gamma",
+"function": "rad.zipfbrot",
+"in_corpus": true,
+"key": "c0*(c1 + x1)**c2",
+"max_rel_err": 1.967826170245701e-14,
+"model": "Mandelbrot1977",
+"n_points": 291,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_micmen": {
+"formula": "Vm*x/(K + x)",
+"function": "SSmicmen",
+"in_corpus": true,
+"key": "c0*x1/(c1 + x1)",
+"max_rel_err": 4.138308037912277e-15,
+"model": "MichaelisMenten",
+"n_points": 75,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_preempt": {
+"formula": "J*alpha*(1 - alpha)**(x - 1)",
+"function": "rad.preempt",
+"in_corpus": true,
+"key": "c0*exp(c1*x1 - c1)",
+"max_rel_err": 4.732826477636023e-15,
+"model": "Motomura1932",
+"n_points": 291,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_weibull": {
+"formula": "Asym - Drop*exp(-exp(lrc)*x**pwr)",
+"function": "SSweibull",
+"in_corpus": true,
+"key": "c0*exp(c1*x1**c2) + c3",
+"max_rel_err": 4.503318080666998e-15,
+"model": "Weibull1951",
+"n_points": 75,
+"note": "",
+"package": "vegan",
+"verified": true
+},
+"vg_zipf": {
+"formula": "J*p1*x**gamma",
+"function": "rad.zipf",
+"in_corpus": true,
+"key": "c0*x1**c1",
+"max_rel_err": 7.796343437017526e-15,
+"model": "Zipf1949",
+"n_points": 291,
+"note": "",
+"package": "vegan",
+"verified": true
+}
+},
+"versions": "R=4.5.3;vegan=2.7.5;sads=0.6.5;MortalityLaws_3.0.0.tar.gz::MortalityLaws/R/MortalityLaw_models.R=sourced;phytotools_1.0.tar.gz::phytotools/R/fitJP.R=sourced;phytotools_1.0.tar.gz::phytotools/R/fitEP.R=sourced;phytotools_1.0.tar.gz::phytotools/R/fitPGH.R=sourced;phytotools_1.0.tar.gz::phytotools/R/fitWebb.R=sourced;photosynthesisLRC_1.0.6.tar.gz::photosynthesisLRC/R/eq1.R=sourced;photosynthesisLRC_1.0.6.tar.gz::photosynthesisLRC/R/eq2.R=sourced;photosynthesisLRC_1.0.6.tar.gz::photosynthesisLRC/R/eq3.R=sourced;photosynthesisLRC_1.0.6.tar.gz::photosynthesisLRC/R/eq4.R=sourced;photosynthesisLRC_1.0.6.tar.gz::photosynthesisLRC/R/eq5.R=sourced;photosynthesisLRC_1.0.6.tar.gz::photosynthesisLRC/R/eq6.R=sourced;photosynthesisLRC_1.0.6.tar.gz::photosynthesisLRC/R/eq8.R=sourced;photosynthesisLRC_1.0.6.tar.gz::photosynthesisLRC/R/eq9.R=sourced;photosynthesisLRC_1.0.6.tar.gz::photosynthesisLRC/R/eq11.R=sourced;REddyProc_1.3.4.tar.gz::REddyProc/R/GeoFunctions.R=sourced;REddyProc_1.3.4.tar.gz::REddyProc/R/LRC_rectangular.R=sourced;REddyProc_1.3.4.tar.gz::REddyProc/R/LRC_nonrectangular.R=sourced;REddyProc_1.3.4.tar.gz::REddyProc/R/LRC_logisticSigmoid.R=sourced;plantecophys_1.4-6.tar.gz::plantecophys/R/fitBB.R=sourced;plantecophys_1.4-6.tar.gz::plantecophys/R/photosyn.R=sourced;chillR_0.77.tar.gz::chillR/R/temp_models.R=sourced"
+}
