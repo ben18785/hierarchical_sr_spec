@@ -37,6 +37,7 @@ from .canonical import canonicalise
 from .experiment import _COMPILED, gibbs_summary
 from .equivalence import Equivalence, class_summary
 from .fixed_prior import FIXED_PRIORS, FixedPrior, corpus_log_prior, with_log_prior
+from .decompose import evidence_decomposition
 from .gibbs import GibbsConfig, run_gibbs
 from .grammar import Grammar
 from .likelihood import LikelihoodTable, compute_likelihoods, predictive_logpdf, scale_population
@@ -300,11 +301,14 @@ def infer(prep, cfg: GibbsConfig, prior=None, classes=True):
     rows = []
     for kind in ("laplace", "bic"):
         L = table.matrix(kind)
+        lp0 = grammar.log_prob(cnt, grammar.prior_mean())
+        keys = [s.key for s in sks]
+        dec = lambda P: evidence_decomposition(P, L, lp0, keys=keys)
         res = run_gibbs(L, cnt, grammar, cfg)
         rows.append(summarise("hier", res.assign_probs, sks, table, held, sx, sy, names, res.pop_weight,
-                              gibbs_summary(res, [s.key for s in sks]), res=res) | {"kind": kind})
+                              gibbs_summary(res, [s.key for s in sks]), res=res) | {"kind": kind} | dec(res.assign_probs))
         P = baselines.no_pooling_posterior(L, cnt, grammar)
-        rows.append(summarise("no_pool_bma", P, sks, table, held, sx, sy, names) | {"kind": kind})
+        rows.append(summarise("no_pool_bma", P, sks, table, held, sx, sy, names) | {"kind": kind} | dec(P))
         Pc = baselines.complete_pooling_posterior(L, cnt, grammar)
         rows.append(summarise("complete_pool", np.tile(Pc, (J, 1)), sks, table, held, sx, sy, names, Pc)
                     | {"kind": kind})
@@ -322,7 +326,8 @@ def infer(prep, cfg: GibbsConfig, prior=None, classes=True):
             pm = PooledModel(table, [s.n_consts for s in sks], tau_ref=tau, tau_mu=tau, trunc_logq=trunc_logq)
             resp = run_gibbs(L, cnt, grammar, cfg, model=pm)
             rows.append(summarise("hier_pooled", resp.assign_probs, sks, table, held, sx, sy, names,
-                                  resp.pop_weight, gibbs_summary(resp, [s.key for s in sks]), res=resp) | {"kind": kind})
+                                  resp.pop_weight, gibbs_summary(resp, [s.key for s in sks]), res=resp) | {"kind": kind}
+                        | dec(resp.assign_probs))
             if themes:
                 kernel = EditKernel(n_C, edges, log_w=grammar.log_prob(cnt, grammar.prior_mean()))
                 rest = run_gibbs_themes(L, cnt, grammar, kernel, cfg, model=pm)
@@ -330,7 +335,7 @@ def infer(prep, cfg: GibbsConfig, prior=None, classes=True):
                                              "n_themes_mean": float(rest.n_themes.mean()),
                                              "rho_mean": float(rest.rho.mean())}
                 rows.append(summarise("hier_themes", rest.assign_probs, sks, table, held, sx, sy, names,
-                                      rest.pop_weight, ext, res=rest) | {"kind": kind})
+                                      rest.pop_weight, ext, res=rest) | {"kind": kind} | dec(rest.assign_probs))
     meta = dict(prep["meta"], seconds_likelihood=t_lik, seconds_inference=time.time() - t0,
                 seconds_total=t_lik + time.time() - t0)
     for r in rows:
