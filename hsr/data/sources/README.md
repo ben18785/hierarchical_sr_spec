@@ -252,6 +252,199 @@ of a piecewise function), transcribed into sympy syntax in x and verified agains
 * Terms of use: allodb is GPL-3. Only derived skeletons and reference ids are committed; cite
   Gonzalez-Akre et al. (2022) and the original references listed in allodb.
 
+# Hold-out sources
+
+Three further sources are hold-outs (config `holdout_sources`,
+`hsr.grammar_compare.HOLDOUT_SOURCES`): they are never part of `SOURCES`, so no prior
+(`hsr.fixed_prior`, the LOSO runs) trains on them. The `holdout` target trains every prior on all
+twelve training sources (equal and pooled weighting) and scores each hold-out and their union
+(`results/grammar/holdout.md`; the command, with `--allowed-rules` so that the committed corpus
+files are used as they are, is in the Snakefile). Their rules are in `workflow/rules/<name>.smk`
+and their settings in `config/<name>.yaml`.
+
+## Hold-out: nonlinear fits in CRAN package code (`corpus_rnls.json`)
+
+* Source: the source tarballs of CRAN packages in five task views that cover biological and
+  ecological modelling: Agriculture (version 2026-10-05), Environmetrics (2023-12-18),
+  Epidemiology (2025-03-03), Pharmacokinetics (2026-01-30) and Tracking (animal movement,
+  2025-02-12), as listed in CRAN's task-view index `src/contrib/Views.rds` downloaded on
+  2026-11-25 (`config/rnls.yaml`; rule `rnls_index`, which also downloads the package database
+  `web/packages/packages.rds`; both with sha256 in the manifest). Hydrology is left out
+  (physical rather than biological); Phylogenetics, Omics and ChemPhys rarely fit regression
+  curves of one regressor.
+* Bio/eco filter (rule `rnls_packages`, `hsr.rnls.select_packages`): of the 495 packages in these
+  views, a package is kept if its CRAN Title or Description contains one of the keywords in
+  `hsr.rnls.BIO_KEYWORDS` (word-start match: ecolog, species, population, fish, forest, plant,
+  crop, soil, epidemi, disease, infect, pharmacokinet, drug, dose, growth curve, ...) and is not
+  in `config rnls.exclude` (randomForest, rpart, party, maptree, VGAM, nsRFA, eyetrackingR,
+  Rbeast: matched only through "tree"/"forest"/"Fisher"/"growth curve" in a non-biological
+  sense, or hydrological/time-series tools). General statistical infrastructure (nlme, lme4,
+  mgcv, MASS, deSolve, ...) is thereby dropped. 354 packages are kept; the list with the pinned
+  version, licence, views and the matched keyword is committed as
+  `hsr/data/sources/rnls_packages.tsv`. Rule `rnls_fetch` downloads each listed version
+  (CRAN, falling back to the CRAN archive; <= 40 requests per minute; manifest with URL, date and
+  sha256 of every tarball, cached under `results/corpora/raw/rnls/`).
+* Parsing (rule `rnls_extract`, `workflow/scripts/rnls_extract.R`, R 4.5.3 of `envs/r.yaml`;
+  nothing is evaluated): R's parser reads R/, tests/, demo/, inst/ (including vignette code
+  purled into inst/doc), the code chunks of vignettes (Rmd, qmd, Rnw) and the `\examples` of
+  man/*.Rd (`tools::Rd2ex`, `\dontrun` and `\donttest` kept). It finds calls of nls, nlme, gnls,
+  nlsLM and nls2 (also as `pkg::fn`) and `selfStart` definitions. The formula is the argument as
+  written, or resolved when it is a name assigned a formula earlier in the same file (or
+  `formula()`/`as.formula()` of a literal). Parameter names come from `start=` (named
+  list/c/data.frame/expand.grid, resolved like formulas), nlme `fixed=` and gnls `params=`
+  (left-hand sides), `lower=`/`upper=` names, and the parameter arguments of self-starting
+  models. Calls of stats' self-starting models (SSlogis, SSasymp, SSmicmen, SSfol, ...) and of
+  functions or selfStart models defined in the same package are expanded into closed form when
+  the function body is a closed-form expression; selfStart models are shared across packages
+  (a second pass expands e.g. `nlraa::SSagauss` called from pacu). Every other variable of the right-hand side is
+  a regressor (a data column), except names assigned a number earlier in the file (fixed
+  constants). A selfStart definition contributes its own model, with the function arguments that
+  are not parameters as regressors. The response (left-hand side) is recorded but the form is the
+  right-hand side as fitted (a fit of log(y) is therefore a form for log(y)).
+* Reduction (rule `rnls_corpus`, `hsr.rnls.build`): each right-hand side is transcribed into
+  sympy (`hsr.corpus_sources.r_infix`; formulas with indexing, `$`, comparisons, `ifelse` or
+  functions other than exp, log, sqrt, ... are dropped), identical formulas are counted once per
+  package, and each regressor in turn becomes x1 with every other symbol a constant
+  (`hsr.corpus.project`, as for rate laws; formulas with several regressors give one key per
+  regressor); keys are generalised. A model is one package (`cran:<package>`), contributing each
+  distinct form once, so `freq` counts packages. `stats` gives the calls found, parsed and dropped
+  by reason (`drop_reasons`); `results/corpora/rnls_formulas.tsv.files.tsv` lists, per package,
+  the code units read and those R could not parse.
+* Snapshot of 2026-11-25: 354 packages downloaded; 27 contain at least one fit or selfStart
+  definition (494 calls: 279 nls, 82 nlme, 60 nlsLM, 29 gnls, 44 selfStart; no nls2). Dropped:
+  111 not arithmetic (piecewise models written with comparisons or `ifelse`, e.g. most of nlraa's
+  linear-plateau models), 55 formula not resolvable (a function argument or built at run time),
+  20 without parameter names (start values computed at run time), 13 calling a function that is
+  not closed form (e.g. plantecophys' `acifun_wrap`, `plnorm`), 4 without a regressor, 1 with no
+  canonical key. The 291 parsed formulas give 174 distinct (package, formula) pairs; 21 packages
+  contribute 110 model-form pairs and 70 distinct forms (all expressible), 14 of them in none of
+  the twelve training sources. The largest contributors are nlraa (28 forms), AgroReg (19),
+  bigleaf and plantecophys (10 each) and vegan (9).
+* Limitations: a regressor is "any non-parameter variable", so a constant passed in from the
+  enclosing function (e.g. a fixed g0) is treated as a regressor and adds a trivial projection;
+  forms fitted inside generic wrappers (e.g. `nls(formula, ...)` where the formula is a function
+  argument) are not resolvable; packages that fit through optim/mle/brms are not seen.
+* Terms of use: each CRAN package carries its own licence (column `license` of
+  `rnls_packages.tsv`, also recorded per model under `licenses` in the corpus file; all FOSS: of the
+  21 contributing packages, 15 GPL/AGPL variants and 6 MIT). Only derived skeletons and package names are committed.
+  Cite the packages (`citation("<package>")`) and the CRAN task views (maintainers: Agriculture,
+  J Piaskowski, A Sparks, A Correndo; Environmetrics, G L Simpson; Epidemiology, T Jombart,
+  M Rolland, H Gruson; Pharmacokinetics, B Denney, S Nayak; Tracking, R Joo, M Basille;
+  https://CRAN.R-project.org/view=<name>).
+
+## Rate-law libraries (`corpus_ratelaws.json`; hold-out)
+
+* Source: (a) the Systems Biology Ontology OWL export (`SBO_OWL.owl` in the EBI-BioModels/SBO
+  repository at the commit in `config/ratelaws.yaml`; the export is dated 2021-11-03, last commit
+  2023-05-16): every term under SBO:0000001 "rate law" with a MathML definition (127 terms);
+  (b) COPASI's built-in function database (`copasi/function/FunctionDB.xml.cpp`, which embeds the
+  CopasiML function list as a string) at tag Build-311 (80 functions). Rule `ratelaws_fetch`
+  (two GETs from raw.githubusercontent.com; manifest of URLs, date and sha256).
+* Parsing: rule `ratelaws_corpus` (`hsr.ratelaws`). SBO: the `lambda` of each term's MathML is
+  converted to sympy (plus, minus, times, divide, power, exp, ln, log, root, tanh); its bound
+  variables carry SBO terms, and a bound variable is a variable if its term is, or descends from,
+  SBO:0000360 "quantity of an entity pool" (concentrations and particle numbers of reactants,
+  products, enzymes, inhibitors, activators, modifiers), SBO:0000010 "reactant", SBO:0000015
+  "substrate" or SBO:0000586 "model time"; all other bound variables (rate, Michaelis, inhibition
+  and equilibrium constants, Hill coefficients, stoichiometries, ...) are constants. COPASI: the
+  infix expression with the parameters whose role is substrate, product or modifier (volume and
+  time would also count; none occur) as variables; the mass-action `PRODUCT<substrate_i>` is read
+  as one substrate. Each variable in turn is x1 (`hsr.corpus_sources.law_keys`), keys generalised.
+  A model is one rate-law definition (`sbo:SBO_xxxxxxx`, `copasi:<name>`); several MathML
+  definitions of one term (continuous and discrete) are pooled.
+* Losses (snapshot 2026-11-25): 13 of 207 definitions give no key and are listed under `dropped`:
+  9 SBO laws written with indexed sums or products over an arbitrary number of species
+  (`<sum>`/`<product>` with a bound index: generic mass action, inhibition by n inhibitors), 2
+  zeroth-order SBO laws and COPASI's two constant-flux functions (no variable). All 194 others
+  reduce: 194 models, 344 model-form pairs, 31 distinct forms. Only 1 form is absent from the
+  twelve training sources, and it is a non-canonical rendering of a hyperbolic form (known
+  canonicalisation gap), i.e. these libraries are almost entirely covered by the kinetic laws of
+  BioModels, SABIO-RK, JWS and CellML.
+* Terms of use: SBO is distributed under the Artistic License 2.0 (repository licence); cite
+  Courtot M et al. (2011) Controlled vocabularies and semantics in systems biology. Mol Syst Biol
+  7:543. COPASI is open source under the Artistic License 2.0; cite Hoops S et al. (2006)
+  COPASI - a COmplex PAthway SImulator. Bioinformatics 22:3067-3074. Only derived skeletons and
+  term ids / function names are committed.
+
+## Ecology and demography catalogue, hold-out (`ecocat2_curves.csv` -> `corpus_ecocat2.json`)
+
+A hold-out source (config `holdout_sources`; `hsr.grammar_compare.HOLDOUT_SOURCES`): it is scored
+by the `holdout` target and never used to train a prior. Same format as the R curve catalogues
+above (columns `id`, `package`, `function`, `model`, `variable`, `params`, `defs`, `formula`,
+`r_call`, `ranges`, `reference`, `notes`); rules `ecocat2_cran_fetch`, `ecocat2_eval`,
+`ecocat2_corpus` (`workflow/rules/ecocat2.smk`, `workflow/scripts/ecocat2_eval.R`,
+`hsr.corpus_sources.curves_build`). 102 rows:
+
+* Mortality laws (37 rows): every closed-form hazard of **MortalityLaws** 3.0.0 (de Moivre,
+  Gompertz in three parametrisations, inverse Gompertz, Makeham (2), Opperman, Thiele, Wittstein,
+  Weibull, inverse Weibull, Perks, Steffensen, Pareto II, Scholey (2), van der Maen (2),
+  Strehler-Mildvan, quadratic, Beard, Beard-Makeham, gamma-Gompertz, Siler, Heligman-Pollard 1-4,
+  Kostaki (both branches), Martinelle, Rogers-Planck, Kannisto, Kannisto-Makeham, the two
+  log-quadratic laws), hazard as a function of age. The Carriere mixtures (hazard by numerical
+  differencing) are left out.
+* Species abundance and accumulation (19 rows): the rank-abundance models of **vegan** 2.7-5
+  `radfit` with a closed form (preemption, Zipf, Zipf-Mandelbrot; the log-normal model uses the
+  normal quantile function and is left out); the species-accumulation models of `fitspecaccum`
+  (vegan's own self-starting Arrhenius, Gleason, Gitay and Lomolino models, and the stats models it
+  uses: asymptotic regression, Gompertz, Michaelis-Menten, logistic, Weibull); the closed-form
+  species-abundance distributions of **sads** 0.6.5 (log-series, metacommunity zero-sum
+  multinomial, power, Zipf, Zipf-Mandelbrot, broken stick, geometric series).
+* Photosynthesis-irradiance curves (19 rows): the nine net-photosynthesis light-response models
+  of **photosynthesisLRC** 1.0.6 (Lobo et al. 2013: Baly, Kaipiainen, Smith, Abe, Jassby-Platt,
+  Prioul-Chartier non-rectangular hyperbola, Webb, Prado-Moraes, Ye); the phytoplankton P-E
+  models inside **phytotools** 1.0 (archived on CRAN) `fitJP`, `fitEP`, `fitPGH`, `fitWebb`
+  (Jassby-Platt, Eilers-Peeters, Platt-Gallegos-Harrison, Webb); the ecosystem GPP light
+  responses of **REddyProc** 1.3.4 (rectangular, non-rectangular, hyperbolic tangent);
+  **plantecophys** 1.4-6 `Jfun`; Bannister (1979) and Steele (1962), unverified.
+* Soil respiration (6 rows): Lloyd-Taylor (REddyProc `fLloydTaylor`, verified); Q10,
+  exponential, Arrhenius, Kirschbaum (1995) and Gaussian (Tuomi et al. 2008), unverified.
+* Stomatal conductance (4 rows): the nls formulas of **plantecophys** `fitBB` (Medlyn et al.
+  2011, its full form with gk (Duursma et al. 2013) and Leuning 1995 as functions of VPD; Ball,
+  Woodrow & Berry 1987 as a function of net assimilation A; the other inputs constant).
+* Pathogen transmission (7 rows, unverified; no R implementation): the transmission functions
+  compiled by McCallum, Barlow & Hone (2001) Trends Ecol Evol 16:295 (mass action, frequency
+  dependent, power, negative binomial, asymptotic) plus saturating incidence (Capasso & Serio
+  1978) and Reed-Frost, with the density of infected hosts I as x and S constant.
+* Microbial dose-response (4 rows, unverified): exponential, approximate beta-Poisson (two
+  parametrisations), Weibull-gamma.
+* Phenology and degree days (6 rows): the growing-degree-hours model of **chillR** 0.77 (`GDH`,
+  Anderson et al. 1986, both branches; the rising branch is a cosine, which our grammar cannot
+  express, so it is verified but left out of the corpus) and the dynamic chill model's
+  temperature functions `xsfct`, `k1fct` (Fishman et al. 1987); Yan & Hunt (1999) and the
+  single-triangle degree-day formula (Lindsey & Newman 1956), unverified. Wang-Engel and the
+  other development-rate curves are already in `thermal`.
+* Verification (rule `ecocat2_eval`, R 4.5.3 from `envs/r.yaml`): every row with an `r_call` is
+  evaluated by the package code at three random parameter draws on a grid of x and compared with
+  the sympy transcription (relative error < 1e-6 at >= 5 points). vegan and sads are installed in
+  the pinned conda environment. MortalityLaws, phytotools, photosynthesisLRC, REddyProc,
+  plantecophys and chillR are not on conda-forge: their CRAN source tarballs (versions in
+  `config/ecocat2.yaml`; rule `ecocat2_cran_fetch`, cached under
+  `results/corpora/raw/ecocat2/<pkg>/` with URL, date and sha256) are read and only the top-level
+  function definitions of the listed R files are evaluated (models defined inside a fitting
+  function, e.g. `JP` in `fitJP`, or as nls formulas, as in `fitBB`, are extracted from the
+  function body). vegan's rank-abundance models are checked by fitting them to three BCI sites
+  and comparing vegan's fitted values with the formula at vegan's coefficients; the normalising
+  constants of the sads Zipf, Zipf-Mandelbrot and mZSM distributions are passed from R as
+  parameters. All 82 rows with an R implementation agree (max relative error 1e-13); 20 rows have
+  none and are kept with verified = false.
+* A "model" is the original publication (column `model`), as in the other catalogues: the same
+  law in two packages (e.g. Jassby-Platt in photosynthesisLRC, phytotools and REddyProc) counts
+  once. 101 rows enter the corpus: 75 models, 89 model-form pairs, 69 distinct generalised forms,
+  32 of them (35 model-form pairs) not in any of the twelve training sources (snapshot of
+  2026-11-25). Forms that also occur in the training sources (e.g. Michaelis-Menten, logistic,
+  Gompertz, Arrhenius) are kept; overlap is reported separately.
+* Terms of use and citation: MortalityLaws (MIT; Pascariu MD (2018) MortalityLaws: Parametric
+  Mortality Models, Life Tables and HMD, https://CRAN.R-project.org/package=MortalityLaws), vegan
+  (GPL-2; Oksanen J et al., vegan: Community Ecology Package), sads (GPL-2; Prado PI, Miranda MD,
+  Chalom A, sads: Maximum Likelihood Models for Species Abundance Distributions), photosynthesisLRC
+  (MIT; Davis R, Goolsby E, photosynthesisLRC: Nonlinear Least Squares Models for Photosynthetic Light Response), phytotools (GPL-2; Silsbe GM, Malkin SY,
+  phytotools), REddyProc (GPL (>= 2); Wutzler T et al. (2018) Biogeosciences 15:5015),
+  plantecophys (GPL; Duursma RA (2015) PLoS ONE 10:e0143346), chillR (GPL-3; Luedeling E, chillR).
+  Cite the original references in the `reference` column. Only the transcribed formulas, derived
+  skeletons and identifiers are committed; package code is not.
+
+# Overlap
+
 ## Overlap between sources (`results/corpora/overlap.md`)
 
 Rule `corpus_overlap` tabulates, for every source of the leave-one-source-out comparison, its
