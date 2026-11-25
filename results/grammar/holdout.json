@@ -1,0 +1,2068 @@
+{
+ "equal": {
+  "stats": {
+   "default_prior": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -19.40783993362773,
+     "renorm": -18.23661667921175,
+     "raw_seen": -17.670097591890862,
+     "raw_novel": -31.3237874198234,
+     "raw_distinct": -22.012732263355172,
+     "renorm_distinct": -20.841509008939187,
+     "raw_distinct_seen": -19.684968474238115,
+     "raw_distinct_novel": -31.323787419823407,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -16.412707254124523,
+     "renorm": -15.241483999708539,
+     "raw_seen": -16.14255689599522,
+     "raw_novel": -47.11979796148861,
+     "raw_distinct": -28.35035587495032,
+     "renorm_distinct": -27.179132620534332,
+     "raw_distinct_seen": -27.724707805399042,
+     "raw_distinct_novel": -47.11979796148861,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -28.240782595233718,
+     "renorm": -27.069559340817737,
+     "raw_seen": -17.400467759095225,
+     "raw_novel": -44.96583977099025,
+     "raw_distinct": -30.132647448262126,
+     "renorm_distinct": -28.961424193846145,
+     "raw_distinct_seen": -19.059676675468445,
+     "raw_distinct_novel": -42.93576990430482,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -18.95812769630513,
+     "renorm": -17.78690444188915,
+     "raw_seen": -16.57956523288602,
+     "raw_novel": -41.417246341281775,
+     "raw_distinct": -28.61266976376322,
+     "renorm_distinct": -27.441446509347234,
+     "raw_distinct_seen": -23.067200110129914,
+     "raw_distinct_novel": -40.07330704793871,
+     "n_zero": 0
+    }
+   },
+   "cf": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -17.326201547354522,
+     "renorm": -15.714648561304687,
+     "raw_seen": -15.700211913083011,
+     "raw_novel": -28.475844753787737,
+     "raw_distinct": -19.78485792260949,
+     "renorm_distinct": -18.17330493655965,
+     "raw_distinct_seen": -17.612111214814924,
+     "raw_distinct_novel": -28.475844753787733,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -14.354180681276404,
+     "renorm": -12.742627695226565,
+     "raw_seen": -14.155093302035226,
+     "raw_novel": -36.983779455023395,
+     "raw_distinct": -24.345565202756145,
+     "renorm_distinct": -22.734012216706308,
+     "raw_distinct_seen": -23.924291394347236,
+     "raw_distinct_novel": -36.983779455023395,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -25.464758965496422,
+     "renorm": -23.85320597944658,
+     "raw_seen": -15.350350890485421,
+     "raw_novel": -41.069845709799104,
+     "raw_distinct": -27.11409884811963,
+     "renorm_distinct": -25.5025458620698,
+     "raw_distinct_seen": -16.771131987450854,
+     "raw_distinct_novel": -39.07315428076791,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -16.77731836555665,
+     "renorm": -15.165765379506812,
+     "raw_seen": -14.588647877263126,
+     "raw_novel": -37.443418553097445,
+     "raw_distinct": -25.484848459063315,
+     "renorm_distinct": -23.87329547301348,
+     "raw_distinct_seen": -20.256998786149374,
+     "raw_distinct_novel": -36.2890711164188,
+     "n_zero": 0
+    }
+   },
+   "parent": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -16.678005682089864,
+     "renorm": -14.871759998288608,
+     "raw_seen": -15.075375060448536,
+     "raw_novel": -27.667472801916098,
+     "raw_distinct": -19.076406317017014,
+     "renorm_distinct": -17.27016063321576,
+     "raw_distinct_seen": -16.928639695792235,
+     "raw_distinct_novel": -27.667472801916098,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -14.377873585735589,
+     "renorm": -12.571627901934335,
+     "raw_seen": -14.182135520953429,
+     "raw_novel": -36.626766949307815,
+     "raw_distinct": -23.99250800738095,
+     "renorm_distinct": -22.186262323579694,
+     "raw_distinct_seen": -23.57136604265005,
+     "raw_distinct_novel": -36.626766949307815,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -24.36666195563171,
+     "renorm": -22.56041627183046,
+     "raw_seen": -14.737792183369496,
+     "raw_novel": -39.2226324614077,
+     "raw_distinct": -25.992177337032704,
+     "renorm_distinct": -24.185931653231457,
+     "raw_distinct_seen": -16.17679542246422,
+     "raw_distinct_novel": -37.341212675752516,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -16.481035087613535,
+     "renorm": -14.674789403812282,
+     "raw_seen": -14.417892049592933,
+     "raw_novel": -35.961866465846505,
+     "raw_distinct": -24.636443646262705,
+     "renorm_distinct": -22.83019796246145,
+     "raw_distinct_seen": -19.68318388395757,
+     "raw_distinct_novel": -34.873180488359985,
+     "n_zero": 0
+    }
+   },
+   "position": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.605855816828992,
+     "renorm": -13.865608111622189,
+     "raw_seen": -14.016485830025772,
+     "raw_novel": -26.504392869193968,
+     "raw_distinct": -17.928836959471713,
+     "renorm_distinct": -16.188589254264905,
+     "raw_distinct_seen": -15.78494798204115,
+     "raw_distinct_novel": -26.504392869193964,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -13.119294057334223,
+     "renorm": -11.379046352127414,
+     "raw_seen": -12.916665272572736,
+     "raw_novel": -36.15143259188986,
+     "raw_distinct": -22.692283043362227,
+     "renorm_distinct": -20.952035338155422,
+     "raw_distinct_seen": -22.243644725077974,
+     "raw_distinct_novel": -36.15143259188986,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -23.525819724201416,
+     "renorm": -21.78557201899461,
+     "raw_seen": -13.809737777902857,
+     "raw_novel": -38.516346155633485,
+     "raw_distinct": -25.17480797539251,
+     "renorm_distinct": -23.434560270185706,
+     "raw_distinct_seen": -15.262074222166504,
+     "raw_distinct_novel": -36.63640637756009,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.32869107003331,
+     "renorm": -13.588443364826503,
+     "raw_seen": -13.22992125791554,
+     "raw_novel": -35.14592141137609,
+     "raw_distinct": -23.59734128190803,
+     "renorm_distinct": -21.857093576701224,
+     "raw_distinct_seen": -18.55380097401571,
+     "raw_distinct_novel": -34.020657918218824,
+     "n_zero": 0
+    }
+   },
+   "term": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.284678067272903,
+     "renorm": -13.52668848711284,
+     "raw_seen": -13.737589768647737,
+     "raw_novel": -25.89328354355975,
+     "raw_distinct": -17.538464336088126,
+     "renorm_distinct": -15.780474755928068,
+     "raw_distinct_seen": -15.449759534220217,
+     "raw_distinct_novel": -25.893283543559743,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -12.814566684377725,
+     "renorm": -11.056577104217668,
+     "raw_seen": -12.60804458114062,
+     "raw_novel": -36.289245752328945,
+     "raw_distinct": -22.190259873988772,
+     "renorm_distinct": -20.432270293828715,
+     "raw_distinct_seen": -21.720293678044097,
+     "raw_distinct_novel": -36.289245752328945,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -23.353795352109394,
+     "renorm": -21.59580577194933,
+     "raw_seen": -13.625895431013081,
+     "raw_novel": -38.362555230372266,
+     "raw_distinct": -24.919614631976835,
+     "renorm_distinct": -23.161625051816777,
+     "raw_distinct_seen": -15.072320482712673,
+     "raw_distinct_novel": -36.30554849206354,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.042381792198329,
+     "renorm": -13.28439221203827,
+     "raw_seen": -12.940835383368308,
+     "raw_novel": -34.88582961403562,
+     "raw_distinct": -23.222442345839813,
+     "renorm_distinct": -21.464452765679752,
+     "raw_distinct_seen": -18.1762130013662,
+     "raw_distinct_novel": -33.651316324418616,
+     "n_zero": 0
+    }
+   },
+   "term_root": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -14.950477901264726,
+     "renorm": -13.161056947656407,
+     "raw_seen": -13.32669015190661,
+     "raw_novel": -26.08502246829181,
+     "raw_distinct": -17.22209000266298,
+     "renorm_distinct": -15.432669049054661,
+     "raw_distinct_seen": -15.006356886255775,
+     "raw_distinct_novel": -26.08502246829181,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -12.105129398329483,
+     "renorm": -10.315708444721162,
+     "raw_seen": -11.909245382541316,
+     "raw_novel": -34.370612526251286,
+     "raw_distinct": -21.131854670795445,
+     "renorm_distinct": -19.34243371718712,
+     "raw_distinct_seen": -20.69056274228025,
+     "raw_distinct_novel": -34.370612526251286,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -22.78136940828749,
+     "renorm": -20.99194845467917,
+     "raw_seen": -13.284502303148294,
+     "raw_novel": -37.43367865621654,
+     "raw_distinct": -24.235963564888095,
+     "renorm_distinct": -22.44654261127977,
+     "raw_distinct_seen": -14.756901341043836,
+     "raw_distinct_novel": -35.19612926120802,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -14.431416131679647,
+     "renorm": -12.641995178071326,
+     "raw_seen": -12.337633512015541,
+     "raw_novel": -34.201555867354195,
+     "raw_distinct": -22.555104235470697,
+     "renorm_distinct": -20.765683281862376,
+     "raw_distinct_seen": -17.57245027434949,
+     "raw_distinct_novel": -32.85258908845452,
+     "n_zero": 0
+    }
+   },
+   "parent_backoff20": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -16.678063051085054,
+     "renorm": -14.871805450163999,
+     "raw_seen": -15.075400684073932,
+     "raw_novel": -27.667747853447047,
+     "raw_distinct": -19.07647376045958,
+     "renorm_distinct": -17.270216159538524,
+     "raw_distinct_seen": -16.928655237212716,
+     "raw_distinct_novel": -27.667747853447047,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -14.377857366353043,
+     "renorm": -12.571599765431985,
+     "raw_seen": -14.182119426652164,
+     "raw_novel": -36.62673651235288,
+     "raw_distinct": -23.992452042202114,
+     "renorm_distinct": -22.186194441281053,
+     "raw_distinct_seen": -23.571309226530424,
+     "raw_distinct_novel": -36.62673651235288,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -24.367157507188217,
+     "renorm": -22.560899906267156,
+     "raw_seen": -14.737788714180825,
+     "raw_novel": -39.22389793068535,
+     "raw_distinct": -25.992719023323804,
+     "renorm_distinct": -24.18646142240275,
+     "raw_distinct_seen": -16.17677319888775,
+     "raw_distinct_novel": -37.34240638282799,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -16.48111765706179,
+     "renorm": -14.674860056140739,
+     "raw_seen": -14.417885500458757,
+     "raw_novel": -35.962790520371236,
+     "raw_distinct": -24.636712801645952,
+     "renorm_distinct": -22.830455200724895,
+     "raw_distinct_seen": -19.683159471602455,
+     "raw_distinct_novel": -34.874056350402505,
+     "n_zero": 0
+    }
+   },
+   "position_backoff20": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.608939312969383,
+     "renorm": -13.868678186751996,
+     "raw_seen": -14.019940216574165,
+     "raw_novel": -26.504933116822304,
+     "raw_distinct": -17.93057471990409,
+     "renorm_distinct": -16.19031359368671,
+     "raw_distinct_seen": -15.786985120674542,
+     "raw_distinct_novel": -26.504933116822297,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -13.11933997500141,
+     "renorm": -11.37907884878402,
+     "raw_seen": -12.916711313816876,
+     "raw_novel": -36.15146446297651,
+     "raw_distinct": -22.69229743101669,
+     "renorm_distinct": -20.9520363047993,
+     "raw_distinct_seen": -22.243658529951364,
+     "raw_distinct_novel": -36.15146446297651,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -23.530080781421372,
+     "renorm": -21.789819655203985,
+     "raw_seen": -13.81179553424552,
+     "raw_novel": -38.52400659134983,
+     "raw_distinct": -25.180150632824677,
+     "renorm_distinct": -23.43988950660729,
+     "raw_distinct_seen": -15.265035495368975,
+     "raw_distinct_novel": -36.644502510507834,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.330043214316058,
+     "renorm": -13.589782088098671,
+     "raw_seen": -13.230854944301289,
+     "raw_novel": -35.15122476387858,
+     "raw_distinct": -23.600075933523517,
+     "renorm_distinct": -21.859814807306133,
+     "raw_distinct_seen": -18.55502006015108,
+     "raw_distinct_novel": -34.02652473849323,
+     "n_zero": 0
+    }
+   },
+   "term_backoff20": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.296171147030032,
+     "renorm": -13.538092207380952,
+     "raw_seen": -13.750607394833784,
+     "raw_novel": -25.894322590661442,
+     "raw_distinct": -17.54476996511675,
+     "renorm_distinct": -15.786691025467663,
+     "raw_distinct_seen": -15.457381808730569,
+     "raw_distinct_novel": -25.89432259066145,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -12.814648241450023,
+     "renorm": -11.056569301800941,
+     "raw_seen": -12.608127024128098,
+     "raw_novel": -36.28922661037527,
+     "raw_distinct": -22.190368042084724,
+     "renorm_distinct": -20.432289102435647,
+     "raw_distinct_seen": -21.72040608980837,
+     "raw_distinct_novel": -36.28922661037527,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -23.371454799187912,
+     "renorm": -21.61337585953883,
+     "raw_seen": -13.63368700061158,
+     "raw_novel": -38.39543940270568,
+     "raw_distinct": -24.94167101469482,
+     "renorm_distinct": -23.18359207504574,
+     "raw_distinct_seen": -15.08360285291502,
+     "raw_distinct_novel": -36.340062326752715,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.047656166408537,
+     "renorm": -13.289577226759452,
+     "raw_seen": -12.944294751863033,
+     "raw_novel": -34.90824183067471,
+     "raw_distinct": -23.23363317260077,
+     "renorm_distinct": -21.475554232951687,
+     "raw_distinct_seen": -18.180844332601875,
+     "raw_distinct_novel": -33.67606344193182,
+     "n_zero": 0
+    }
+   },
+   "term_root_backoff20": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -14.961928573029406,
+     "renorm": -13.172406969985044,
+     "raw_seen": -13.339730004510836,
+     "raw_novel": -26.085575900013858,
+     "raw_distinct": -17.228320385602608,
+     "renorm_distinct": -15.438798782558244,
+     "raw_distinct_seen": -15.01400650699979,
+     "raw_distinct_novel": -26.085575900013854,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -12.105220277917073,
+     "renorm": -10.315698674872719,
+     "raw_seen": -11.90933738274792,
+     "raw_novel": -34.37057602881089,
+     "raw_distinct": -21.13197233523876,
+     "renorm_distinct": -19.3424507321944,
+     "raw_distinct_seen": -20.690685545453018,
+     "raw_distinct_novel": -34.37057602881089,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -22.863217749199052,
+     "renorm": -21.073696146154695,
+     "raw_seen": -13.292315714180875,
+     "raw_novel": -37.6297523175128,
+     "raw_distinct": -24.341094214831053,
+     "renorm_distinct": -22.551572611786703,
+     "raw_distinct_seen": -14.76821694506577,
+     "raw_distinct_novel": -35.40973355799717,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -14.447208652514592,
+     "renorm": -12.657687049470235,
+     "raw_seen": -12.341106265816393,
+     "raw_novel": -34.33367541922259,
+     "raw_distinct": -22.607827944314227,
+     "renorm_distinct": -20.818306341269874,
+     "raw_distinct_seen": -17.577101967851984,
+     "raw_distinct_novel": -33.004661629002875,
+     "n_zero": 0
+    }
+   },
+   "fnprior_kn": {
+    "family": "tree",
+    "rnls": {
+     "raw": -8.629819686330436,
+     "renorm": -9.624966590043513,
+     "raw_seen": -7.1655570020753245,
+     "raw_novel": -18.67047809265122,
+     "raw_distinct": -10.362793432371923,
+     "renorm_distinct": -11.357940336084994,
+     "raw_distinct_seen": -8.2858722673021,
+     "raw_distinct_novel": -18.670478092651216,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -5.988850136612201,
+     "renorm": -6.983997040325277,
+     "raw_seen": -5.884039136226257,
+     "raw_novel": -17.902367180481132,
+     "raw_distinct": -12.121349038471848,
+     "renorm_distinct": -13.11649594218492,
+     "raw_distinct_seen": -11.928648433738207,
+     "raw_distinct_novel": -17.902367180481132,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.423691897863721,
+     "renorm": -15.418838801576799,
+     "raw_seen": -7.327004837513418,
+     "raw_novel": -25.372866219547046,
+     "raw_distinct": -15.677573676710978,
+     "renorm_distinct": -16.672720580424055,
+     "raw_distinct_seen": -8.324093008225473,
+     "raw_distinct_novel": -24.18003569964734,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -7.906359468509789,
+     "renorm": -8.901506372222867,
+     "raw_seen": -6.29329751299004,
+     "raw_novel": -23.13738677928283,
+     "raw_distinct": -14.26063344697282,
+     "renorm_distinct": -15.255780350685898,
+     "raw_distinct_seen": -10.088621444413274,
+     "raw_distinct_novel": -22.882791585595882,
+     "n_zero": 0
+    }
+   },
+   "fnprior_kn_tuned": {
+    "family": "tree",
+    "rnls": {
+     "raw": -8.650399019897344,
+     "renorm": -9.645552284837043,
+     "raw_seen": -7.16554886701178,
+     "raw_novel": -18.832228639684043,
+     "raw_distinct": -10.39512292098941,
+     "renorm_distinct": -11.390276185929112,
+     "raw_distinct_seen": -8.285846491315748,
+     "raw_distinct_novel": -18.83222863968405,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -5.988870573563838,
+     "renorm": -6.984023838503541,
+     "raw_seen": -5.884059006718959,
+     "raw_novel": -17.902452004931682,
+     "raw_distinct": -12.121407852423115,
+     "renorm_distinct": -13.116561117362817,
+     "raw_distinct_seen": -11.92870638067283,
+     "raw_distinct_novel": -17.902452004931682,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.580156456800015,
+     "renorm": -15.575309721739716,
+     "raw_seen": -7.325170256570737,
+     "raw_novel": -25.773563737153747,
+     "raw_distinct": -15.859072100962162,
+     "renorm_distinct": -16.854225365901865,
+     "raw_distinct_seen": -8.321415194685052,
+     "raw_distinct_novel": -24.57448789884507,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -7.9361865453957074,
+     "renorm": -8.931339810335409,
+     "raw_seen": -6.2931079559656125,
+     "raw_novel": -23.45064014943756,
+     "raw_distinct": -14.367792785610947,
+     "renorm_distinct": -15.362946050550649,
+     "raw_distinct_seen": -10.087559824873113,
+     "raw_distinct_novel": -23.213607571135803,
+     "n_zero": 0
+    }
+   },
+   "hpy": {
+    "family": "tree",
+    "rnls": {
+     "raw": -8.628802584869115,
+     "renorm": -9.623844657867508,
+     "raw_seen": -7.165909958359527,
+     "raw_novel": -18.660066309506302,
+     "raw_distinct": -10.361124525835356,
+     "renorm_distinct": -11.35616659883375,
+     "raw_distinct_seen": -8.286389079917623,
+     "raw_distinct_novel": -18.6600663095063,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -5.989040351078148,
+     "renorm": -6.98408242407654,
+     "raw_seen": -5.884227300087617,
+     "raw_novel": -17.902790480335316,
+     "raw_distinct": -12.121794931719291,
+     "renorm_distinct": -13.116837004717683,
+     "raw_distinct_seen": -11.929095080098756,
+     "raw_distinct_novel": -17.902790480335316,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.263002982017147,
+     "renorm": -15.258045055015536,
+     "raw_seen": -7.3242915628873755,
+     "raw_novel": -24.96844345724593,
+     "raw_distinct": -15.496761752844145,
+     "renorm_distinct": -16.491803825842535,
+     "raw_distinct_seen": -8.320086670765164,
+     "raw_distinct_novel": -23.79479231649797,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -7.879936336106836,
+     "renorm": -8.874978409105227,
+     "raw_seen": -6.2931987978173325,
+     "raw_novel": -22.862400399571186,
+     "raw_distinct": -14.169447055071117,
+     "renorm_distinct": -15.164489128069508,
+     "raw_distinct_seen": -10.087433341504475,
+     "raw_distinct_novel": -22.60560872977551,
+     "n_zero": 0
+    }
+   },
+   "sym0": {
+    "family": "tree",
+    "rnls": {
+     "raw": -15.946247297634157,
+     "renorm": -14.291885047422936,
+     "raw_seen": -14.52333292469694,
+     "raw_novel": -25.703374426346524,
+     "raw_distinct": -18.425504420275757,
+     "renorm_distinct": -16.77114217006453,
+     "raw_distinct_seen": -16.606036918758065,
+     "raw_distinct_novel": -25.70337442634652,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -13.258027522872968,
+     "renorm": -11.603665272661743,
+     "raw_seen": -13.110641042308732,
+     "raw_novel": -30.01095748034093,
+     "raw_distinct": -23.984681497018364,
+     "renorm_distinct": -22.330319246807132,
+     "raw_distinct_seen": -23.78380563090761,
+     "raw_distinct_novel": -30.01095748034093,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -21.587832389480177,
+     "renorm": -19.933470139268955,
+     "raw_seen": -14.345598113220758,
+     "raw_novel": -32.76156527285187,
+     "raw_distinct": -23.038308968151412,
+     "renorm_distinct": -21.38394671794019,
+     "raw_distinct_seen": -15.660487355549417,
+     "raw_distinct_novel": -31.568915207722462,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.167892731623931,
+     "renorm": -13.513530481412705,
+     "raw_seen": -13.522669764383107,
+     "raw_novel": -30.702594210763262,
+     "raw_distinct": -22.995066027602846,
+     "renorm_distinct": -21.340703777391617,
+     "raw_distinct_seen": -19.470878643996933,
+     "raw_distinct_novel": -30.278386620388403,
+     "n_zero": 0
+    }
+   },
+   "hpy2": {
+    "family": "tree",
+    "rnls": {
+     "raw": -8.624670737767122,
+     "renorm": -9.619696428482168,
+     "raw_seen": -7.16594968145138,
+     "raw_novel": -18.6273294096465,
+     "raw_distinct": -10.35458953721353,
+     "renorm_distinct": -11.349615227928572,
+     "raw_distinct_seen": -8.286404569105285,
+     "raw_distinct_novel": -18.6273294096465,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -5.988942534102312,
+     "renorm": -6.983968224817358,
+     "raw_seen": -5.884134411495503,
+     "raw_novel": -17.902132470409743,
+     "raw_distinct": -12.121525677217885,
+     "renorm_distinct": -13.116551367932928,
+     "raw_distinct_seen": -11.92883878411149,
+     "raw_distinct_novel": -17.902132470409743,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.279988207795625,
+     "renorm": -15.275013898510668,
+     "raw_seen": -7.327214485588182,
+     "raw_novel": -25.00712480777282,
+     "raw_distinct": -15.520183051068763,
+     "renorm_distinct": -16.515208741783805,
+     "raw_distinct_seen": -8.324265084776624,
+     "raw_distinct_novel": -23.840463199594048,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -7.881821295357991,
+     "renorm": -8.876846986073039,
+     "raw_seen": -6.293463515195642,
+     "raw_novel": -22.87958418112171,
+     "raw_distinct": -14.17775249442973,
+     "renorm_distinct": -15.172778185144777,
+     "raw_distinct_seen": -10.089002237628511,
+     "raw_distinct_novel": -22.62783635848558,
+     "n_zero": 0
+    }
+   },
+   "hpy3_depth": {
+    "family": "tree",
+    "rnls": {
+     "raw": -7.285916780538568,
+     "renorm": -8.53619989699508,
+     "raw_seen": -5.674838697962552,
+     "raw_novel": -18.333309346774104,
+     "raw_distinct": -9.017444534564262,
+     "renorm_distinct": -10.267727651020774,
+     "raw_distinct_seen": -6.6884783315118,
+     "raw_distinct_novel": -18.333309346774108,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -5.063957502833789,
+     "renorm": -6.314240619290304,
+     "raw_seen": -4.9549191812798785,
+     "raw_novel": -17.457980052794998,
+     "raw_distinct": -10.191999214819841,
+     "renorm_distinct": -11.442282331276356,
+     "raw_distinct_seen": -9.949799853554003,
+     "raw_distinct_novel": -17.457980052794998,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.382344787236523,
+     "renorm": -15.632627903693038,
+     "raw_seen": -5.8153121490996815,
+     "raw_novel": -27.600052286076224,
+     "raw_distinct": -15.585002164610996,
+     "renorm_distinct": -16.835285281067513,
+     "raw_distinct_seen": -6.7631755698801115,
+     "raw_distinct_novel": -25.785239164768583,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -7.041401312887876,
+     "renorm": -8.29168442934439,
+     "raw_seen": -5.190303079169504,
+     "raw_novel": -24.520040404344044,
+     "raw_distinct": -13.371141778885832,
+     "renorm_distinct": -14.621424895342347,
+     "raw_distinct_seen": -8.331981526310562,
+     "raw_distinct_novel": -23.785406300874723,
+     "n_zero": 0
+    }
+   },
+   "hpy2_src": {
+    "family": "tree",
+    "rnls": {
+     "raw": -9.923362090030441,
+     "renorm": -11.21356374995304,
+     "raw_seen": -8.392509534350422,
+     "raw_novel": -20.420636757550593,
+     "raw_distinct": -11.761817333471917,
+     "renorm_distinct": -13.052018993394512,
+     "raw_distinct_seen": -9.597112477452248,
+     "raw_distinct_novel": -20.420636757550593,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -6.129581215145037,
+     "renorm": -7.41978287506763,
+     "raw_seen": -6.026977109259148,
+     "raw_novel": -17.792247917507627,
+     "raw_distinct": -11.834008126281766,
+     "renorm_distinct": -13.124209786204363,
+     "raw_distinct_seen": -11.635400133240905,
+     "raw_distinct_novel": -17.792247917507627,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -15.117372313982075,
+     "renorm": -16.407573973904668,
+     "raw_seen": -8.361125782406155,
+     "raw_novel": -25.54129553412778,
+     "raw_distinct": -16.440524291220328,
+     "renorm_distinct": -17.73072595114292,
+     "raw_distinct_seen": -9.508666901616909,
+     "raw_distinct_novel": -24.45548439794928,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -8.371255808209295,
+     "renorm": -9.661457468131887,
+     "raw_seen": -6.746193282698459,
+     "raw_novel": -23.715596193321225,
+     "raw_distinct": -15.103014320318985,
+     "renorm_distinct": -16.39321598024158,
+     "raw_distinct_seen": -10.994870631552292,
+     "raw_distinct_novel": -23.593177943770154,
+     "n_zero": 0
+    }
+   },
+   "form_ad": {
+    "family": "tree",
+    "rnls": {
+     "raw": -7.0651968134180345,
+     "renorm": -8.542169958646031,
+     "raw_seen": -4.899675775716016,
+     "raw_novel": -21.914483929089027,
+     "raw_distinct": -8.818131423635224,
+     "renorm_distinct": -10.295104568863218,
+     "raw_distinct_seen": -5.544043297271771,
+     "raw_distinct_novel": -21.914483929089027,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -4.032817961469416,
+     "renorm": -5.509791106697413,
+     "raw_seen": -3.874037256113382,
+     "raw_novel": -22.080891470271965,
+     "raw_distinct": -6.944885492525402,
+     "renorm_distinct": -8.421858637753402,
+     "raw_distinct_seen": -6.44035195993385,
+     "raw_distinct_novel": -22.080891470271965,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.381056837590652,
+     "renorm": -15.85802998281865,
+     "raw_seen": -5.245944916052014,
+     "raw_novel": -28.475229516535972,
+     "raw_distinct": -15.972617460434114,
+     "renorm_distinct": -17.449590605662106,
+     "raw_distinct_seen": -5.969666121261585,
+     "raw_distinct_novel": -27.538529946352348,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -6.3432322039908495,
+     "renorm": -7.820205349218847,
+     "raw_seen": -4.225451332525886,
+     "raw_novel": -26.339970817246567,
+     "raw_distinct": -12.825525856337583,
+     "renorm_distinct": -14.302499001565582,
+     "raw_distinct_seen": -6.3970966204034285,
+     "raw_distinct_novel": -26.11094627726817,
+     "n_zero": 0
+    }
+   },
+   "form_ad3_depth": {
+    "family": "tree",
+    "rnls": {
+     "raw": -6.918294668607164,
+     "renorm": -8.395241003592082,
+     "raw_seen": -4.899065166165002,
+     "raw_novel": -20.764439828210563,
+     "raw_distinct": -8.587284879893645,
+     "renorm_distinct": -10.064231214878557,
+     "raw_distinct_seen": -5.542996142814411,
+     "raw_distinct_novel": -20.764439828210566,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -4.0267844140820355,
+     "renorm": -5.50373074906695,
+     "raw_seen": -3.873980120051243,
+     "raw_novel": -21.395539168915338,
+     "raw_distinct": -6.921156928810905,
+     "renorm_distinct": -8.39810326379582,
+     "raw_distinct_seen": -6.438677520807423,
+     "raw_distinct_novel": -21.39553916891534,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.050092795058596,
+     "renorm": -15.527039130043516,
+     "raw_seen": -5.244337464140887,
+     "raw_novel": -27.636115305617352,
+     "raw_distinct": -15.491969033706486,
+     "renorm_distinct": -16.968915368691405,
+     "raw_distinct_seen": -5.9673233364414155,
+     "raw_distinct_novel": -26.504840621169222,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -6.255404255527114,
+     "renorm": -7.73235059051203,
+     "raw_seen": -4.22511547851919,
+     "raw_novel": -25.42601559227502,
+     "raw_distinct": -12.46297631787264,
+     "renorm_distinct": -13.939922652857552,
+     "raw_distinct_seen": -6.3950178383789655,
+     "raw_distinct_novel": -25.003423842159556,
+     "n_zero": 0
+    }
+   },
+   "tree_ad3": {
+    "family": "tree",
+    "rnls": {
+     "raw": -6.8909995305885205,
+     "renorm": -8.367964861002836,
+     "raw_seen": -4.8989970099544005,
+     "raw_novel": -20.550445386365336,
+     "raw_distinct": -8.544346022978045,
+     "renorm_distinct": -10.021311353392363,
+     "raw_distinct_seen": -5.542821182131223,
+     "raw_distinct_novel": -20.550445386365336,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -4.026325971265289,
+     "renorm": -5.503291301679607,
+     "raw_seen": -3.8741311420863447,
+     "raw_novel": -21.325804887938585,
+     "raw_distinct": -6.920071428418267,
+     "renorm_distinct": -8.397036758832588,
+     "raw_distinct_seen": -6.439880313100924,
+     "raw_distinct_novel": -21.325804887938585,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.400159071130199,
+     "renorm": -15.877124401544519,
+     "raw_seen": -5.244921241465492,
+     "raw_novel": -28.52538315118432,
+     "raw_distinct": -15.81023297278214,
+     "renorm_distinct": -17.28719830319646,
+     "raw_distinct_seen": -5.968284407689824,
+     "raw_distinct_novel": -27.189986001170134,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -6.3069617676069685,
+     "renorm": -7.783927098021287,
+     "raw_seen": -4.225271241234628,
+     "raw_novel": -25.962924237776573,
+     "raw_distinct": -12.609111076355568,
+     "renorm_distinct": -14.086076406769886,
+     "raw_distinct_seen": -6.3958851439897435,
+     "raw_distinct_novel": -25.449778003244937,
+     "n_zero": 0
+    }
+   },
+   "uniform symbols": {
+    "family": "tree",
+    "rnls": {
+     "raw": -24.22711256729579,
+     "renorm": -22.284042836046115,
+     "raw_seen": -22.496743322735558,
+     "raw_novel": -36.092501672851625,
+     "raw_distinct": -27.151821055414263,
+     "renorm_distinct": -25.2087513241646,
+     "raw_distinct_seen": -24.91665090105493,
+     "raw_distinct_novel": -36.09250167285162,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -21.593294590722707,
+     "renorm": -19.650224859473038,
+     "raw_seen": -21.286823113243837,
+     "raw_novel": -56.428885864153806,
+     "raw_distinct": -38.14327915450866,
+     "renorm_distinct": -36.20020942325899,
+     "raw_distinct_seen": -37.53375893085383,
+     "raw_distinct_novel": -56.428885864153806,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -32.393293008840075,
+     "renorm": -30.450223277590418,
+     "raw_seen": -22.562054533226483,
+     "raw_novel": -47.561489514072505,
+     "raw_distinct": -34.49671019890299,
+     "renorm_distinct": -32.553640467653324,
+     "raw_distinct_seen": -24.471003329295204,
+     "raw_distinct_novel": -46.08893376688698,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -23.89701436353207,
+     "renorm": -21.9539446322824,
+     "raw_seen": -21.663635408132368,
+     "raw_novel": -44.985265653940786,
+     "raw_distinct": -34.60822973618392,
+     "renorm_distinct": -32.66516000493425,
+     "raw_distinct_seen": -29.924409170384592,
+     "raw_distinct_novel": -44.28812557216919,
+     "n_zero": 0
+    }
+   }
+  },
+  "counts": {
+   "rnls": {
+    "pairs": 110,
+    "distinct": 70,
+    "novel_pairs": 14,
+    "novel_distinct": 14
+   },
+   "ratelaws": {
+    "pairs": 344,
+    "distinct": 31,
+    "novel_pairs": 3,
+    "novel_distinct": 1
+   },
+   "ecocat2": {
+    "pairs": 89,
+    "distinct": 69,
+    "novel_pairs": 35,
+    "novel_distinct": 32
+   },
+   "all": {
+    "pairs": 543,
+    "distinct": 138,
+    "novel_pairs": 52,
+    "novel_distinct": 45
+   }
+  },
+  "train_sizes": {
+   "biomodels": 3526,
+   "sabiork": 7976,
+   "cellml": 4571,
+   "curvelib": 38,
+   "biocat": 54,
+   "biomodels_nc": 2480,
+   "thermal": 82,
+   "ecocurves": 99,
+   "modeldb": 19848,
+   "nlmixr2lib": 225,
+   "allodb": 80,
+   "jws": 3004
+  },
+  "support": 6684,
+  "n_train": 235100
+ },
+ "pooled": {
+  "stats": {
+   "default_prior": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -19.40783993362773,
+     "renorm": -18.23661667921175,
+     "raw_seen": -17.670097591890862,
+     "raw_novel": -31.3237874198234,
+     "raw_distinct": -22.012732263355172,
+     "renorm_distinct": -20.841509008939187,
+     "raw_distinct_seen": -19.684968474238115,
+     "raw_distinct_novel": -31.323787419823407,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -16.412707254124523,
+     "renorm": -15.241483999708539,
+     "raw_seen": -16.14255689599522,
+     "raw_novel": -47.11979796148861,
+     "raw_distinct": -28.35035587495032,
+     "renorm_distinct": -27.179132620534332,
+     "raw_distinct_seen": -27.724707805399042,
+     "raw_distinct_novel": -47.11979796148861,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -28.240782595233718,
+     "renorm": -27.069559340817737,
+     "raw_seen": -17.400467759095225,
+     "raw_novel": -44.96583977099025,
+     "raw_distinct": -30.132647448262126,
+     "renorm_distinct": -28.961424193846145,
+     "raw_distinct_seen": -19.059676675468445,
+     "raw_distinct_novel": -42.93576990430482,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -18.95812769630513,
+     "renorm": -17.78690444188915,
+     "raw_seen": -16.57956523288602,
+     "raw_novel": -41.417246341281775,
+     "raw_distinct": -28.61266976376322,
+     "renorm_distinct": -27.441446509347234,
+     "raw_distinct_seen": -23.067200110129914,
+     "raw_distinct_novel": -40.07330704793871,
+     "n_zero": 0
+    }
+   },
+   "cf": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -17.572909818918948,
+     "renorm": -15.889122279008868,
+     "raw_seen": -15.905497545148018,
+     "raw_novel": -29.006593981919615,
+     "raw_distinct": -20.146549369857837,
+     "renorm_distinct": -18.462761829947755,
+     "raw_distinct_seen": -17.931538216842394,
+     "raw_distinct_novel": -29.00659398191961,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -14.461621320833565,
+     "renorm": -12.777833780923487,
+     "raw_seen": -14.268037977255114,
+     "raw_novel": -36.465594707584394,
+     "raw_distinct": -25.05457415375885,
+     "renorm_distinct": -23.370786613848768,
+     "raw_distinct_seen": -24.674206801964665,
+     "raw_distinct_novel": -36.465594707584394,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -25.984518827700416,
+     "renorm": -24.300731287790338,
+     "raw_seen": -15.487738026638876,
+     "raw_novel": -42.17955206362394,
+     "raw_distinct": -27.637180299463797,
+     "renorm_distinct": -25.95339275955372,
+     "raw_distinct_seen": -16.876192443080306,
+     "raw_distinct_novel": -40.079572508407196,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -16.980552467980054,
+     "renorm": -15.296764928069972,
+     "raw_seen": -14.722335169076787,
+     "raw_novel": -38.30333504031665,
+     "raw_distinct": -26.01448281833236,
+     "renorm_distinct": -24.330695278422283,
+     "raw_distinct_seen": -20.645830920632097,
+     "raw_distinct_novel": -37.10969674024624,
+     "n_zero": 0
+    }
+   },
+   "parent": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -17.088439373680334,
+     "renorm": -15.212966533028194,
+     "raw_seen": -15.3766519328979,
+     "raw_novel": -28.826410396188482,
+     "raw_distinct": -19.702633947475427,
+     "renorm_distinct": -17.82716110682328,
+     "raw_distinct_seen": -17.421689835297162,
+     "raw_distinct_novel": -28.826410396188486,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -14.517658278319539,
+     "renorm": -12.642185437667395,
+     "raw_seen": -14.323955896872357,
+     "raw_novel": -36.53516230281586,
+     "raw_distinct": -24.72037925742745,
+     "renorm_distinct": -22.84490641677531,
+     "raw_distinct_seen": -24.3265531559145,
+     "raw_distinct_novel": -36.53516230281586,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -25.808963225499692,
+     "renorm": -23.933490384847552,
+     "raw_seen": -14.88400319028685,
+     "raw_novel": -42.664615851256656,
+     "raw_distinct": -27.458925069254025,
+     "renorm_distinct": -25.58345222860188,
+     "raw_distinct_seen": -16.308106827916653,
+     "raw_distinct_novel": -40.35205866080038,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -16.889135370011477,
+     "renorm": -15.013662529359332,
+     "raw_seen": -14.591372135778334,
+     "raw_novel": -38.585322831712865,
+     "raw_distinct": -25.76204852093531,
+     "renorm_distinct": -23.886575680283162,
+     "raw_distinct_seen": -20.1666691027828,
+     "raw_distinct_novel": -37.32583265178383,
+     "n_zero": 0
+    }
+   },
+   "position": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.989908079711277,
+     "renorm": -14.190330094320066,
+     "raw_seen": -14.296178277448979,
+     "raw_novel": -27.604055295224196,
+     "raw_distinct": -18.533635357844283,
+     "renorm_distinct": -16.734057372453062,
+     "raw_distinct_seen": -16.266030373499294,
+     "raw_distinct_novel": -27.604055295224196,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -13.2642059308632,
+     "renorm": -11.464627945471989,
+     "raw_seen": -13.064961517782187,
+     "raw_novel": -35.91165421773848,
+     "raw_distinct": -23.359004885865986,
+     "renorm_distinct": -21.559426900474776,
+     "raw_distinct_seen": -22.940583241470236,
+     "raw_distinct_novel": -35.91165421773848,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -24.879151107747052,
+     "renorm": -23.079573122355836,
+     "raw_seen": -13.934956553131629,
+     "raw_novel": -41.76447984915369,
+     "raw_distinct": -26.535804969964598,
+     "renorm_distinct": -24.736226984573392,
+     "raw_distinct_seen": -15.35801284876455,
+     "raw_distinct_novel": -39.46012711010215,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.72011266588337,
+     "renorm": -13.920534680492157,
+     "raw_seen": -13.401369951258523,
+     "raw_novel": -37.61439483666795,
+     "raw_distinct": -24.654148472389114,
+     "renorm_distinct": -22.8545704869979,
+     "raw_distinct_seen": -19.009999242321136,
+     "raw_distinct_novel": -36.31872354786295,
+     "n_zero": 0
+    }
+   },
+   "term": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.933201469370868,
+     "renorm": -14.242393739832824,
+     "raw_seen": -14.217381588519665,
+     "raw_novel": -27.69882350949339,
+     "raw_distinct": -18.50385002533704,
+     "renorm_distinct": -16.813042295799,
+     "raw_distinct_seen": -16.205106654297953,
+     "raw_distinct_novel": -27.69882350949339,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -13.027203364256037,
+     "renorm": -11.336395634717995,
+     "raw_seen": -12.823081144315182,
+     "raw_novel": -36.22909569753317,
+     "raw_distinct": -22.87897203592035,
+     "renorm_distinct": -21.18816430638231,
+     "raw_distinct_seen": -22.43396791386659,
+     "raw_distinct_novel": -36.22909569753317,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -25.50652322485474,
+     "renorm": -23.815715495316695,
+     "raw_seen": -13.98781158341818,
+     "raw_novel": -43.27824975735685,
+     "raw_distinct": -27.146191333353173,
+     "renorm_distinct": -25.455383603815136,
+     "raw_distinct_seen": -15.46575684588672,
+     "raw_distinct_novel": -40.65169370948627,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.661308813898607,
+     "renorm": -13.970501084360567,
+     "raw_seen": -13.223790485160787,
+     "raw_novel": -38.67710687948071,
+     "raw_distinct": -24.840642402384336,
+     "renorm_distinct": -23.149834672846296,
+     "raw_distinct_seen": -18.83749372360265,
+     "raw_distinct_novel": -37.24714967186649,
+     "n_zero": 0
+    }
+   },
+   "term_root": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.7895330510307,
+     "renorm": -14.103612610547245,
+     "raw_seen": -14.008379949741483,
+     "raw_novel": -28.00315431701387,
+     "raw_distinct": -18.338988233687942,
+     "renorm_distinct": -16.653067793204492,
+     "raw_distinct_seen": -15.922946712856454,
+     "raw_distinct_novel": -28.003154317013866,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -12.22609123933172,
+     "renorm": -10.540170798848267,
+     "raw_seen": -12.03361623038323,
+     "raw_novel": -34.10408392314284,
+     "raw_distinct": -21.6100223454436,
+     "renorm_distinct": -19.92410190496015,
+     "raw_distinct_seen": -21.193553626186958,
+     "raw_distinct_novel": -34.10408392314284,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -24.946401137942406,
+     "renorm": -23.260480697458956,
+     "raw_seen": -13.904885650232456,
+     "raw_novel": -41.98188217612347,
+     "raw_distinct": -26.486541324227687,
+     "renorm_distinct": -24.800620883744237,
+     "raw_distinct_seen": -15.418178149469924,
+     "raw_distinct_novel": -39.28433624504135,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.03287978493621,
+     "renorm": -13.346959344452756,
+     "raw_seen": -12.625522270567041,
+     "raw_novel": -37.76389016099892,
+     "raw_distinct": -24.18547345105509,
+     "renorm_distinct": -22.499553010571635,
+     "raw_distinct_seen": -18.303676718199167,
+     "raw_distinct_novel": -36.341186698957316,
+     "n_zero": 0
+    }
+   },
+   "parent_backoff20": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -17.08517121815878,
+     "renorm": -15.209590279858594,
+     "raw_seen": -15.375405689481738,
+     "raw_novel": -28.80927770051561,
+     "raw_distinct": -19.697055979669265,
+     "renorm_distinct": -17.82147504136908,
+     "raw_distinct_seen": -17.419000549457678,
+     "raw_distinct_novel": -28.80927770051561,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -14.517544438376918,
+     "renorm": -12.641963500076736,
+     "raw_seen": -14.323842624007003,
+     "raw_novel": -36.53498400509075,
+     "raw_distinct": -24.719989055140395,
+     "renorm_distinct": -22.84440811684021,
+     "raw_distinct_seen": -24.326155890142047,
+     "raw_distinct_novel": -36.53498400509075,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -25.813705910545384,
+     "renorm": -23.938124972245205,
+     "raw_seen": -14.883822050357624,
+     "raw_novel": -42.676955294835075,
+     "raw_distinct": -27.46400652445898,
+     "renorm_distinct": -25.588425586158788,
+     "raw_distinct_seen": -16.307645062747827,
+     "raw_distinct_novel": -40.36354946456249,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -16.889178539295884,
+     "renorm": -15.013597600995698,
+     "raw_seen": -14.591029881254475,
+     "raw_novel": -38.58900529118689,
+     "raw_distinct": -25.76129373487072,
+     "renorm_distinct": -23.88571279657054,
+     "raw_distinct_seen": -20.16451438917435,
+     "raw_distinct_novel": -37.327971049309895,
+     "n_zero": 0
+    }
+   },
+   "position_backoff20": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.992323803758726,
+     "renorm": -14.192627616453825,
+     "raw_seen": -14.301186742045175,
+     "raw_novel": -27.588692226937376,
+     "raw_distinct": -18.53154430010153,
+     "renorm_distinct": -16.731848112796627,
+     "raw_distinct_seen": -16.26725731839257,
+     "raw_distinct_novel": -27.588692226937376,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -13.26435754121403,
+     "renorm": -11.464661353909127,
+     "raw_seen": -13.065113967917217,
+     "raw_novel": -35.9117103726183,
+     "raw_distinct": -23.358982207962107,
+     "renorm_distinct": -21.559286020657208,
+     "raw_distinct_seen": -22.940557935806904,
+     "raw_distinct_novel": -35.9117103726183,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -24.89097642651667,
+     "renorm": -23.09128023921177,
+     "raw_seen": -13.938676066319143,
+     "raw_novel": -41.78881126796429,
+     "raw_distinct": -26.549780767955042,
+     "renorm_distinct": -24.750084580650142,
+     "raw_distinct_seen": -15.363115459754441,
+     "raw_distinct_novel": -39.48436253056199,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.722636306723885,
+     "renorm": -13.922940119418985,
+     "raw_seen": -13.402864150463017,
+     "raw_novel": -37.62663878218709,
+     "raw_distinct": -24.658218689080307,
+     "renorm_distinct": -22.85852250177541,
+     "raw_distinct_seen": -19.01036262245401,
+     "raw_distinct_novel": -36.33045456010799,
+     "n_zero": 0
+    }
+   },
+   "term_backoff20": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.943904863497938,
+     "renorm": -14.252739240072525,
+     "raw_seen": -14.230599136432708,
+     "raw_novel": -27.692286991945263,
+     "raw_distinct": -18.506949507821837,
+     "renorm_distinct": -16.815783884396424,
+     "raw_distinct_seen": -16.210615136790977,
+     "raw_distinct_novel": -27.69228699194527,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -13.027686663330467,
+     "renorm": -11.33652103990505,
+     "raw_seen": -12.823570817219496,
+     "raw_novel": -36.22885450461082,
+     "raw_distinct": -22.880254492567243,
+     "renorm_distinct": -21.189088869141827,
+     "raw_distinct_seen": -22.435301158832456,
+     "raw_distinct_novel": -36.22885450461082,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -25.539532003995554,
+     "renorm": -23.848366380570134,
+     "raw_seen": -13.995845624845328,
+     "raw_novel": -43.34979098897019,
+     "raw_distinct": -27.175732454858746,
+     "renorm_distinct": -25.484566831433334,
+     "raw_distinct_seen": -15.476508920654796,
+     "raw_distinct_novel": -40.70295966628207,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.669193546088504,
+     "renorm": -13.978027922663088,
+     "raw_seen": -13.22759843077604,
+     "raw_novel": -38.72348588490429,
+     "raw_distinct": -24.852314901222144,
+     "renorm_distinct": -23.161149277796724,
+     "raw_distinct_seen": -18.841230898517857,
+     "raw_distinct_novel": -37.275221840144326,
+     "n_zero": 0
+    }
+   },
+   "term_root_backoff20": {
+    "family": "pcfg",
+    "rnls": {
+     "raw": -15.80111229805735,
+     "renorm": -14.11478269818952,
+     "raw_seen": -14.02238436220024,
+     "raw_novel": -27.998103858220386,
+     "raw_distinct": -18.343043909192787,
+     "renorm_distinct": -16.65671430932496,
+     "raw_distinct_seen": -15.929278921935886,
+     "raw_distinct_novel": -27.998103858220386,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -12.226643514723865,
+     "renorm": -10.54031391485604,
+     "raw_seen": -12.034174966584809,
+     "raw_novel": -34.10390181986303,
+     "raw_distinct": -21.611423063672373,
+     "renorm_distinct": -19.925093463804547,
+     "raw_distinct_seen": -21.19500710513268,
+     "raw_distinct_novel": -34.10390181986303,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -25.108166711722063,
+     "renorm": -23.421837111854238,
+     "raw_seen": -13.913610140098152,
+     "raw_novel": -42.379768279370374,
+     "raw_distinct": -26.680721714149797,
+     "renorm_distinct": -24.99439211428197,
+     "raw_distinct_seen": -15.43007720982085,
+     "raw_distinct_novel": -39.68927942228013,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.06208942761433,
+     "renorm": -13.375759827746505,
+     "raw_seen": -12.62960796322188,
+     "raw_novel": -38.030327870243035,
+     "raw_distinct": -24.279424936617243,
+     "renorm_distinct": -22.59309533674942,
+     "raw_distinct_seen": -18.30790992491573,
+     "raw_distinct_novel": -36.62055596080037,
+     "n_zero": 0
+    }
+   },
+   "fnprior_kn": {
+    "family": "tree",
+    "rnls": {
+     "raw": -9.292891752411363,
+     "renorm": -9.84689993817599,
+     "raw_seen": -7.721410704064392,
+     "raw_novel": -20.068761798219168,
+     "raw_distinct": -11.240343222289606,
+     "renorm_distinct": -11.794351408054231,
+     "raw_distinct_seen": -9.033238578307216,
+     "raw_distinct_novel": -20.068761798219164,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -6.171762963669906,
+     "renorm": -6.725771149434532,
+     "raw_seen": -6.0742721525959835,
+     "raw_novel": -17.253218489072655,
+     "raw_distinct": -12.730065893908534,
+     "renorm_distinct": -13.284074079673157,
+     "raw_distinct_seen": -12.579294140736398,
+     "raw_distinct_novel": -17.253218489072655,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -15.030329323079945,
+     "renorm": -15.584337508844571,
+     "raw_seen": -8.01851254438345,
+     "raw_novel": -25.848560924497388,
+     "raw_distinct": -16.337808306305607,
+     "renorm_distinct": -16.891816492070234,
+     "raw_distinct_seen": -9.06327987447952,
+     "raw_distinct_novel": -24.74898180560451,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -8.25599237941402,
+     "renorm": -8.810000565178646,
+     "raw_seen": -6.6101464542201995,
+     "raw_novel": -23.7965760192249,
+     "raw_distinct": -15.04486265237839,
+     "renorm_distinct": -15.598870838143021,
+     "raw_distinct_seen": -10.85523607410904,
+     "raw_distinct_novel": -23.703424247468394,
+     "n_zero": 0
+    }
+   },
+   "fnprior_kn_tuned": {
+    "family": "tree",
+    "rnls": {
+     "raw": -9.299509297345695,
+     "renorm": -9.853568393830754,
+     "raw_seen": -7.72129454182527,
+     "raw_novel": -20.12155333520003,
+     "raw_distinct": -11.250709842071773,
+     "renorm_distinct": -11.804768938556832,
+     "raw_distinct_seen": -9.032998968789707,
+     "raw_distinct_novel": -20.121553335200037,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -6.171839576491688,
+     "renorm": -6.7258986729767445,
+     "raw_seen": -6.074347294674139,
+     "raw_novel": -17.25346227641966,
+     "raw_distinct": -12.730208435435467,
+     "renorm_distinct": -13.284267531920522,
+     "raw_distinct_seen": -12.57943330740266,
+     "raw_distinct_novel": -17.25346227641966,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -15.14143713653127,
+     "renorm": -15.695496233016332,
+     "raw_seen": -8.01238364626822,
+     "raw_novel": -26.140548235794263,
+     "raw_distinct": -16.461963967062797,
+     "renorm_distinct": -17.016023063547856,
+     "raw_distinct_seen": -9.05435825873103,
+     "raw_distinct_novel": -25.027008067321404,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -8.275592527021086,
+     "renorm": -8.829651623506145,
+     "raw_seen": -6.609501874536845,
+     "raw_novel": -24.00733311105497,
+     "raw_distinct": -15.112266383786114,
+     "renorm_distinct": -15.666325480271174,
+     "raw_distinct_seen": -10.85165125587979,
+     "raw_distinct_novel": -23.91753764812585,
+     "n_zero": 0
+    }
+   },
+   "hpy": {
+    "family": "tree",
+    "rnls": {
+     "raw": -9.296290219309055,
+     "renorm": -9.850021732608862,
+     "raw_seen": -7.72262760466496,
+     "raw_novel": -20.087119576868563,
+     "raw_distinct": -11.245357575991777,
+     "renorm_distinct": -11.799089089291584,
+     "raw_distinct_seen": -9.034917075772581,
+     "raw_distinct_novel": -20.087119576868563,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -6.172935349476751,
+     "renorm": -6.726666862776557,
+     "raw_seen": -6.075453461528471,
+     "raw_novel": -17.253376612931238,
+     "raw_distinct": -12.734060620148776,
+     "renorm_distinct": -13.287792133448589,
+     "raw_distinct_seen": -12.583416753722695,
+     "raw_distinct_novel": -17.253376612931238,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.867980636774618,
+     "renorm": -15.421712150074422,
+     "raw_seen": -8.017164333527191,
+     "raw_novel": -25.437811504642074,
+     "raw_distinct": -16.153045840400733,
+     "renorm_distinct": -16.706777353700534,
+     "raw_distinct_seen": -9.06130257402528,
+     "raw_distinct_novel": -24.35287399214734,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -8.230813924524751,
+     "renorm": -8.784545437824557,
+     "raw_seen": -6.611056526353387,
+     "raw_novel": -23.525061664950506,
+     "raw_distinct": -14.955522249795726,
+     "renorm_distinct": -15.509253763095527,
+     "raw_distinct_seen": -10.856251949289154,
+     "raw_distinct_novel": -23.427347537509295,
+     "n_zero": 0
+    }
+   },
+   "sym0": {
+    "family": "tree",
+    "rnls": {
+     "raw": -16.115747515857375,
+     "renorm": -14.401367870718646,
+     "raw_seen": -14.663046338557047,
+     "raw_novel": -26.077127017345337,
+     "raw_distinct": -18.705738283413137,
+     "renorm_distinct": -16.991358638274402,
+     "raw_distinct_seen": -16.862891099930085,
+     "raw_distinct_novel": -26.07712701734534,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -13.342621135415378,
+     "renorm": -11.62824149027665,
+     "raw_seen": -13.206827485401485,
+     "raw_novel": -28.77783268699456,
+     "raw_distinct": -24.76530545143017,
+     "renorm_distinct": -23.050925806291435,
+     "raw_distinct_seen": -24.631554543578023,
+     "raw_distinct_novel": -28.777832686994564,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -22.09320247146136,
+     "renorm": -20.37882282632263,
+     "raw_seen": -14.449092162786018,
+     "raw_novel": -33.88697266198903,
+     "raw_distinct": -23.577314937762775,
+     "renorm_distinct": -21.862935292624048,
+     "raw_distinct_seen": -15.772425958246874,
+     "raw_distinct_novel": -32.60171782032805,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -15.338653622996803,
+     "renorm": -13.624273977858072,
+     "raw_seen": -13.628170260313295,
+     "raw_novel": -31.489563836027585,
+     "raw_distinct": -23.49829983034359,
+     "renorm_distinct": -21.78392018520486,
+     "raw_distinct_seen": -19.849200616571842,
+     "raw_distinct_novel": -31.03977153880521,
+     "n_zero": 0
+    }
+   },
+   "hpy2": {
+    "family": "tree",
+    "rnls": {
+     "raw": -9.296237322935351,
+     "renorm": -9.849657825387812,
+     "raw_seen": -7.721711963101058,
+     "raw_novel": -20.09298264751335,
+     "raw_distinct": -11.245241590301964,
+     "renorm_distinct": -11.798662092754427,
+     "raw_distinct_seen": -9.033306325999119,
+     "raw_distinct_novel": -20.092982647513356,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -6.172163921324833,
+     "renorm": -6.725584423777294,
+     "raw_seen": -6.074672540885504,
+     "raw_novel": -17.253684164594983,
+     "raw_distinct": -12.730455289502878,
+     "renorm_distinct": -13.28387579195534,
+     "raw_distinct_seen": -12.579680993666475,
+     "raw_distinct_novel": -17.253684164594983,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.937306488856015,
+     "renorm": -15.490726991308478,
+     "raw_seen": -8.006608496209882,
+     "raw_novel": -25.63038339179576,
+     "raw_distinct": -16.213482774152453,
+     "renorm_distinct": -16.76690327660491,
+     "raw_distinct_seen": -9.04582172801426,
+     "raw_distinct_novel": -24.50109085874973,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -8.24167729643981,
+     "renorm": -8.79509779889227,
+     "raw_seen": -6.609174223411389,
+     "raw_novel": -23.656273620611994,
+     "raw_distinct": -14.985207368815566,
+     "renorm_distinct": -15.538627871268025,
+     "raw_distinct_seen": -10.848397601717224,
+     "raw_distinct_novel": -23.534614220818806,
+     "n_zero": 0
+    }
+   },
+   "hpy3_depth": {
+    "family": "tree",
+    "rnls": {
+     "raw": -8.397891183896098,
+     "renorm": -9.42687082246078,
+     "raw_seen": -6.68138993522452,
+     "raw_novel": -20.1681854605012,
+     "raw_distinct": -10.511554271374816,
+     "renorm_distinct": -11.540533909939498,
+     "raw_distinct_seen": -8.097396474093218,
+     "raw_distinct_novel": -20.168185460501203,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -5.302354646431944,
+     "renorm": -6.331334284996626,
+     "raw_seen": -5.19201640782754,
+     "raw_novel": -17.844134434465857,
+     "raw_distinct": -11.211043423131361,
+     "renorm_distinct": -12.240023061696046,
+     "raw_distinct_seen": -10.989940389420212,
+     "raw_distinct_novel": -17.844134434465857,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.271829479698065,
+     "renorm": -15.300809118262746,
+     "raw_seen": -6.856225336955868,
+     "raw_novel": -25.713047299928878,
+     "raw_distinct": -15.591422063728569,
+     "renorm_distinct": -16.62040170229325,
+     "raw_distinct_seen": -8.024235036210458,
+     "raw_distinct_novel": -24.34098206429638,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -7.399577996858723,
+     "renorm": -8.428557635423408,
+     "raw_seen": -5.6662468371616335,
+     "raw_novel": -23.766224139383176,
+     "raw_distinct": -14.1404286302143,
+     "renorm_distinct": -15.169408268778984,
+     "raw_distinct_seen": -9.650902322617148,
+     "raw_distinct_novel": -23.418782999248418,
+     "n_zero": 0
+    }
+   },
+   "hpy2_src": {
+    "family": "tree",
+    "rnls": {
+     "raw": -9.818812401165578,
+     "renorm": -10.723871408501045,
+     "raw_seen": -8.54509109712795,
+     "raw_novel": -18.55290134313794,
+     "raw_distinct": -11.345008488312326,
+     "renorm_distinct": -12.250067495647793,
+     "raw_distinct_seen": -9.543035274605923,
+     "raw_distinct_novel": -18.552901343137943,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -6.301278659099437,
+     "renorm": -7.2063376664349015,
+     "raw_seen": -6.205850241043903,
+     "raw_novel": -17.148308844745117,
+     "raw_distinct": -11.990196653090457,
+     "renorm_distinct": -12.89525566042592,
+     "raw_distinct_seen": -11.818259580035301,
+     "raw_distinct_novel": -17.148308844745117,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.593828182796118,
+     "renorm": -15.498887190131585,
+     "raw_seen": -8.561233144939932,
+     "raw_novel": -23.90126052691709,
+     "raw_distinct": -15.801162756908331,
+     "renorm_distinct": -16.706221764243793,
+     "raw_distinct_seen": -9.632403796387468,
+     "raw_distinct_novel": -22.933790305010575,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -8.373038547195717,
+     "renorm": -9.278097554531186,
+     "raw_seen": -6.9222612369592875,
+     "raw_novel": -22.071724303466628,
+     "raw_distinct": -14.537409317304762,
+     "renorm_distinct": -15.442468324640227,
+     "raw_distinct_seen": -10.95603934885455,
+     "raw_distinct_novel": -21.938907252101867,
+     "n_zero": 0
+    }
+   },
+   "form_ad": {
+    "family": "tree",
+    "rnls": {
+     "raw": -7.554117972685558,
+     "renorm": -8.912271935047352,
+     "raw_seen": -5.703984100606015,
+     "raw_novel": -20.240750238373842,
+     "raw_distinct": -9.325868554310375,
+     "renorm_distinct": -10.684022516672172,
+     "raw_distinct_seen": -6.5971481332945086,
+     "raw_distinct_novel": -20.24075023837384,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -4.102599334732168,
+     "renorm": -5.460753297093962,
+     "raw_seen": -3.9638325101297975,
+     "raw_novel": -19.875761731201518,
+     "raw_distinct": -7.165350892429752,
+     "renorm_distinct": -8.523504854791549,
+     "raw_distinct_seen": -6.74167053113736,
+     "raw_distinct_novel": -19.875761731201518,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -14.099670335372755,
+     "renorm": -15.457824297734549,
+     "raw_seen": -6.078501231283157,
+     "raw_novel": -26.47518838168241,
+     "raw_distinct": -15.511704562780501,
+     "renorm_distinct": -16.8698585251423,
+     "raw_distinct_seen": -6.866637850440741,
+     "raw_distinct_novel": -25.50756294892335,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -6.440364287277074,
+     "renorm": -7.79851824963887,
+     "raw_seen": -4.5366363057061685,
+     "raw_novel": -24.415949651725438,
+     "raw_distinct": -12.774786693064918,
+     "renorm_distinct": -14.132940655426717,
+     "raw_distinct_seen": -7.250519581978844,
+     "raw_distinct_novel": -24.191605389309473,
+     "n_zero": 0
+    }
+   },
+   "form_ad3_depth": {
+    "family": "tree",
+    "rnls": {
+     "raw": -7.408864368442247,
+     "renorm": -8.766361162492073,
+     "raw_seen": -5.7007409378744365,
+     "raw_novel": -19.121710749478645,
+     "raw_distinct": -9.095871399052273,
+     "renorm_distinct": -10.453368193102103,
+     "raw_distinct_seen": -6.5894115614456785,
+     "raw_distinct_novel": -19.121710749478645,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -4.096134861907169,
+     "renorm": -5.4536316559569995,
+     "raw_seen": -3.9626388086050026,
+     "raw_novel": -19.27018625392013,
+     "raw_distinct": -7.134743106554958,
+     "renorm_distinct": -8.492239900604785,
+     "raw_distinct_seen": -6.730228334976118,
+     "raw_distinct_novel": -19.27018625392013,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -13.65559514649974,
+     "renorm": -15.01309194054957,
+     "raw_seen": -6.070962688693838,
+     "raw_novel": -25.35759950997171,
+     "raw_distinct": -14.93657146846939,
+     "renorm_distinct": -16.294068262519225,
+     "raw_distinct_seen": -6.857984845968121,
+     "raw_distinct_novel": -24.277437250736487,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -6.334057902510479,
+     "renorm": -7.691554696560308,
+     "raw_seen": -4.534344091567656,
+     "raw_novel": -23.32750946352829,
+     "raw_distinct": -12.364427785530614,
+     "renorm_distinct": -13.721924579580442,
+     "raw_distinct_seen": -7.237048279345383,
+     "raw_distinct_novel": -22.961012098313425,
+     "n_zero": 0
+    }
+   },
+   "tree_ad3": {
+    "family": "tree",
+    "rnls": {
+     "raw": -7.400649416821587,
+     "renorm": -8.75844583383796,
+     "raw_seen": -5.699852728407937,
+     "raw_novel": -19.063255280229463,
+     "raw_distinct": -9.083557738302288,
+     "renorm_distinct": -10.441354155318662,
+     "raw_distinct_seen": -6.588633352820494,
+     "raw_distinct_novel": -19.063255280229466,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -4.0876250077642755,
+     "renorm": -5.44542142478065,
+     "raw_seen": -3.9595030818621098,
+     "raw_novel": -18.650817251977166,
+     "raw_distinct": -7.099901874033875,
+     "renorm_distinct": -8.45769829105025,
+     "raw_distinct_seen": -6.714871361435765,
+     "raw_distinct_novel": -18.650817251977166,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -13.95721574123666,
+     "renorm": -15.315012158253033,
+     "raw_seen": -6.068678324693208,
+     "raw_novel": -26.128102041046553,
+     "raw_distinct": -15.227301416591784,
+     "renorm_distinct": -16.585097833608156,
+     "raw_distinct_seen": -6.853027494778456,
+     "raw_distinct_novel": -24.910055638688444,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -6.376439483409481,
+     "renorm": -7.7342359004258565,
+     "raw_seen": -4.531741430500152,
+     "raw_novel": -23.794646098380262,
+     "raw_distinct": -12.505373313317543,
+     "renorm_distinct": -13.863169730333917,
+     "raw_distinct_seen": -7.230664948419318,
+     "raw_distinct_novel": -23.406437267440545,
+     "n_zero": 0
+    }
+   },
+   "uniform symbols": {
+    "family": "tree",
+    "rnls": {
+     "raw": -24.22711256729579,
+     "renorm": -22.284042836046115,
+     "raw_seen": -22.496743322735558,
+     "raw_novel": -36.092501672851625,
+     "raw_distinct": -27.151821055414263,
+     "renorm_distinct": -25.2087513241646,
+     "raw_distinct_seen": -24.91665090105493,
+     "raw_distinct_novel": -36.09250167285162,
+     "n_zero": 0
+    },
+    "ratelaws": {
+     "raw": -21.593294590722707,
+     "renorm": -19.650224859473038,
+     "raw_seen": -21.286823113243837,
+     "raw_novel": -56.428885864153806,
+     "raw_distinct": -38.14327915450866,
+     "renorm_distinct": -36.20020942325899,
+     "raw_distinct_seen": -37.53375893085383,
+     "raw_distinct_novel": -56.428885864153806,
+     "n_zero": 0
+    },
+    "ecocat2": {
+     "raw": -32.393293008840075,
+     "renorm": -30.450223277590418,
+     "raw_seen": -22.562054533226483,
+     "raw_novel": -47.561489514072505,
+     "raw_distinct": -34.49671019890299,
+     "renorm_distinct": -32.553640467653324,
+     "raw_distinct_seen": -24.471003329295204,
+     "raw_distinct_novel": -46.08893376688698,
+     "n_zero": 0
+    },
+    "all": {
+     "raw": -23.89701436353207,
+     "renorm": -21.9539446322824,
+     "raw_seen": -21.663635408132368,
+     "raw_novel": -44.985265653940786,
+     "raw_distinct": -34.60822973618392,
+     "renorm_distinct": -32.66516000493425,
+     "raw_distinct_seen": -29.924409170384592,
+     "raw_distinct_novel": -44.28812557216919,
+     "n_zero": 0
+    }
+   }
+  },
+  "counts": {
+   "rnls": {
+    "pairs": 110,
+    "distinct": 70,
+    "novel_pairs": 14,
+    "novel_distinct": 14
+   },
+   "ratelaws": {
+    "pairs": 344,
+    "distinct": 31,
+    "novel_pairs": 3,
+    "novel_distinct": 1
+   },
+   "ecocat2": {
+    "pairs": 89,
+    "distinct": 69,
+    "novel_pairs": 35,
+    "novel_distinct": 32
+   },
+   "all": {
+    "pairs": 543,
+    "distinct": 138,
+    "novel_pairs": 52,
+    "novel_distinct": 45
+   }
+  },
+  "train_sizes": {
+   "biomodels": 3526,
+   "sabiork": 7976,
+   "cellml": 4571,
+   "curvelib": 38,
+   "biocat": 54,
+   "biomodels_nc": 2480,
+   "thermal": 82,
+   "ecocurves": 99,
+   "modeldb": 19848,
+   "nlmixr2lib": 225,
+   "allodb": 80,
+   "jws": 3004
+  },
+  "support": 6684,
+  "n_train": 41983
+ }
+}
