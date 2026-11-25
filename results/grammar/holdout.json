@@ -12,7 +12,12 @@
      "renorm_distinct": -20.841509008939187,
      "raw_distinct_seen": -19.684968474238115,
      "raw_distinct_novel": -31.323787419823407,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.1562706498800193,
+     "novel_penalty_fixed_size": -2.2241718891339963,
+     "raw_novel_nonredundant": -25.842280444217067,
+     "vs_sym0_seen": -3.1467646671939242,
+     "vs_sym0_novel": -5.620412993476882
     },
     "ratelaws": {
      "raw": -16.412707254124523,
@@ -23,7 +28,12 @@
      "renorm_distinct": -27.179132620534332,
      "raw_distinct_seen": -27.724707805399042,
      "raw_distinct_novel": -47.11979796148861,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.9514641975853475,
+     "novel_penalty_fixed_size": -4.240464727901777,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -3.0319158536864874,
+     "vs_sym0_novel": -17.108840481147677
     },
     "ecocat2": {
      "raw": -28.240782595233718,
@@ -34,7 +44,12 @@
      "renorm_distinct": -28.961424193846145,
      "raw_distinct_seen": -19.059676675468445,
      "raw_distinct_novel": -42.93576990430482,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -3.0041529310325936,
+     "novel_penalty_fixed_size": 1.7147873227882624,
+     "raw_novel_nonredundant": -41.768140114180476,
+     "vs_sym0_seen": -3.0548696458744704,
+     "vs_sym0_novel": -12.204274498138393
     },
     "all": {
      "raw": -18.95812769630513,
@@ -45,7 +60,44 @@
      "renorm_distinct": -27.441446509347234,
      "raw_distinct_seen": -23.067200110129914,
      "raw_distinct_novel": -40.07330704793871,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.3329468225210683,
+     "novel_penalty_fixed_size": -3.6255183732155754,
+     "raw_novel_nonredundant": -37.27623097649848,
+     "vs_sym0_seen": -3.0568954685029133,
+     "vs_sym0_novel": -10.714652130518525,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -8.162660284320546,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -14.102198542696408,
+       "novel": -20.627025970131296
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -22.063981520138373,
+       "novel": -22.416905669708637
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -32.07507174926562,
+       "novel": -35.88882864749825
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -49.029821178584584,
+       "novel": -79.47927096719623
+      }
+     }
     }
    },
    "cf": {
@@ -59,7 +111,12 @@
      "renorm_distinct": -18.17330493655965,
      "raw_distinct_seen": -17.612111214814924,
      "raw_distinct_novel": -28.475844753787733,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.8027695330327795,
+     "novel_penalty_fixed_size": -3.2198812385280027,
+     "raw_novel_nonredundant": -24.19415289571613,
+     "vs_sym0_seen": -1.176878988386074,
+     "vs_sym0_novel": -2.7724703274412135
     },
     "ratelaws": {
      "raw": -14.354180681276404,
@@ -70,7 +127,12 @@
      "renorm_distinct": -22.734012216706308,
      "raw_distinct_seen": -23.924291394347236,
      "raw_distinct_novel": -36.983779455023395,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6266557053705948,
+     "novel_penalty_fixed_size": -0.5420719140104441,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -1.0444522597264922,
+     "vs_sym0_novel": -6.972821974682464
     },
     "ecocat2": {
      "raw": -25.464758965496422,
@@ -81,7 +143,12 @@
      "renorm_distinct": -25.5025458620698,
      "raw_distinct_seen": -16.771131987450854,
      "raw_distinct_novel": -39.07315428076791,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.655331431399088,
+     "novel_penalty_fixed_size": 0.1608545446030461,
+     "raw_novel_nonredundant": -38.33546764260687,
+     "vs_sym0_seen": -1.004752777264666,
+     "vs_sym0_novel": -8.308280436947237
     },
     "all": {
      "raw": -16.77731836555665,
@@ -92,7 +159,44 @@
      "renorm_distinct": -23.87329547301348,
      "raw_distinct_seen": -20.256998786149374,
      "raw_distinct_novel": -36.2890711164188,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.9947264788549415,
+     "novel_penalty_fixed_size": -4.717853763206389,
+     "raw_novel_nonredundant": -34.34689168835564,
+     "vs_sym0_seen": -1.065978112880018,
+     "vs_sym0_novel": -6.740824342334188,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -7.243335879354423,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -12.652866891962917,
+       "novel": -21.207863644535916
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -19.536190317231764,
+       "novel": -20.9819146692084
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -26.63497991153479,
+       "novel": -32.0597091294738
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -41.422913029166985,
+       "novel": -69.78917614396596
+      }
+     }
     }
    },
    "parent": {
@@ -106,7 +210,12 @@
      "renorm_distinct": -17.27016063321576,
      "raw_distinct_seen": -16.928639695792235,
      "raw_distinct_novel": -27.667472801916098,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.78960938051279,
+     "novel_penalty_fixed_size": -3.1061027810709056,
+     "raw_novel_nonredundant": -22.820591558792025,
+     "vs_sym0_seen": -0.5520421357515969,
+     "vs_sym0_novel": -1.96409837556958
     },
     "ratelaws": {
      "raw": -14.377873585735589,
@@ -117,7 +226,12 @@
      "renorm_distinct": -22.186262323579694,
      "raw_distinct_seen": -23.57136604265005,
      "raw_distinct_novel": -36.626766949307815,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5801701240156107,
+     "novel_penalty_fixed_size": -0.794910550345798,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -1.0714944786446938,
+     "vs_sym0_novel": -6.615809468966884
     },
     "ecocat2": {
      "raw": -24.36666195563171,
@@ -128,7 +242,12 @@
      "renorm_distinct": -24.185931653231457,
      "raw_distinct_seen": -16.17679542246422,
      "raw_distinct_novel": -37.341212675752516,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5041768949979466,
+     "novel_penalty_fixed_size": -0.07772780038889525,
+     "raw_novel_nonredundant": -36.63630109470339,
+     "vs_sym0_seen": -0.39219407014874164,
+     "vs_sym0_novel": -6.4610671885558295
     },
     "all": {
      "raw": -16.481035087613535,
@@ -139,7 +258,44 @@
      "renorm_distinct": -22.83019796246145,
      "raw_distinct_seen": -19.68318388395757,
      "raw_distinct_novel": -34.873180488359985,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.9145623313963103,
+     "novel_penalty_fixed_size": -4.135944645417366,
+     "raw_novel_nonredundant": -32.73956250765146,
+     "vs_sym0_seen": -0.8952222852098288,
+     "vs_sym0_novel": -5.259272255083247,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -7.314568946943197,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -12.544473045139819,
+       "novel": -20.365111982716634
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -19.152779133349338,
+       "novel": -20.217714884999573
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -25.831874366940436,
+       "novel": -30.819811398742115
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -40.73743462367786,
+       "novel": -66.93413132989417
+      }
+     }
     }
    },
    "position": {
@@ -153,7 +309,12 @@
      "renorm_distinct": -16.188589254264905,
      "raw_distinct_seen": -15.78494798204115,
      "raw_distinct_novel": -26.504392869193964,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5920756926568664,
+     "novel_penalty_fixed_size": -4.048958203984041,
+     "raw_novel_nonredundant": -22.256268912339337,
+     "vs_sym0_seen": 0.5068470946711695,
+     "vs_sym0_novel": -0.8010184428474451
     },
     "ratelaws": {
      "raw": -13.119294057334223,
@@ -164,7 +325,12 @@
      "renorm_distinct": -20.952035338155422,
      "raw_distinct_seen": -22.243644725077974,
      "raw_distinct_novel": -36.15143259188986,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.543827205209919,
+     "novel_penalty_fixed_size": -2.082976402188885,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.1939757697359988,
+     "vs_sym0_novel": -6.140475111548927
     },
     "ecocat2": {
      "raw": -23.525819724201416,
@@ -175,7 +341,12 @@
      "renorm_distinct": -23.434560270185706,
      "raw_distinct_seen": -15.262074222166504,
      "raw_distinct_novel": -36.63640637756009,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.459991636334967,
+     "novel_penalty_fixed_size": -0.7301502121610863,
+     "raw_novel_nonredundant": -35.96740475213766,
+     "vs_sym0_seen": 0.5358603353178961,
+     "vs_sym0_novel": -5.754780882781615
     },
     "all": {
      "raw": -15.32869107003331,
@@ -186,7 +357,44 @@
      "renorm_distinct": -21.857093576701224,
      "raw_distinct_seen": -18.55380097401571,
      "raw_distinct_novel": -34.020657918218824,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.8606261929780328,
+     "novel_penalty_fixed_size": -4.998381108831704,
+     "raw_novel_nonredundant": -32.100161310143264,
+     "vs_sym0_seen": 0.2927485064675647,
+     "vs_sym0_novel": -4.4433272006128375,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.613775827097074,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -11.233319181760601,
+       "novel": -20.27277933661707
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -17.66934972294192,
+       "novel": -19.853000723261864
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -24.171424548931203,
+       "novel": -30.13682415572281
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -39.133784368135565,
+       "novel": -65.07512142357338
+      }
+     }
     }
    },
    "term": {
@@ -200,7 +408,12 @@
      "renorm_distinct": -15.780474755928068,
      "raw_distinct_seen": -15.449759534220217,
      "raw_distinct_novel": -25.893283543559743,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.601002743104612,
+     "novel_penalty_fixed_size": -3.6694262586342945,
+     "raw_novel_nonredundant": -21.319093975635273,
+     "vs_sym0_seen": 0.7857431560492033,
+     "vs_sym0_novel": -0.18990911721322426
     },
     "ratelaws": {
      "raw": -12.814566684377725,
@@ -211,7 +424,12 @@
      "renorm_distinct": -20.432270293828715,
      "raw_distinct_seen": -21.720293678044097,
      "raw_distinct_novel": -36.289245752328945,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.479794117289109,
+     "novel_penalty_fixed_size": -3.4067198926701256,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.5025964611681141,
+     "vs_sym0_novel": -6.278288271988014
     },
     "ecocat2": {
      "raw": -23.353795352109394,
@@ -222,7 +440,12 @@
      "renorm_distinct": -23.161625051816777,
      "raw_distinct_seen": -15.072320482712673,
      "raw_distinct_novel": -36.30554849206354,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5044942065409335,
+     "novel_penalty_fixed_size": -0.32645462544882703,
+     "raw_novel_nonredundant": -36.03283087736834,
+     "vs_sym0_seen": 0.7197026822076711,
+     "vs_sym0_novel": -5.6009899575204
     },
     "all": {
      "raw": -15.042381792198329,
@@ -233,7 +456,44 @@
      "renorm_distinct": -21.464452765679752,
      "raw_distinct_seen": -18.1762130013662,
      "raw_distinct_novel": -33.651316324418616,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.8431306686120577,
+     "novel_penalty_fixed_size": -5.1864520695772605,
+     "raw_novel_nonredundant": -31.88280252046926,
+     "vs_sym0_seen": 0.5818343810147957,
+     "vs_sym0_novel": -4.183235403272369,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.597264117324132,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -11.200357075679344,
+       "novel": -19.85985795286173
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -16.821742661118208,
+       "novel": -19.15036032772193
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -23.814772686895953,
+       "novel": -30.028577760265453
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -38.163445717272076,
+       "novel": -65.29692916132696
+      }
+     }
     }
    },
    "term_root": {
@@ -247,7 +507,12 @@
      "renorm_distinct": -15.432669049054661,
      "raw_distinct_seen": -15.006356886255775,
      "raw_distinct_novel": -26.08502246829181,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5444152085894836,
+     "novel_penalty_fixed_size": -4.572012416093926,
+     "raw_novel_nonredundant": -21.772232237331234,
+     "vs_sym0_seen": 1.1966427727903295,
+     "vs_sym0_novel": -0.38164804194529073
     },
     "ratelaws": {
      "raw": -12.105129398329483,
@@ -258,7 +523,12 @@
      "renorm_distinct": -19.34243371718712,
      "raw_distinct_seen": -20.69056274228025,
      "raw_distinct_novel": -34.370612526251286,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.4023481281100758,
+     "novel_penalty_fixed_size": -3.247964051245867,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 1.2013956597674187,
+     "vs_sym0_novel": -4.359655045910355
     },
     "ecocat2": {
      "raw": -22.78136940828749,
@@ -269,7 +539,12 @@
      "renorm_distinct": -22.44654261127977,
      "raw_distinct_seen": -14.756901341043836,
      "raw_distinct_novel": -35.19612926120802,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.506467724117424,
+     "novel_penalty_fixed_size": 0.2802638299831164,
+     "raw_novel_nonredundant": -35.45847165434388,
+     "vs_sym0_seen": 1.0610958100724628,
+     "vs_sym0_novel": -4.672113383364675
     },
     "all": {
      "raw": -14.431416131679647,
@@ -280,7 +555,44 @@
      "renorm_distinct": -20.765683281862376,
      "raw_distinct_seen": -17.57245027434949,
      "raw_distinct_novel": -32.85258908845452,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.7925552762808121,
+     "novel_penalty_fixed_size": -5.565233561744838,
+     "raw_novel_nonredundant": -31.598250280314677,
+     "vs_sym0_seen": 1.185036252367565,
+     "vs_sym0_novel": -3.4989616565909367,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.430267368326106,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -10.728264473715774,
+       "novel": -19.913733347808083
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -15.699880646051122,
+       "novel": -19.068659771735895
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -22.79159035990393,
+       "novel": -28.644936806748344
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -36.75395742000991,
+       "novel": -63.99971893189356
+      }
+     }
     }
    },
    "parent_backoff20": {
@@ -294,7 +606,12 @@
      "renorm_distinct": -17.270216159538524,
      "raw_distinct_seen": -16.928655237212716,
      "raw_distinct_novel": -27.667747853447047,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.7895887760193028,
+     "novel_penalty_fixed_size": -3.1064614250565157,
+     "raw_novel_nonredundant": -22.821025310975674,
+     "vs_sym0_seen": -0.5520677593769941,
+     "vs_sym0_novel": -1.9643734271005258
     },
     "ratelaws": {
      "raw": -14.377857366353043,
@@ -305,7 +622,12 @@
      "renorm_distinct": -22.186194441281053,
      "raw_distinct_seen": -23.571309226530424,
      "raw_distinct_novel": -36.62673651235288,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5801625768851377,
+     "novel_penalty_fixed_size": -0.7949996100193037,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -1.0714783843434317,
+     "vs_sym0_novel": -6.615779032011947
     },
     "ecocat2": {
      "raw": -24.367157507188217,
@@ -316,7 +638,12 @@
      "renorm_distinct": -24.18646142240275,
      "raw_distinct_seen": -16.17677319888775,
      "raw_distinct_novel": -37.34240638282799,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5043428777836865,
+     "novel_penalty_fixed_size": -0.0773789775345172,
+     "raw_novel_nonredundant": -36.63728777011644,
+     "vs_sym0_seen": -0.39219060096006575,
+     "vs_sym0_novel": -6.46233265783348
     },
     "all": {
      "raw": -16.48111765706179,
@@ -327,7 +654,44 @@
      "renorm_distinct": -22.830455200724895,
      "raw_distinct_seen": -19.683159471602455,
      "raw_distinct_novel": -34.874056350402505,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.914612592741748,
+     "novel_penalty_fixed_size": -4.1364182511591165,
+     "raw_novel_nonredundant": -32.74039323035879,
+     "vs_sym0_seen": -0.8952157360756522,
+     "vs_sym0_novel": -5.260196309607979,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -7.314572449197169,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -12.544482573515854,
+       "novel": -20.364596356146148
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -19.1527885445426,
+       "novel": -20.21814366818791
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -25.831881254405165,
+       "novel": -30.82038036910417
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -40.73717819952853,
+       "novel": -66.93674089564325
+      }
+     }
     }
    },
    "position_backoff20": {
@@ -341,7 +705,12 @@
      "renorm_distinct": -16.19031359368671,
      "raw_distinct_seen": -15.786985120674542,
      "raw_distinct_novel": -26.504933116822297,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5918218707785132,
+     "novel_penalty_fixed_size": -4.047389472103699,
+     "raw_novel_nonredundant": -22.256734767157013,
+     "vs_sym0_seen": 0.5033927081227744,
+     "vs_sym0_novel": -0.8015586904757778
     },
     "ratelaws": {
      "raw": -13.11933997500141,
@@ -352,7 +721,12 @@
      "renorm_distinct": -20.9520363047993,
      "raw_distinct_seen": -22.243658529951364,
      "raw_distinct_novel": -36.15146446297651,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5438230069186818,
+     "novel_penalty_fixed_size": -2.0830197523148706,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.1939297284918573,
+     "vs_sym0_novel": -6.140506982635582
     },
     "ecocat2": {
      "raw": -23.530080781421372,
@@ -363,7 +737,12 @@
      "renorm_distinct": -23.43988950660729,
      "raw_distinct_seen": -15.265035495368975,
      "raw_distinct_novel": -36.644502510507834,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.460004548157222,
+     "novel_penalty_fixed_size": -0.7356270456735122,
+     "raw_novel_nonredundant": -35.97254651439404,
+     "vs_sym0_seen": 0.5338025789752325,
+     "vs_sym0_novel": -5.762441318497963
     },
     "all": {
      "raw": -15.330043214316058,
@@ -374,7 +753,44 @@
      "renorm_distinct": -21.859814807306133,
      "raw_distinct_seen": -18.55502006015108,
      "raw_distinct_novel": -34.02652473849323,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.8606219396402184,
+     "novel_penalty_fixed_size": -5.002789448137644,
+     "raw_novel_nonredundant": -32.103984226711816,
+     "vs_sym0_seen": 0.2918148200818172,
+     "vs_sym0_novel": -4.448630553115314,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.613789926217092,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -11.23586292508676,
+       "novel": -20.2730808939634
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -17.66944457171037,
+       "novel": -19.853410675376587
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -24.17151510637612,
+       "novel": -30.157026433078332
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -39.13371799563029,
+       "novel": -65.07804582871678
+      }
+     }
     }
    },
    "term_backoff20": {
@@ -388,7 +804,12 @@
      "renorm_distinct": -15.786691025467663,
      "raw_distinct_seen": -15.457381808730569,
      "raw_distinct_novel": -25.89432259066145,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5999721990486353,
+     "novel_penalty_fixed_size": -3.6629101764657035,
+     "raw_novel_nonredundant": -21.320234324006083,
+     "vs_sym0_seen": 0.772725529863155,
+     "vs_sym0_novel": -0.19094816431492503
     },
     "ratelaws": {
      "raw": -12.814648241450023,
@@ -399,7 +820,12 @@
      "renorm_distinct": -20.432289102435647,
      "raw_distinct_seen": -21.72040608980837,
      "raw_distinct_novel": -36.28922661037527,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.4797985300960637,
+     "novel_penalty_fixed_size": -3.4065578483914654,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.5025140181806351,
+     "vs_sym0_novel": -6.278269130034342
     },
     "ecocat2": {
      "raw": -23.371454799187912,
@@ -410,7 +836,12 @@
      "renorm_distinct": -23.18359207504574,
      "raw_distinct_seen": -15.08360285291502,
      "raw_distinct_novel": -36.340062326752715,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5035363748284043,
+     "novel_penalty_fixed_size": -0.3608827932506867,
+     "raw_novel_nonredundant": -36.05888993909237,
+     "vs_sym0_seen": 0.7119111126091746,
+     "vs_sym0_novel": -5.633874129853814
     },
     "all": {
      "raw": -15.047656166408537,
@@ -421,7 +852,44 @@
      "renorm_distinct": -21.475554232951687,
      "raw_distinct_seen": -18.180844332601875,
      "raw_distinct_novel": -33.67606344193182,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.8427958194121083,
+     "novel_penalty_fixed_size": -5.208449511645706,
+     "raw_novel_nonredundant": -31.90183322714495,
+     "vs_sym0_seen": 0.5783750125200711,
+     "vs_sym0_novel": -4.205647619911452,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.597261359368375,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -11.209876326844396,
+       "novel": -19.891515256291942
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -16.821944967759972,
+       "novel": -19.152113330649485
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -23.81491579703904,
+       "novel": -30.101432462047683
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -38.16369266919187,
+       "novel": -65.30021694565944
+      }
+     }
     }
    },
    "term_root_backoff20": {
@@ -435,7 +903,12 @@
      "renorm_distinct": -15.438798782558244,
      "raw_distinct_seen": -15.01400650699979,
      "raw_distinct_novel": -26.085575900013854,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.543402839444326,
+     "novel_penalty_fixed_size": -4.564892154281765,
+     "raw_novel_nonredundant": -21.772746726710455,
+     "vs_sym0_seen": 1.183602920186102,
+     "vs_sym0_novel": -0.38220147366733376
     },
     "ratelaws": {
      "raw": -12.105220277917073,
@@ -446,7 +919,12 @@
      "renorm_distinct": -19.3424507321944,
      "raw_distinct_seen": -20.690685545453018,
      "raw_distinct_novel": -34.37057602881089,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.402352738182847,
+     "novel_penalty_fixed_size": -3.2477723915460874,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 1.2013036595608118,
+     "vs_sym0_novel": -4.359618548469957
     },
     "ecocat2": {
      "raw": -22.863217749199052,
@@ -457,7 +935,12 @@
      "renorm_distinct": -22.551572611786703,
      "raw_distinct_seen": -14.76821694506577,
      "raw_distinct_novel": -35.40973355799717,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5148617199504777,
+     "novel_penalty_fixed_size": 0.17381617085207327,
+     "raw_novel_nonredundant": -35.606314254157574,
+     "vs_sym0_seen": 1.0532823990398776,
+     "vs_sym0_novel": -4.8681870446609405
     },
     "all": {
      "raw": -14.447208652514592,
@@ -468,7 +951,44 @@
      "renorm_distinct": -20.818306341269874,
      "raw_distinct_seen": -17.577101967851984,
      "raw_distinct_novel": -33.004661629002875,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.7956333031050036,
+     "novel_penalty_fixed_size": -5.665893607063581,
+     "raw_novel_nonredundant": -31.704538797698117,
+     "vs_sym0_seen": 1.1815634985667127,
+     "vs_sym0_novel": -3.631081208459336,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.430267451008036,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -10.737804122022165,
+       "novel": -19.944347920982377
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -15.700096822687204,
+       "novel": -19.070406213491275
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -22.791717110029758,
+       "novel": -28.927081992621336
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -36.754246761479884,
+       "novel": -64.2304788641698
+      }
+     }
     }
    },
    "fnprior_kn": {
@@ -482,7 +1002,12 @@
      "renorm_distinct": -11.357940336084994,
      "raw_distinct_seen": -8.2858722673021,
      "raw_distinct_novel": -18.670478092651216,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.9637822426501923,
+     "novel_penalty_fixed_size": -6.396301524623532,
+     "raw_novel_nonredundant": -15.20178098146579,
+     "vs_sym0_seen": 7.357775922621616,
+     "vs_sym0_novel": 7.032896333695308
     },
     "ratelaws": {
      "raw": -5.988850136612201,
@@ -493,7 +1018,12 @@
      "renorm_distinct": -13.11649594218492,
      "raw_distinct_seen": -11.928648433738207,
      "raw_distinct_novel": -17.902367180481132,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.876925915470459,
+     "novel_penalty_fixed_size": -0.003671513234418685,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.226601906082477,
+     "vs_sym0_novel": 12.108590299859799
     },
     "ecocat2": {
      "raw": -14.423691897863721,
@@ -504,7 +1034,12 @@
      "renorm_distinct": -16.672720580424055,
      "raw_distinct_seen": -8.324093008225473,
      "raw_distinct_novel": -24.18003569964734,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5567768450164303,
+     "novel_penalty_fixed_size": -2.8726411375639618,
+     "raw_novel_nonredundant": -24.015915709512594,
+     "vs_sym0_seen": 7.018593275707338,
+     "vs_sym0_novel": 7.388699053304817
     },
     "all": {
      "raw": -7.906359468509789,
@@ -515,7 +1050,44 @@
      "renorm_distinct": -15.255780350685898,
      "raw_distinct_seen": -10.088621444413274,
      "raw_distinct_novel": -22.882791585595882,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.113302160320102,
+     "novel_penalty_fixed_size": -6.721463936745943,
+     "raw_novel_nonredundant": -21.52987770929426,
+     "vs_sym0_seen": 7.229372251393067,
+     "vs_sym0_novel": 7.565207431480431,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.128280350510335,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -5.213163341454228,
+       "novel": -12.257406528996585
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -7.8081834251959545,
+       "novel": -13.664023245301156
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -12.599757833264457,
+       "novel": -20.035746839225837
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -21.805974330977655,
+       "novel": -42.67638955734227
+      }
+     }
     }
    },
    "fnprior_kn_tuned": {
@@ -529,7 +1101,12 @@
      "renorm_distinct": -11.390276185929112,
      "raw_distinct_seen": -8.285846491315748,
      "raw_distinct_novel": -18.83222863968405,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.9609131327868418,
+     "novel_penalty_fixed_size": -6.573268196799164,
+     "raw_novel_nonredundant": -15.414458334911886,
+     "vs_sym0_seen": 7.3577840576851585,
+     "vs_sym0_novel": 6.871145786662473
     },
     "ratelaws": {
      "raw": -5.988870573563838,
@@ -540,7 +1117,12 @@
      "renorm_distinct": -13.116561117362817,
      "raw_distinct_seen": -11.92870638067283,
      "raw_distinct_novel": -17.902452004931682,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.8769337959504598,
+     "novel_penalty_fixed_size": -0.0036284976832607484,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.226582035589775,
+     "vs_sym0_novel": 12.10850547540925
     },
     "ecocat2": {
      "raw": -14.580156456800015,
@@ -551,7 +1133,12 @@
      "renorm_distinct": -16.854225365901865,
      "raw_distinct_seen": -8.321415194685052,
      "raw_distinct_novel": -24.57448789884507,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5927056955890364,
+     "novel_penalty_fixed_size": -2.9249905078604574,
+     "raw_novel_nonredundant": -24.334738261867944,
+     "vs_sym0_seen": 7.020427856650017,
+     "vs_sym0_novel": 6.988001535698112
     },
     "all": {
      "raw": -7.9361865453957074,
@@ -562,7 +1149,44 @@
      "renorm_distinct": -15.362946050550649,
      "raw_distinct_seen": -10.087559824873113,
      "raw_distinct_novel": -23.213607571135803,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.1252053891969604,
+     "novel_penalty_fixed_size": -6.926677552578358,
+     "raw_novel_nonredundant": -21.818761872213674,
+     "vs_sym0_seen": 7.229561808417493,
+     "vs_sym0_novel": 7.251954061325697,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.1279950972234114,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -5.212858434151906,
+       "novel": -12.253456635760955
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -7.80819324623621,
+       "novel": -13.79998451444698
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -12.599780556876897,
+       "novel": -20.310743521569847
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -21.806078138193563,
+       "novel": -43.40895083773583
+      }
+     }
     }
    },
    "hpy": {
@@ -576,7 +1200,12 @@
      "renorm_distinct": -11.35616659883375,
      "raw_distinct_seen": -8.286389079917623,
      "raw_distinct_novel": -18.6600663095063,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.9632861842356807,
+     "novel_penalty_fixed_size": -6.388166190064195,
+     "raw_novel_nonredundant": -15.192642940640837,
+     "vs_sym0_seen": 7.357422966337412,
+     "vs_sym0_novel": 7.043308116840223
     },
     "ratelaws": {
      "raw": -5.989040351078148,
@@ -587,7 +1216,12 @@
      "renorm_distinct": -13.116837004717683,
      "raw_distinct_seen": -11.929095080098756,
      "raw_distinct_novel": -17.902790480335316,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.8769663105481859,
+     "novel_penalty_fixed_size": -0.003353201124183397,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.2264137422211165,
+     "vs_sym0_novel": 12.108167000005615
     },
     "ecocat2": {
      "raw": -14.263002982017147,
@@ -598,7 +1232,12 @@
      "renorm_distinct": -16.491803825842535,
      "raw_distinct_seen": -8.320086670765164,
      "raw_distinct_novel": -23.79479231649797,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5121327714411927,
+     "novel_penalty_fixed_size": -2.9060578294282746,
+     "raw_novel_nonredundant": -23.74857907350155,
+     "vs_sym0_seen": 7.021306550333379,
+     "vs_sym0_novel": 7.793121815605934
     },
     "all": {
      "raw": -7.879936336106836,
@@ -609,7 +1248,44 @@
      "renorm_distinct": -15.164489128069508,
      "raw_distinct_seen": -10.087433341504475,
      "raw_distinct_novel": -22.60560872977551,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.0977546762889216,
+     "novel_penalty_fixed_size": -6.587940729471234,
+     "raw_novel_nonredundant": -21.335366318079302,
+     "vs_sym0_seen": 7.229470966565773,
+     "vs_sym0_novel": 7.840193811192071,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.1283894260090226,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -5.21240507433632,
+       "novel": -12.237578959248529
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -7.808451922376598,
+       "novel": -13.651433874863903
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -12.59997870484487,
+       "novel": -19.74159969271162
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -21.807188989088154,
+       "novel": -41.964975843463385
+      }
+     }
     }
    },
    "sym0": {
@@ -623,7 +1299,12 @@
      "renorm_distinct": -16.77114217006453,
      "raw_distinct_seen": -16.606036918758065,
      "raw_distinct_novel": -25.70337442634652,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6629885375057178,
+     "novel_penalty_fixed_size": -2.365212378739814,
+     "raw_novel_nonredundant": -22.275351639889983,
+     "vs_sym0_seen": 0.0,
+     "vs_sym0_novel": 0.0
     },
     "ratelaws": {
      "raw": -13.258027522872968,
@@ -634,7 +1315,12 @@
      "renorm_distinct": -22.330319246807132,
      "raw_distinct_seen": -23.78380563090761,
      "raw_distinct_novel": -30.01095748034093,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5922674013554374,
+     "novel_penalty_fixed_size": 4.915147782297965,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.0,
+     "vs_sym0_novel": 0.0
     },
     "ecocat2": {
      "raw": -21.587832389480177,
@@ -645,7 +1331,12 @@
      "renorm_distinct": -21.38394671794019,
      "raw_distinct_seen": -15.660487355549417,
      "raw_distinct_novel": -31.568915207722462,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.7124115114434268,
+     "novel_penalty_fixed_size": -1.725844168996518,
+     "raw_novel_nonredundant": -31.57850536152844,
+     "vs_sym0_seen": 0.0,
+     "vs_sym0_novel": 0.0
     },
     "all": {
      "raw": -15.167892731623931,
@@ -656,7 +1347,44 @@
      "renorm_distinct": -21.340703777391617,
      "raw_distinct_seen": -19.470878643996933,
      "raw_distinct_novel": -30.278386620388403,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6350081437976498,
+     "novel_penalty_fixed_size": -2.313722403205465,
+     "raw_novel_nonredundant": -28.95453892722015,
+     "vs_sym0_seen": 0.0,
+     "vs_sym0_novel": 0.0,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.525693151442605,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -11.96926273876251,
+       "novel": -17.674516984997783
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -17.544936064115678,
+       "novel": -21.493655484583627
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -25.98470765568352,
+       "novel": -27.078146299520032
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -39.83788548864699,
+       "novel": -51.61416623747115
+      }
+     }
     }
    },
    "hpy2": {
@@ -670,7 +1398,12 @@
      "renorm_distinct": -11.349615227928572,
      "raw_distinct_seen": -8.286404569105285,
      "raw_distinct_novel": -18.6273294096465,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.9632687640780853,
+     "novel_penalty_fixed_size": -6.355481904316938,
+     "raw_novel_nonredundant": -15.149936791976238,
+     "vs_sym0_seen": 7.357383243245558,
+     "vs_sym0_novel": 7.076045016700022
     },
     "ratelaws": {
      "raw": -5.988942534102312,
@@ -681,7 +1414,12 @@
      "renorm_distinct": -13.116551367932928,
      "raw_distinct_seen": -11.92883878411149,
      "raw_distinct_novel": -17.902132470409743,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.876916708119507,
+     "novel_penalty_fixed_size": -0.0034676767021245124,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.2265066308132315,
+     "vs_sym0_novel": 12.108825009931188
     },
     "ecocat2": {
      "raw": -14.279988207795625,
@@ -692,7 +1430,12 @@
      "renorm_distinct": -16.515208741783805,
      "raw_distinct_seen": -8.324265084776624,
      "raw_distinct_novel": -23.840463199594048,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5158706473328316,
+     "novel_penalty_fixed_size": -2.9053848224396086,
+     "raw_novel_nonredundant": -23.75332232465777,
+     "vs_sym0_seen": 7.018383627632577,
+     "vs_sym0_novel": 7.754440465079044
     },
     "all": {
      "raw": -7.881821295357991,
@@ -703,7 +1446,44 @@
      "renorm_distinct": -15.172778185144777,
      "raw_distinct_seen": -10.089002237628511,
      "raw_distinct_novel": -22.62783635848558,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.0991280707965734,
+     "novel_penalty_fixed_size": -6.592372296065422,
+     "raw_novel_nonredundant": -21.326726405183493,
+     "vs_sym0_seen": 7.229206249187464,
+     "vs_sym0_novel": 7.823010029641547,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.128398413026236,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -5.2133317463566025,
+       "novel": -12.24089451804423
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -7.808444518572892,
+       "novel": -13.629071727673804
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -12.600135222069833,
+       "novel": -19.682900731331102
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -21.80584809106709,
+       "novel": -42.09094662272227
+      }
+     }
     }
    },
    "hpy3_depth": {
@@ -717,7 +1497,12 @@
      "renorm_distinct": -10.267727651020774,
      "raw_distinct_seen": -6.6884783315118,
      "raw_distinct_novel": -18.333309346774108,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.6875893613598661,
+     "novel_penalty_fixed_size": -9.013837754222504,
+     "raw_novel_nonredundant": -16.059952621472405,
+     "vs_sym0_seen": 8.848494226734386,
+     "vs_sym0_novel": 7.370065079572418
     },
     "ratelaws": {
      "raw": -5.063957502833789,
@@ -728,7 +1513,12 @@
      "renorm_distinct": -11.442282331276356,
      "raw_distinct_seen": -9.949799853554003,
      "raw_distinct_novel": -17.457980052794998,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.7387617368471217,
+     "novel_penalty_fixed_size": -2.3813751396976697,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 8.155721861028855,
+     "vs_sym0_novel": 12.552977427545933
     },
     "ecocat2": {
      "raw": -14.382344787236523,
@@ -739,7 +1529,12 @@
      "renorm_distinct": -16.835285281067513,
      "raw_distinct_seen": -6.7631755698801115,
      "raw_distinct_novel": -25.785239164768583,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.7897278481971683,
+     "novel_penalty_fixed_size": -4.341048765738418,
+     "raw_novel_nonredundant": -26.56917813367908,
+     "vs_sym0_seen": 8.530285964121074,
+     "vs_sym0_novel": 5.161512986775643
     },
     "all": {
      "raw": -7.041401312887876,
@@ -750,7 +1545,44 @@
      "renorm_distinct": -14.621424895342347,
      "raw_distinct_seen": -8.331981526310562,
      "raw_distinct_novel": -23.785406300874723,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.0881350724247913,
+     "novel_penalty_fixed_size": -9.435942056755712,
+     "raw_novel_nonredundant": -23.605037604595147,
+     "vs_sym0_seen": 8.332366685213602,
+     "vs_sym0_novel": 6.182553806419214,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.047341196478831,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -3.9377665179491346,
+       "novel": -14.011917260814464
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -6.436399905551777,
+       "novel": -14.240176653918974
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -10.158737840795622,
+       "novel": -19.49344358739002
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -17.791384950958932,
+       "novel": -46.16159754004316
+      }
+     }
     }
    },
    "hpy2_src": {
@@ -764,7 +1596,12 @@
      "renorm_distinct": -13.052018993394512,
      "raw_distinct_seen": -9.597112477452248,
      "raw_distinct_novel": -20.420636757550593,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.1386756276873442,
+     "novel_penalty_fixed_size": -5.992468613345527,
+     "raw_novel_nonredundant": -16.47675034749775,
+     "vs_sym0_seen": 6.130823390346517,
+     "vs_sym0_novel": 5.2827376687959315
     },
     "ratelaws": {
      "raw": -6.129581215145037,
@@ -775,7 +1612,12 @@
      "renorm_distinct": -13.124209786204363,
      "raw_distinct_seen": -11.635400133240905,
      "raw_distinct_novel": -17.792247917507627,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.8377790484582334,
+     "novel_penalty_fixed_size": -0.2869607953544448,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.083663933049586,
+     "vs_sym0_novel": 12.218709562833304
     },
     "ecocat2": {
      "raw": -15.117372313982075,
@@ -786,7 +1628,12 @@
      "renorm_distinct": -17.73072595114292,
      "raw_distinct_seen": -9.508666901616909,
      "raw_distinct_novel": -24.45548439794928,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5120413346653716,
+     "novel_penalty_fixed_size": -2.442966880890507,
+     "raw_novel_nonredundant": -24.375064329521628,
+     "vs_sym0_seen": 5.984472330814596,
+     "vs_sym0_novel": 7.2202697387240855
     },
     "all": {
      "raw": -8.371255808209295,
@@ -797,7 +1644,44 @@
      "renorm_distinct": -16.39321598024158,
      "raw_distinct_seen": -10.994870631552292,
      "raw_distinct_novel": -23.593177943770154,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.0947912403129711,
+     "novel_penalty_fixed_size": -7.015086881476017,
+     "raw_novel_nonredundant": -22.147334744848227,
+     "vs_sym0_seen": 6.776476481684649,
+     "vs_sym0_novel": 6.986998017442038,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.3203241751673174,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -5.757726477993559,
+       "novel": -12.25282983100308
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -8.60405661085928,
+       "novel": -14.635719233912377
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -13.77981574531799,
+       "novel": -20.840417079379964
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -21.186019931577672,
+       "novel": -42.992247914932385
+      }
+     }
     }
    },
    "form_ad": {
@@ -811,7 +1695,12 @@
      "renorm_distinct": -10.295104568863218,
      "raw_distinct_seen": -5.544043297271771,
      "raw_distinct_novel": -21.914483929089027,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.28665610408982517,
+     "novel_penalty_fixed_size": -15.495360173063558,
+     "raw_novel_nonredundant": -19.651501103467485,
+     "vs_sym0_seen": 9.623657148980923,
+     "vs_sym0_novel": 3.7888904972574915
     },
     "ratelaws": {
      "raw": -4.032817961469416,
@@ -822,7 +1711,12 @@
      "renorm_distinct": -8.421858637753402,
      "raw_distinct_seen": -6.44035195993385,
      "raw_distinct_novel": -22.080891470271965,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.32026884753161633,
+     "novel_penalty_fixed_size": -13.818889241526012,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 9.236603786195351,
+     "vs_sym0_novel": 7.930066010068966
     },
     "ecocat2": {
      "raw": -14.381056837590652,
@@ -833,7 +1727,12 @@
      "renorm_distinct": -17.449590605662106,
      "raw_distinct_seen": -5.969666121261585,
      "raw_distinct_novel": -27.538529946352348,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.2163602792056916,
+     "novel_penalty_fixed_size": -11.373955127865948,
+     "raw_novel_nonredundant": -27.252485089703157,
+     "vs_sym0_seen": 9.09965319716874,
+     "vs_sym0_novel": 4.286335756315893
     },
     "all": {
      "raw": -6.3432322039908495,
@@ -844,7 +1743,44 @@
      "renorm_distinct": -14.302499001565582,
      "raw_distinct_seen": -6.3970966204034285,
      "raw_distinct_novel": -26.11094627726817,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.6236695667013588,
+     "novel_penalty_fixed_size": -16.44384571961864,
+     "raw_novel_nonredundant": -25.10861781153412,
+     "vs_sym0_seen": 9.297218431857223,
+     "vs_sym0_novel": 4.362623393516693,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -2.9862504943996386,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -3.801199020854087,
+       "novel": -17.33133050541885
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -4.984289500247924,
+       "novel": -18.62122621990683
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -8.63505857052683,
+       "novel": -24.564854599537885
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -8.485771556368366,
+       "novel": -41.79481744098125
+      }
+     }
     }
    },
    "form_ad3_depth": {
@@ -858,7 +1794,12 @@
      "renorm_distinct": -10.064231214878557,
      "raw_distinct_seen": -5.542996142814411,
      "raw_distinct_novel": -20.764439828210566,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.2618175765121059,
+     "novel_penalty_fixed_size": -14.477585662735867,
+     "raw_novel_nonredundant": -19.529127758860977,
+     "vs_sym0_seen": 9.624267758531937,
+     "vs_sym0_novel": 4.938934598135954
     },
     "ratelaws": {
      "raw": -4.0267844140820355,
@@ -869,7 +1810,12 @@
      "renorm_distinct": -8.39810326379582,
      "raw_distinct_seen": -6.438677520807423,
      "raw_distinct_novel": -21.39553916891534,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.3201037507517846,
+     "novel_penalty_fixed_size": -13.135856047361646,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 9.23666092225749,
+     "vs_sym0_novel": 8.61541831142559
     },
     "ecocat2": {
      "raw": -14.050092795058596,
@@ -880,7 +1826,12 @@
      "renorm_distinct": -16.968915368691405,
      "raw_distinct_seen": -5.9673233364414155,
      "raw_distinct_novel": -26.504840621169222,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.2846266279823093,
+     "novel_penalty_fixed_size": -9.871086246734592,
+     "raw_novel_nonredundant": -26.44369655887864,
+     "vs_sym0_seen": 9.101260649079869,
+     "vs_sym0_novel": 5.125449967234514
     },
     "all": {
      "raw": -6.255404255527114,
@@ -891,7 +1842,44 @@
      "renorm_distinct": -13.939922652857552,
      "raw_distinct_seen": -6.3950178383789655,
      "raw_distinct_novel": -25.003423842159556,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.6443551422198428,
+     "novel_penalty_fixed_size": -15.342144138663778,
+     "raw_novel_nonredundant": -24.493433564001858,
+     "vs_sym0_seen": 9.297554285863916,
+     "vs_sym0_novel": 5.276578618488234,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -2.9866144356676902,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -3.800900061088565,
+       "novel": -16.825389767426103
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -4.983756420246925,
+       "novel": -17.876480791682315
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -8.631027062346105,
+       "novel": -23.04206462741878
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -8.483957847178026,
+       "novel": -40.89076123541736
+      }
+     }
     }
    },
    "tree_ad3": {
@@ -905,7 +1893,12 @@
      "renorm_distinct": -10.021311353392363,
      "raw_distinct_seen": -5.542821182131223,
      "raw_distinct_novel": -20.550445386365336,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.23764385549929173,
+     "novel_penalty_fixed_size": -14.391794487588802,
+     "raw_novel_nonredundant": -19.336357257257365,
+     "vs_sym0_seen": 9.624335914742538,
+     "vs_sym0_novel": 5.152929039981188
     },
     "ratelaws": {
      "raw": -4.026325971265289,
@@ -916,7 +1909,12 @@
      "renorm_distinct": -8.397036758832588,
      "raw_distinct_seen": -6.439880313100924,
      "raw_distinct_novel": -21.325804887938585,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.3202310314094972,
+     "novel_penalty_fixed_size": -13.064226887362013,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 9.236509900222389,
+     "vs_sym0_novel": 8.685152592402346
     },
     "ecocat2": {
      "raw": -14.400159071130199,
@@ -927,7 +1925,12 @@
      "renorm_distinct": -17.28719830319646,
      "raw_distinct_seen": -5.968284407689824,
      "raw_distinct_novel": -27.189986001170134,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.4179599619042362,
+     "novel_penalty_fixed_size": -9.460228863032077,
+     "raw_novel_nonredundant": -27.04499083400376,
+     "vs_sym0_seen": 9.100676871755265,
+     "vs_sym0_novel": 4.236182121667546
     },
     "all": {
      "raw": -6.3069617676069685,
@@ -938,7 +1941,44 @@
      "renorm_distinct": -14.086076406769886,
      "raw_distinct_seen": -6.3958851439897435,
      "raw_distinct_novel": -25.449778003244937,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.6880841882754201,
+     "novel_penalty_fixed_size": -15.481293598932634,
+     "raw_novel_nonredundant": -24.870760850818876,
+     "vs_sym0_seen": 9.297398523148477,
+     "vs_sym0_novel": 4.739669972986688,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -2.9866365687300425,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -3.8007082160326355,
+       "novel": -16.508263794742128
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -4.984037604522849,
+       "novel": -18.00198572982341
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -8.630930018805586,
+       "novel": -23.4100150519417
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -8.486792386192278,
+       "novel": -42.530250882223044
+      }
+     }
     }
    },
    "uniform symbols": {
@@ -952,7 +1992,12 @@
      "renorm_distinct": -25.2087513241646,
      "raw_distinct_seen": -24.91665090105493,
      "raw_distinct_novel": -36.09250167285162,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5649493574615385,
+     "novel_penalty_fixed_size": 1.020483363750745e-15,
+     "raw_novel_nonredundant": -30.546215075223756,
+     "vs_sym0_seen": -7.973410398038624,
+     "vs_sym0_novel": -10.389127246505101
     },
     "ratelaws": {
      "raw": -21.593294590722707,
@@ -963,7 +2008,12 @@
      "renorm_distinct": -36.20020942325899,
      "raw_distinct_seen": -37.53375893085383,
      "raw_distinct_novel": -56.428885864153806,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5649493574615394,
+     "novel_penalty_fixed_size": -1.3833518951797744e-15,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -8.176182070935104,
+     "vs_sym0_novel": -26.417928383812875
     },
     "ecocat2": {
      "raw": -32.393293008840075,
@@ -974,7 +2024,12 @@
      "renorm_distinct": -32.553640467653324,
      "raw_distinct_seen": -24.471003329295204,
      "raw_distinct_novel": -46.08893376688698,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.564949357461535,
+     "novel_penalty_fixed_size": -7.125496924970584e-15,
+     "raw_novel_nonredundant": -45.06982442396701,
+     "vs_sym0_seen": -8.216456420005725,
+     "vs_sym0_novel": -14.799924241220628
     },
     "all": {
      "raw": -23.89701436353207,
@@ -985,7 +2040,44 @@
      "renorm_distinct": -32.66516000493425,
      "raw_distinct_seen": -29.924409170384592,
      "raw_distinct_novel": -44.28812557216919,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5649493574615403,
+     "novel_penalty_fixed_size": 1.4593727484484729e-15,
+     "raw_novel_nonredundant": -40.973421787141994,
+     "vs_sym0_seen": -8.140965643749261,
+     "vs_sym0_novel": -14.28267144317754,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -11.392372470803192,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -18.599547054963942,
+       "novel": -21.089583605794857
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -27.49962097999746,
+       "novel": -29.72323667176016
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -42.13845372972525,
+       "novel": -42.4382530052727
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -64.71564532672186,
+       "novel": -78.48745033832303
+      }
+     }
     }
    }
   },
@@ -994,25 +2086,33 @@
     "pairs": 110,
     "distinct": 70,
     "novel_pairs": 14,
-    "novel_distinct": 14
+    "novel_distinct": 14,
+    "redundant_novel_pairs": 3,
+    "redundant_novel_distinct": 3
    },
    "ratelaws": {
     "pairs": 344,
     "distinct": 31,
     "novel_pairs": 3,
-    "novel_distinct": 1
+    "novel_distinct": 1,
+    "redundant_novel_pairs": 3,
+    "redundant_novel_distinct": 1
    },
    "ecocat2": {
     "pairs": 89,
     "distinct": 69,
     "novel_pairs": 35,
-    "novel_distinct": 32
+    "novel_distinct": 32,
+    "redundant_novel_pairs": 7,
+    "redundant_novel_distinct": 7
    },
    "all": {
     "pairs": 543,
     "distinct": 138,
     "novel_pairs": 52,
-    "novel_distinct": 45
+    "novel_distinct": 45,
+    "redundant_novel_pairs": 13,
+    "redundant_novel_distinct": 11
    }
   },
   "train_sizes": {
@@ -1029,6 +2129,19 @@
    "allodb": 80,
    "jws": 3004
   },
+  "redundant_novel": [
+   "(c0**x1*c1 + c2)/(c0**x1*c3 + c4 + c1/c0**x1)",
+   "c0*(c1 + c2*x1)*(c3 + x1)/(c4 + x1)",
+   "c0*(c1*x1 + c2)**c3/x1",
+   "c0*exp((c1 + c2*(c3 + x1))*(c3 + x1)**2)",
+   "c0*exp(c1*x1)/(c0*exp(c1*x1) + c2) + c3",
+   "c0*exp(c3*c4/x1 + c4)/(c1 - exp(c2)*exp(c2*c3/x1))",
+   "c0*x1/sqrt(c1*x1**2 + c2) + c3",
+   "c2*exp(c3/(c8 + x1))/(c4*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))",
+   "c3*(c5*x1 + c6)/(c3*(c1*(c0*x1 + c7) + c2) + c4)",
+   "c5*exp(c4*(c2 + log(x1))**2) + c6**(x1**c7)*c8/(c6**(x1**c7)*c8 + c9) + exp(c1*(c0 + x1)**c3)",
+   "c5*exp(c4*(c2 + log(x1))**2) + c6**x1*c7/(c6**x1*c7 + c8) + exp(c1*(c0 + x1)**c3)"
+  ],
   "support": 6684,
   "n_train": 235100
  },
@@ -1045,7 +2158,12 @@
      "renorm_distinct": -20.841509008939187,
      "raw_distinct_seen": -19.684968474238115,
      "raw_distinct_novel": -31.323787419823407,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.1562706498800193,
+     "novel_penalty_fixed_size": -2.2241718891339963,
+     "raw_novel_nonredundant": -25.842280444217067,
+     "vs_sym0_seen": -3.007051253333813,
+     "vs_sym0_novel": -5.246660402478066
     },
     "ratelaws": {
      "raw": -16.412707254124523,
@@ -1056,7 +2174,12 @@
      "renorm_distinct": -27.179132620534332,
      "raw_distinct_seen": -27.724707805399042,
      "raw_distinct_novel": -47.11979796148861,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.9514641975853475,
+     "novel_penalty_fixed_size": -4.240464727901777,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -2.935729410593734,
+     "vs_sym0_novel": -18.341965274494044
     },
     "ecocat2": {
      "raw": -28.240782595233718,
@@ -1067,7 +2190,12 @@
      "renorm_distinct": -28.961424193846145,
      "raw_distinct_seen": -19.059676675468445,
      "raw_distinct_novel": -42.93576990430482,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -3.0041529310325936,
+     "novel_penalty_fixed_size": 1.7147873227882624,
+     "raw_novel_nonredundant": -41.768140114180476,
+     "vs_sym0_seen": -2.9513755963092088,
+     "vs_sym0_novel": -11.078867109001232
     },
     "all": {
      "raw": -18.95812769630513,
@@ -1078,7 +2206,44 @@
      "renorm_distinct": -27.441446509347234,
      "raw_distinct_seen": -23.067200110129914,
      "raw_distinct_novel": -40.07330704793871,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.3329468225210683,
+     "novel_penalty_fixed_size": -3.6255183732155754,
+     "raw_novel_nonredundant": -37.27623097649848,
+     "vs_sym0_seen": -2.951394972572722,
+     "vs_sym0_novel": -9.927682505254195,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -8.162660284320546,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -14.102198542696408,
+       "novel": -20.627025970131296
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -22.063981520138373,
+       "novel": -22.416905669708637
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -32.07507174926562,
+       "novel": -35.88882864749825
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -49.029821178584584,
+       "novel": -79.47927096719623
+      }
+     }
     }
    },
    "cf": {
@@ -1092,7 +2257,12 @@
      "renorm_distinct": -18.462761829947755,
      "raw_distinct_seen": -17.931538216842394,
      "raw_distinct_novel": -29.00659398191961,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.7581972363516383,
+     "novel_penalty_fixed_size": -3.7816045381338967,
+     "raw_novel_nonredundant": -25.202283004750758,
+     "vs_sym0_seen": -1.2424512065909687,
+     "vs_sym0_novel": -2.9294669645742744
     },
     "ratelaws": {
      "raw": -14.461621320833565,
@@ -1103,7 +2273,12 @@
      "renorm_distinct": -23.370786613848768,
      "raw_distinct_seen": -24.674206801964665,
      "raw_distinct_novel": -36.465594707584394,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6892898483257062,
+     "novel_penalty_fixed_size": 0.9472003704850899,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -1.0612104918536236,
+     "vs_sym0_novel": -7.68776202058983
     },
     "ecocat2": {
      "raw": -25.984518827700416,
@@ -1114,7 +2289,12 @@
      "renorm_distinct": -25.95339275955372,
      "raw_distinct_seen": -16.876192443080306,
      "raw_distinct_novel": -40.079572508407196,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.755367169982048,
+     "novel_penalty_fixed_size": 0.16353973986113488,
+     "raw_novel_nonredundant": -39.32634598850685,
+     "vs_sym0_seen": -1.0386458638528597,
+     "vs_sym0_novel": -8.292579401634907
     },
     "all": {
      "raw": -16.980552467980054,
@@ -1125,7 +2305,44 @@
      "renorm_distinct": -24.330695278422283,
      "raw_distinct_seen": -20.645830920632097,
      "raw_distinct_novel": -37.10969674024624,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.0574683468413357,
+     "novel_penalty_fixed_size": -4.873606726068243,
+     "raw_novel_nonredundant": -35.3426359161654,
+     "vs_sym0_seen": -1.094164908763489,
+     "vs_sym0_novel": -6.813771204289059,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -7.317239561819499,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -12.695827583471829,
+       "novel": -21.601257360298014
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -19.670990147452468,
+       "novel": -21.90738299763637
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -26.42404351635534,
+       "novel": -32.63738251771409
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -42.70170927579819,
+       "novel": -71.06169247994067
+      }
+     }
     }
    },
    "parent": {
@@ -1139,7 +2356,12 @@
      "renorm_distinct": -17.82716110682328,
      "raw_distinct_seen": -17.421689835297162,
      "raw_distinct_novel": -28.826410396188486,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.7759762028016879,
+     "novel_penalty_fixed_size": -4.036027459749503,
+     "raw_novel_nonredundant": -24.484481250967715,
+     "vs_sym0_seen": -0.7136055943408502,
+     "vs_sym0_novel": -2.749283378843148
     },
     "ratelaws": {
      "raw": -14.517658278319539,
@@ -1150,7 +2372,12 @@
      "renorm_distinct": -22.84490641677531,
      "raw_distinct_seen": -24.3265531559145,
      "raw_distinct_novel": -36.53516230281586,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6354371242932952,
+     "novel_penalty_fixed_size": 0.1957209978637314,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -1.11712841147087,
+     "vs_sym0_novel": -7.757329615821298
     },
     "ecocat2": {
      "raw": -25.808963225499692,
@@ -1161,7 +2388,12 @@
      "renorm_distinct": -25.58345222860188,
      "raw_distinct_seen": -16.308106827916653,
      "raw_distinct_novel": -40.35205866080038,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.9234538285933613,
+     "novel_penalty_fixed_size": 0.713007961526673,
+     "raw_novel_nonredundant": -39.51378443007117,
+     "vs_sym0_seen": -0.43491102750083077,
+     "vs_sym0_novel": -8.777643189267625
     },
     "all": {
      "raw": -16.889135370011477,
@@ -1172,7 +2404,44 @@
      "renorm_distinct": -23.886575680283162,
      "raw_distinct_seen": -20.1666691027828,
      "raw_distinct_novel": -37.32583265178383,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.0854399473137684,
+     "novel_penalty_fixed_size": -5.03222764685902,
+     "raw_novel_nonredundant": -35.27475020006763,
+     "vs_sym0_seen": -0.9632018754650369,
+     "vs_sym0_novel": -7.095758995685285,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -7.43569076809223,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -12.621048500199672,
+       "novel": -20.63033803099652
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -19.34646415023532,
+       "novel": -21.301797255893433
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -25.637429739587752,
+       "novel": -32.65468337427695
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -41.97658500627228,
+       "novel": -73.29544496685773
+      }
+     }
     }
    },
    "position": {
@@ -1186,7 +2455,12 @@
      "renorm_distinct": -16.734057372453062,
      "raw_distinct_seen": -16.266030373499294,
      "raw_distinct_novel": -27.604055295224196,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.582239663875331,
+     "novel_penalty_fixed_size": -4.921064989912236,
+     "raw_novel_nonredundant": -23.859883826432316,
+     "vs_sym0_seen": 0.3668680611080717,
+     "vs_sym0_novel": -1.5269282778788626
     },
     "ratelaws": {
      "raw": -13.2642059308632,
@@ -1197,7 +2471,12 @@
      "renorm_distinct": -21.559426900474776,
      "raw_distinct_seen": -22.940583241470236,
      "raw_distinct_novel": -35.91165421773848,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5927920624803305,
+     "novel_penalty_fixed_size": -1.0240401606363645,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.14186596761930043,
+     "vs_sym0_novel": -7.133821530743916
     },
     "ecocat2": {
      "raw": -24.879151107747052,
@@ -1208,7 +2487,12 @@
      "renorm_distinct": -24.736226984573392,
      "raw_distinct_seen": -15.35801284876455,
      "raw_distinct_novel": -39.46012711010215,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.8683068416105497,
+     "novel_penalty_fixed_size": 0.12660386234192894,
+     "raw_novel_nonredundant": -38.697881430619134,
+     "vs_sym0_seen": 0.5141356096543854,
+     "vs_sym0_novel": -7.877507187164659
     },
     "all": {
      "raw": -15.72011266588337,
@@ -1219,7 +2503,44 @@
      "renorm_distinct": -22.8545704869979,
      "raw_distinct_seen": -19.009999242321136,
      "raw_distinct_novel": -36.31872354786295,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.0244649620325452,
+     "novel_penalty_fixed_size": -5.805712806217413,
+     "raw_novel_nonredundant": -34.51280518328439,
+     "vs_sym0_seen": 0.2268003090547722,
+     "vs_sym0_novel": -6.124831000640365,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.7436743005413575,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -11.298284060488788,
+       "novel": -20.565001839438914
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -17.884958769728737,
+       "novel": -20.910392470250457
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -23.97192220524085,
+       "novel": -31.58349808462971
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -40.2605850930289,
+       "novel": -71.19789093510659
+      }
+     }
     }
    },
    "term": {
@@ -1233,7 +2554,12 @@
      "renorm_distinct": -16.813042295799,
      "raw_distinct_seen": -16.205106654297953,
      "raw_distinct_novel": -27.69882350949339,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6701483552909255,
+     "novel_penalty_fixed_size": -4.628661502006057,
+     "raw_novel_nonredundant": -22.9547229748256,
+     "vs_sym0_seen": 0.4456647500373852,
+     "vs_sym0_novel": -1.6216964921480534
     },
     "ratelaws": {
      "raw": -13.027203364256037,
@@ -1244,7 +2570,12 @@
      "renorm_distinct": -21.18816430638231,
      "raw_distinct_seen": -22.43396791386659,
      "raw_distinct_novel": -36.22909569753317,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5389392410421994,
+     "novel_penalty_fixed_size": -2.3211930454492347,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.38374634108630495,
+     "vs_sym0_novel": -7.451263010538604
     },
     "ecocat2": {
      "raw": -25.50652322485474,
@@ -1255,7 +2586,12 @@
      "renorm_distinct": -25.455383603815136,
      "raw_distinct_seen": -15.46575684588672,
      "raw_distinct_novel": -40.65169370948627,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -3.062696890516624,
+     "novel_penalty_fixed_size": 0.5603234240543103,
+     "raw_novel_nonredundant": -40.17122311773028,
+     "vs_sym0_seen": 0.4612805793678396,
+     "vs_sym0_novel": -9.391277095367826
     },
     "all": {
      "raw": -15.661308813898607,
@@ -1266,7 +2602,44 @@
      "renorm_distinct": -23.149834672846296,
      "raw_distinct_seen": -18.83749372360265,
      "raw_distinct_novel": -37.24714967186649,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.072600917746845,
+     "novel_penalty_fixed_size": -6.608331361690526,
+     "raw_novel_nonredundant": -35.31528717998793,
+     "vs_sym0_seen": 0.4043797751525098,
+     "vs_sym0_novel": -7.1875430434531244,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.7452959594732125,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -11.385296022566708,
+       "novel": -20.29141293670551
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -17.22457778150215,
+       "novel": -20.485956558986445
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -23.640184807144827,
+       "novel": -32.542055285496126
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -39.589141148561865,
+       "novel": -74.82419811062803
+      }
+     }
     }
    },
    "term_root": {
@@ -1280,7 +2653,12 @@
      "renorm_distinct": -16.653067793204492,
      "raw_distinct_seen": -15.922946712856454,
      "raw_distinct_novel": -28.003154317013866,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.627548807621549,
+     "novel_penalty_fixed_size": -5.367796907826028,
+     "raw_novel_nonredundant": -23.635160837868508,
+     "vs_sym0_seen": 0.6546663888155656,
+     "vs_sym0_novel": -1.926027299668537
     },
     "ratelaws": {
      "raw": -12.22609123933172,
@@ -1291,7 +2669,12 @@
      "renorm_distinct": -19.92410190496015,
      "raw_distinct_seen": -21.193553626186958,
      "raw_distinct_novel": -34.10408392314284,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.4459640401037828,
+     "novel_penalty_fixed_size": -2.259488234211602,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 1.1732112550182545,
+     "vs_sym0_novel": -5.3262512361482734
     },
     "ecocat2": {
      "raw": -24.946401137942406,
@@ -1302,7 +2685,12 @@
      "renorm_distinct": -24.800620883744237,
      "raw_distinct_seen": -15.418178149469924,
      "raw_distinct_novel": -39.28433624504135,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -3.021478946560071,
+     "novel_penalty_fixed_size": 1.372031873359292,
+     "raw_novel_nonredundant": -39.23398212317634,
+     "vs_sym0_seen": 0.5442065125535608,
+     "vs_sym0_novel": -8.094909514134443
     },
     "all": {
      "raw": -15.03287978493621,
@@ -1313,7 +2701,44 @@
      "renorm_distinct": -22.499553010571635,
      "raw_distinct_seen": -18.303676718199167,
      "raw_distinct_novel": -36.341186698957316,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.0005490817329066,
+     "novel_penalty_fixed_size": -6.948509351103596,
+     "raw_novel_nonredundant": -34.83431458116643,
+     "vs_sym0_seen": 1.0026479897462555,
+     "vs_sym0_novel": -6.274326324971343,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.577234498415643,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -10.924342948595173,
+       "novel": -19.869076105743147
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -16.141564537248254,
+       "novel": -20.482251035112714
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -22.833074149120005,
+       "novel": -30.994622316404897
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -37.90551517139562,
+       "novel": -73.05076602285905
+      }
+     }
     }
    },
    "parent_backoff20": {
@@ -1327,7 +2752,12 @@
      "renorm_distinct": -17.82147504136908,
      "raw_distinct_seen": -17.419000549457678,
      "raw_distinct_novel": -28.80927770051561,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.7756286478580667,
+     "novel_penalty_fixed_size": -4.021983255571926,
+     "raw_novel_nonredundant": -24.46301014056751,
+     "vs_sym0_seen": -0.7123593509246886,
+     "vs_sym0_novel": -2.7321506831702758
     },
     "ratelaws": {
      "raw": -14.517544438376918,
@@ -1338,7 +2768,12 @@
      "renorm_distinct": -22.84440811684021,
      "raw_distinct_seen": -24.326155890142047,
      "raw_distinct_novel": -36.53498400509075,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6353723196965955,
+     "novel_penalty_fixed_size": 0.19489814273586875,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -1.1170151386055156,
+     "vs_sym0_novel": -7.757151318096184
     },
     "ecocat2": {
      "raw": -25.813705910545384,
@@ -1349,7 +2784,12 @@
      "renorm_distinct": -25.588425586158788,
      "raw_distinct_seen": -16.307645062747827,
      "raw_distinct_novel": -40.36354946456249,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.9241882710620173,
+     "novel_penalty_fixed_size": 0.7076456662280799,
+     "raw_novel_nonredundant": -39.525220147694895,
+     "vs_sym0_seen": -0.4347298875716085,
+     "vs_sym0_novel": -8.789982632846034
     },
     "all": {
      "raw": -16.889178539295884,
@@ -1360,7 +2800,44 @@
      "renorm_distinct": -23.88571279657054,
      "raw_distinct_seen": -20.16451438917435,
      "raw_distinct_novel": -37.327971049309895,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.085677600284823,
+     "novel_penalty_fixed_size": -5.034091517134346,
+     "raw_novel_nonredundant": -35.27690450465898,
+     "vs_sym0_seen": -0.9628596209411767,
+     "vs_sym0_novel": -7.0994414551593,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -7.43576495805361,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -12.621298141664008,
+       "novel": -20.64142918226542
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -19.345265834727922,
+       "novel": -21.28912446754421
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -25.63744340669077,
+       "novel": -32.65985059300593
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -41.973617455154304,
+       "novel": -73.31212933533418
+      }
+     }
     }
    },
    "position_backoff20": {
@@ -1374,7 +2851,12 @@
      "renorm_distinct": -16.731848112796627,
      "raw_distinct_seen": -16.26725731839257,
      "raw_distinct_novel": -27.588692226937376,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5816797569735677,
+     "novel_penalty_fixed_size": -4.9036612968864794,
+     "raw_novel_nonredundant": -23.839008062542174,
+     "vs_sym0_seen": 0.3618595965118733,
+     "vs_sym0_novel": -1.51156520959204
     },
     "ratelaws": {
      "raw": -13.26435754121403,
@@ -1385,7 +2867,12 @@
      "renorm_distinct": -21.559286020657208,
      "raw_distinct_seen": -22.940557935806904,
      "raw_distinct_novel": -35.9117103726183,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5927493724142168,
+     "novel_penalty_fixed_size": -1.0245287568441708,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.14171351748426908,
+     "vs_sym0_novel": -7.133877685623737
     },
     "ecocat2": {
      "raw": -24.89097642651667,
@@ -1396,7 +2883,12 @@
      "renorm_distinct": -24.750084580650142,
      "raw_distinct_seen": -15.363115459754441,
      "raw_distinct_novel": -39.48436253056199,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.868886945590619,
+     "novel_penalty_fixed_size": 0.11164597545791388,
+     "raw_novel_nonredundant": -38.71733776456165,
+     "vs_sym0_seen": 0.5104160964668738,
+     "vs_sym0_novel": -7.901838605975268
     },
     "all": {
      "raw": -15.722636306723885,
@@ -1407,7 +2899,44 @@
      "renorm_distinct": -22.85852250177541,
      "raw_distinct_seen": -19.01036262245401,
      "raw_distinct_novel": -36.33045456010799,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.024673509887677,
+     "novel_penalty_fixed_size": -5.814566345126712,
+     "raw_novel_nonredundant": -34.520885797325384,
+     "vs_sym0_seen": 0.22530610985027857,
+     "vs_sym0_novel": -6.137074946159502,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.743753407436073,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -11.303225386802612,
+       "novel": -20.577209059011867
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -17.884145754029127,
+       "novel": -20.897838120008394
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -23.972280430576554,
+       "novel": -31.623887730100332
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -40.2586970162348,
+       "novel": -71.21762147142502
+      }
+     }
     }
    },
    "term_backoff20": {
@@ -1421,7 +2950,12 @@
      "renorm_distinct": -16.815783884396424,
      "raw_distinct_seen": -16.210615136790977,
      "raw_distinct_novel": -27.69228699194527,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6670967953144908,
+     "novel_penalty_fixed_size": -4.625082520824742,
+     "raw_novel_nonredundant": -22.963655039539955,
+     "vs_sym0_seen": 0.43244720212434135,
+     "vs_sym0_novel": -1.6151599745999319
     },
     "ratelaws": {
      "raw": -13.027686663330467,
@@ -1432,7 +2966,12 @@
      "renorm_distinct": -21.189088869141827,
      "raw_distinct_seen": -22.435301158832456,
      "raw_distinct_novel": -36.22885450461082,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5390220659165728,
+     "novel_penalty_fixed_size": -2.31932740597719,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.38325666818199167,
+     "vs_sym0_novel": -7.451021817616258
     },
     "ecocat2": {
      "raw": -25.539532003995554,
@@ -1443,7 +2982,12 @@
      "renorm_distinct": -25.484566831433334,
      "raw_distinct_seen": -15.476508920654796,
      "raw_distinct_novel": -40.70295966628207,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -3.068891863385107,
+     "novel_penalty_fixed_size": 0.5571959138735911,
+     "raw_novel_nonredundant": -40.25477259743658,
+     "vs_sym0_seen": 0.4532465379406905,
+     "vs_sym0_novel": -9.46281832698116
     },
     "all": {
      "raw": -15.669193546088504,
@@ -1454,7 +2998,44 @@
      "renorm_distinct": -23.161149277796724,
      "raw_distinct_seen": -18.841230898517857,
      "raw_distinct_novel": -37.275221840144326,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.074545048471643,
+     "novel_penalty_fixed_size": -6.6332255430913545,
+     "raw_novel_nonredundant": -35.3777907221324,
+     "vs_sym0_seen": 0.400571829537257,
+     "vs_sym0_novel": -7.233922048876702,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.745239557335262,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -11.395651613645308,
+       "novel": -20.39988423490381
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -17.22503169558477,
+       "novel": -20.4804140031013
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -23.640902181285743,
+       "novel": -32.61047573136139
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -39.589169534389725,
+       "novel": -74.87600245354609
+      }
+     }
     }
    },
    "term_root_backoff20": {
@@ -1468,7 +3049,12 @@
      "renorm_distinct": -16.65671430932496,
      "raw_distinct_seen": -15.929278921935886,
      "raw_distinct_novel": -27.998103858220386,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6244654883368421,
+     "novel_penalty_fixed_size": -5.365085464091834,
+     "raw_novel_nonredundant": -23.646399105054762,
+     "vs_sym0_seen": 0.6406619763568123,
+     "vs_sym0_novel": -1.920976840875049
     },
     "ratelaws": {
      "raw": -12.226643514723865,
@@ -1479,7 +3065,12 @@
      "renorm_distinct": -19.925093463804547,
      "raw_distinct_seen": -21.19500710513268,
      "raw_distinct_novel": -34.10390181986303,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.4460529541643825,
+     "novel_penalty_fixed_size": -2.2575291938764996,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 1.1726525188166774,
+     "vs_sym0_novel": -5.326069132868469
     },
     "ecocat2": {
      "raw": -25.108166711722063,
@@ -1490,7 +3081,12 @@
      "renorm_distinct": -24.99439211428197,
      "raw_distinct_seen": -15.43007720982085,
      "raw_distinct_novel": -39.68927942228013,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -3.0473554207912947,
+     "novel_penalty_fixed_size": 1.235076890567174,
+     "raw_novel_nonredundant": -39.56678531114863,
+     "vs_sym0_seen": 0.5354820226878633,
+     "vs_sym0_novel": -8.492795617381347
     },
     "all": {
      "raw": -15.06208942761433,
@@ -1501,7 +3097,44 @@
      "renorm_distinct": -22.59309533674942,
      "raw_distinct_seen": -18.30790992491573,
      "raw_distinct_novel": -36.62055596080037,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.0096327574469077,
+     "novel_penalty_fixed_size": -7.128268654640469,
+     "raw_novel_nonredundant": -35.0764199709683,
+     "vs_sym0_seen": 0.9985622970914168,
+     "vs_sym0_novel": -6.540764034215448,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.577182191676214,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -10.93538674910935,
+       "novel": -19.985803520105588
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -16.14201602301964,
+       "novel": -20.477024989393563
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -22.83326284800759,
+       "novel": -31.469622262093427
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -37.90642833266028,
+       "novel": -73.56196985793127
+      }
+     }
     }
    },
    "fnprior_kn": {
@@ -1515,7 +3148,12 @@
      "renorm_distinct": -11.794351408054231,
      "raw_distinct_seen": -9.033238578307216,
      "raw_distinct_novel": -20.068761798219164,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.1010325831404422,
+     "novel_penalty_fixed_size": -6.511223026972853,
+     "raw_novel_nonredundant": -15.243653605873078,
+     "vs_sym0_seen": 6.941635634492656,
+     "vs_sym0_novel": 6.008365219126169
     },
     "ratelaws": {
      "raw": -6.171762963669906,
@@ -1526,7 +3164,12 @@
      "renorm_distinct": -13.284074079673157,
      "raw_distinct_seen": -12.579294140736398,
      "raw_distinct_novel": -17.253218489072655,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.8876952720414084,
+     "novel_penalty_fixed_size": 0.9832598540730514,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.132555332805506,
+     "vs_sym0_novel": 11.524614197921911
     },
     "ecocat2": {
      "raw": -15.030329323079945,
@@ -1537,7 +3180,12 @@
      "renorm_distinct": -16.891816492070234,
      "raw_distinct_seen": -9.06327987447952,
      "raw_distinct_novel": -24.74898180560451,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5127444002831367,
+     "novel_penalty_fixed_size": -3.085993037460152,
+     "raw_novel_nonredundant": -24.35786688438784,
+     "vs_sym0_seen": 6.430579618402565,
+     "vs_sym0_novel": 8.038411737491638
     },
     "all": {
      "raw": -8.25599237941402,
@@ -1548,7 +3196,44 @@
      "renorm_distinct": -15.598870838143021,
      "raw_distinct_seen": -10.85523607410904,
      "raw_distinct_novel": -23.703424247468394,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.1175199583233415,
+     "novel_penalty_fixed_size": -7.025454189599472,
+     "raw_novel_nonredundant": -21.787191344293937,
+     "vs_sym0_seen": 7.0180238060930975,
+     "vs_sym0_novel": 7.692987816802681,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.3052789538205785,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -5.727317370011675,
+       "novel": -12.824310597881103
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -7.906073640171213,
+       "novel": -14.188071425613703
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -13.022370023840455,
+       "novel": -21.444673596781044
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -22.593624844117365,
+       "novel": -42.99430225458271
+      }
+     }
     }
    },
    "fnprior_kn_tuned": {
@@ -1562,7 +3247,12 @@
      "renorm_distinct": -11.804768938556832,
      "raw_distinct_seen": -9.032998968789707,
      "raw_distinct_novel": -20.121553335200037,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.0992693505960807,
+     "novel_penalty_fixed_size": -6.57347690822114,
+     "raw_novel_nonredundant": -15.331563415812134,
+     "vs_sym0_seen": 6.941751796731779,
+     "vs_sym0_novel": 5.955573682145301
     },
     "ratelaws": {
      "raw": -6.171839576491688,
@@ -1573,7 +3263,12 @@
      "renorm_distinct": -13.284267531920522,
      "raw_distinct_seen": -12.57943330740266,
      "raw_distinct_novel": -17.25346227641966,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.8877309354093526,
+     "novel_penalty_fixed_size": 0.983579828320432,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.132480190727348,
+     "vs_sym0_novel": 11.524370410574903
     },
     "ecocat2": {
      "raw": -15.14143713653127,
@@ -1584,7 +3279,12 @@
      "renorm_distinct": -17.016023063547856,
      "raw_distinct_seen": -9.05435825873103,
      "raw_distinct_novel": -25.027008067321404,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5431333208213858,
+     "novel_penalty_fixed_size": -3.08792178378491,
+     "raw_novel_nonredundant": -24.594079313420178,
+     "vs_sym0_seen": 6.436708516517798,
+     "vs_sym0_novel": 7.746424426194765
     },
     "all": {
      "raw": -8.275592527021086,
@@ -1595,7 +3295,44 @@
      "renorm_distinct": -15.666325480271174,
      "raw_distinct_seen": -10.85165125587979,
      "raw_distinct_novel": -23.91753764812585,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.1278070326760994,
+     "novel_penalty_fixed_size": -7.143321326534961,
+     "raw_novel_nonredundant": -21.98157482947945,
+     "vs_sym0_seen": 7.018668385776451,
+     "vs_sym0_novel": 7.48223072497261,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.3043269703992504,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -5.726462685735643,
+       "novel": -12.798618866526105
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -7.905903592450801,
+       "novel": -14.241422281445578
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -13.022409324479721,
+       "novel": -21.644625377339132
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -22.59362031271752,
+       "novel": -43.533246269387895
+      }
+     }
     }
    },
    "hpy": {
@@ -1609,7 +3346,12 @@
      "renorm_distinct": -11.799089089291584,
      "raw_distinct_seen": -9.034917075772581,
      "raw_distinct_novel": -20.087119576868563,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.0989423269198917,
+     "novel_penalty_fixed_size": -6.53944350719073,
+     "raw_novel_nonredundant": -15.318657136297372,
+     "vs_sym0_seen": 6.94041873389209,
+     "vs_sym0_novel": 5.990007440476773
     },
     "ratelaws": {
      "raw": -6.172935349476751,
@@ -1620,7 +3362,12 @@
      "renorm_distinct": -13.287792133448589,
      "raw_distinct_seen": -12.583416753722695,
      "raw_distinct_novel": -17.253376612931238,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.8881088617967101,
+     "novel_penalty_fixed_size": 0.9899495826565426,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.131374023873016,
+     "vs_sym0_novel": 11.524456074063329
     },
     "ecocat2": {
      "raw": -14.867980636774618,
@@ -1631,7 +3378,12 @@
      "renorm_distinct": -16.706777353700534,
      "raw_distinct_seen": -9.06130257402528,
      "raw_distinct_novel": -24.35287399214734,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.4756182731044107,
+     "novel_penalty_fixed_size": -3.0384438860056995,
+     "raw_novel_nonredundant": -24.072482125104887,
+     "vs_sym0_seen": 6.431927829258826,
+     "vs_sym0_novel": 8.449161157346955
     },
     "all": {
      "raw": -8.230813924524751,
@@ -1642,7 +3394,44 @@
      "renorm_distinct": -15.509253763095527,
      "raw_distinct_seen": -10.856251949289154,
      "raw_distinct_novel": -23.427347537509295,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.10439311360834,
+     "novel_penalty_fixed_size": -6.872384719595547,
+     "raw_novel_nonredundant": -21.60345456415918,
+     "vs_sym0_seen": 7.01711373395991,
+     "vs_sym0_novel": 7.96450217107708,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.305082490574336,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -5.727185982422511,
+       "novel": -12.731619121980163
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -7.907139798984931,
+       "novel": -14.214067478084761
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -13.024768465747721,
+       "novel": -21.093065012107342
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -22.606564998865238,
+       "novel": -42.337051481265554
+      }
+     }
     }
    },
    "sym0": {
@@ -1656,7 +3445,12 @@
      "renorm_distinct": -16.991358638274402,
      "raw_distinct_seen": -16.862891099930085,
      "raw_distinct_novel": -26.07712701734534,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.591882908009477,
+     "novel_penalty_fixed_size": -2.9761537169880574,
+     "raw_novel_nonredundant": -23.09726041735619,
+     "vs_sym0_seen": 0.0,
+     "vs_sym0_novel": 0.0
     },
     "ratelaws": {
      "raw": -13.342621135415378,
@@ -1667,7 +3461,12 @@
      "renorm_distinct": -23.050925806291435,
      "raw_distinct_seen": -24.631554543578023,
      "raw_distinct_novel": -28.777832686994564,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.622504636553258,
+     "novel_penalty_fixed_size": 6.658735742620467,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 0.0,
+     "vs_sym0_novel": 0.0
     },
     "ecocat2": {
      "raw": -22.09320247146136,
@@ -1678,7 +3477,12 @@
      "renorm_distinct": -21.862935292624048,
      "raw_distinct_seen": -15.772425958246874,
      "raw_distinct_novel": -32.60171782032805,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.800545067597125,
+     "novel_penalty_fixed_size": -1.888758440892614,
+     "raw_novel_nonredundant": -32.52006510072586,
+     "vs_sym0_seen": 0.0,
+     "vs_sym0_novel": 0.0
     },
     "all": {
      "raw": -15.338653622996803,
@@ -1689,7 +3493,44 @@
      "renorm_distinct": -21.78392018520486,
      "raw_distinct_seen": -19.849200616571842,
      "raw_distinct_novel": -31.03977153880521,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.6731061138271248,
+     "novel_penalty_fixed_size": -2.648788291649638,
+     "raw_novel_nonredundant": -29.86235095926262,
+     "vs_sym0_seen": 0.0,
+     "vs_sym0_novel": 0.0,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -6.47484407649561,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -12.322424986859152,
+       "novel": -18.04616652619506
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -17.419733741268168,
+       "novel": -22.41193410673895
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -25.82682955549464,
+       "novel": -27.872169485271094
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -40.426850273904265,
+       "novel": -52.49633843900897
+      }
+     }
     }
    },
    "hpy2": {
@@ -1703,7 +3544,12 @@
      "renorm_distinct": -11.798662092754427,
      "raw_distinct_seen": -9.033306325999119,
      "raw_distinct_novel": -20.092982647513356,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.0991066918456323,
+     "novel_penalty_fixed_size": -6.545350987456727,
+     "raw_novel_nonredundant": -15.296756389104637,
+     "vs_sym0_seen": 6.94133437545599,
+     "vs_sym0_novel": 5.984144369831986
     },
     "ratelaws": {
      "raw": -6.172163921324833,
@@ -1714,7 +3560,12 @@
      "renorm_distinct": -13.28387579195534,
      "raw_distinct_seen": -12.579680993666475,
      "raw_distinct_novel": -17.253684164594983,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.8876855227548902,
+     "novel_penalty_fixed_size": 0.9830609930378591,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.132154944515983,
+     "vs_sym0_novel": 11.52414852239958
     },
     "ecocat2": {
      "raw": -14.937306488856015,
@@ -1725,7 +3576,12 @@
      "renorm_distinct": -16.76690327660491,
      "raw_distinct_seen": -9.04582172801426,
      "raw_distinct_novel": -24.50109085874973,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5077089040693297,
+     "novel_penalty_fixed_size": -2.928798323172588,
+     "raw_novel_nonredundant": -24.23208050908881,
+     "vs_sym0_seen": 6.442483666576134,
+     "vs_sym0_novel": 8.256589270193265
     },
     "all": {
      "raw": -8.24167729643981,
@@ -1736,7 +3592,44 @@
      "renorm_distinct": -15.538627871268025,
      "raw_distinct_seen": -10.848397601717224,
      "raw_distinct_novel": -23.534614220818806,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.1151329523481301,
+     "novel_penalty_fixed_size": -6.90782771375579,
+     "raw_novel_nonredundant": -21.711860885503526,
+     "vs_sym0_seen": 7.018996036901906,
+     "vs_sym0_novel": 7.833290215415594,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.3039069470391094,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -5.72568876858233,
+       "novel": -12.708573058755825
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -7.906410480380892,
+       "novel": -14.222570549978787
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -13.023704850930818,
+       "novel": -21.143188050157473
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -22.59205357036776,
+       "novel": -42.759353522776635
+      }
+     }
     }
    },
    "hpy3_depth": {
@@ -1750,7 +3643,12 @@
      "renorm_distinct": -11.540533909939498,
      "raw_distinct_seen": -8.097396474093218,
      "raw_distinct_novel": -20.168185460501203,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.1509684505330822,
+     "novel_penalty_fixed_size": -7.385977637183176,
+     "raw_novel_nonredundant": -15.569850970347641,
+     "vs_sym0_seen": 7.981656403332529,
+     "vs_sym0_novel": 5.908941556844137
     },
     "ratelaws": {
      "raw": -5.302354646431944,
@@ -1761,7 +3659,12 @@
      "renorm_distinct": -12.240023061696046,
      "raw_distinct_seen": -10.989940389420212,
      "raw_distinct_novel": -17.844134434465857,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.8240304084550815,
+     "novel_penalty_fixed_size": -1.3621764773651988,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 8.014811077573945,
+     "vs_sym0_novel": 10.933698252528707
     },
     "ecocat2": {
      "raw": -14.271829479698065,
@@ -1772,7 +3675,12 @@
      "renorm_distinct": -16.62040170229325,
      "raw_distinct_seen": -8.024235036210458,
      "raw_distinct_novel": -24.34098206429638,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.5909361399432629,
+     "novel_penalty_fixed_size": -3.35066607202334,
+     "raw_novel_nonredundant": -24.371539380462206,
+     "vs_sym0_seen": 7.592866825830146,
+     "vs_sym0_novel": 8.173925362060153
     },
     "all": {
      "raw": -7.399577996858723,
@@ -1783,7 +3691,44 @@
      "renorm_distinct": -15.169408268778984,
      "raw_distinct_seen": -9.650902322617148,
      "raw_distinct_novel": -23.418782999248418,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.1135538878256857,
+     "novel_penalty_fixed_size": -7.975063157189557,
+     "raw_novel_nonredundant": -21.88901188017348,
+     "vs_sym0_seen": 7.961923423151663,
+     "vs_sym0_novel": 7.723339696644412,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.1637812747317953,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -4.155137206648693,
+       "novel": -12.735208145426498
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -7.154435478341961,
+       "novel": -14.110425554250705
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -10.39661238461922,
+       "novel": -20.34155056554118
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -21.12931414737522,
+       "novel": -43.83949941972477
+      }
+     }
     }
    },
    "hpy2_src": {
@@ -1797,7 +3742,12 @@
      "renorm_distinct": -12.250067495647793,
      "raw_distinct_seen": -9.543035274605923,
      "raw_distinct_novel": -18.552901343137943,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.0487964487029506,
+     "novel_penalty_fixed_size": -4.448564784283937,
+     "raw_novel_nonredundant": -15.274089491304148,
+     "vs_sym0_seen": 6.117955241429101,
+     "vs_sym0_novel": 7.524225674207396
     },
     "ratelaws": {
      "raw": -6.301278659099437,
@@ -1808,7 +3758,12 @@
      "renorm_distinct": -12.89525566042592,
      "raw_distinct_seen": -11.818259580035301,
      "raw_distinct_novel": -17.148308844745117,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.821574396037723,
+     "novel_penalty_fixed_size": 0.313833414739375,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 7.000977244357584,
+     "vs_sym0_novel": 11.629523842249448
     },
     "ecocat2": {
      "raw": -14.593828182796118,
@@ -1819,7 +3774,12 @@
      "renorm_distinct": -16.706221764243793,
      "raw_distinct_seen": -9.632403796387468,
      "raw_distinct_novel": -22.933790305010575,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.3951855194645753,
+     "novel_penalty_fixed_size": -1.7417668242750655,
+     "raw_novel_nonredundant": -22.80654413576974,
+     "vs_sym0_seen": 5.887859017846084,
+     "vs_sym0_novel": 9.985712135071942
     },
     "all": {
      "raw": -8.373038547195717,
@@ -1830,7 +3790,44 @@
      "renorm_distinct": -15.442468324640227,
      "raw_distinct_seen": -10.95603934885455,
      "raw_distinct_novel": -21.938907252101867,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.038842008896733,
+     "novel_penalty_fixed_size": -5.703861676825449,
+     "raw_novel_nonredundant": -20.682005646305086,
+     "vs_sym0_seen": 6.7059090233540095,
+     "vs_sym0_novel": 9.417839532560958,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.6313255928715886,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -6.130845036219518,
+       "novel": -11.532304047773932
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -8.297365444958109,
+       "novel": -13.716757083486021
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -13.870272193217982,
+       "novel": -19.8631829618969
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -21.54791729678574,
+       "novel": -39.483936290011385
+      }
+     }
     }
    },
    "form_ad": {
@@ -1844,7 +3841,12 @@
      "renorm_distinct": -10.684022516672172,
      "raw_distinct_seen": -6.5971481332945086,
      "raw_distinct_novel": -20.24075023837384,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.46438957745682186,
+     "novel_penalty_fixed_size": -12.075224954879136,
+     "raw_novel_nonredundant": -17.51277702027688,
+     "vs_sym0_seen": 8.959062237951033,
+     "vs_sym0_novel": 5.8363767789714975
     },
     "ratelaws": {
      "raw": -4.102599334732168,
@@ -1855,7 +3857,12 @@
      "renorm_distinct": -8.523504854791549,
      "raw_distinct_seen": -6.74167053113736,
      "raw_distinct_novel": -19.875761731201518,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.3381633572040128,
+     "novel_penalty_fixed_size": -11.27879372295692,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 9.24299497527169,
+     "vs_sym0_novel": 8.902070955793047
     },
     "ecocat2": {
      "raw": -14.099670335372755,
@@ -1866,7 +3873,12 @@
      "renorm_distinct": -16.8698585251423,
      "raw_distinct_seen": -6.866637850440741,
      "raw_distinct_novel": -25.50756294892335,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.2553478321112148,
+     "novel_penalty_fixed_size": -8.161363121129046,
+     "raw_novel_nonredundant": -25.207385052693116,
+     "vs_sym0_seen": 8.370590931502859,
+     "vs_sym0_novel": 7.411784280306616
     },
     "all": {
      "raw": -6.440364287277074,
@@ -1877,7 +3889,44 @@
      "renorm_distinct": -14.132940655426717,
      "raw_distinct_seen": -7.250519581978844,
      "raw_distinct_novel": -24.191605389309473,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.6667994572829483,
+     "novel_penalty_fixed_size": -13.816483939418907,
+     "raw_novel_nonredundant": -23.03711099226802,
+     "vs_sym0_seen": 9.091533954607126,
+     "vs_sym0_novel": 7.073614184302149,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.0775018865269557,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -4.067085388872161,
+       "novel": -15.182230011247254
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -5.491175466838536,
+       "novel": -16.45516758279242
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -8.902591033404427,
+       "novel": -22.446618999725935
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -9.509750426999465,
+       "novel": -40.42257692560274
+      }
+     }
     }
    },
    "form_ad3_depth": {
@@ -1891,7 +3940,12 @@
      "renorm_distinct": -10.453368193102103,
      "raw_distinct_seen": -6.5894115614456785,
      "raw_distinct_novel": -19.121710749478645,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.4392957845937741,
+     "novel_penalty_fixed_size": -11.092440667671141,
+     "raw_novel_nonredundant": -17.34165593987009,
+     "vs_sym0_seen": 8.962305400682611,
+     "vs_sym0_novel": 6.955416267866691
     },
     "ratelaws": {
      "raw": -4.096134861907169,
@@ -1902,7 +3956,12 @@
      "renorm_distinct": -8.492239900604785,
      "raw_distinct_seen": -6.730228334976118,
      "raw_distinct_novel": -19.27018625392013,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.3369315930154668,
+     "novel_penalty_fixed_size": -10.691288200246921,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 9.244188676796485,
+     "vs_sym0_novel": 9.507646433074434
     },
     "ecocat2": {
      "raw": -13.65559514649974,
@@ -1913,7 +3972,12 @@
      "renorm_distinct": -16.294068262519225,
      "raw_distinct_seen": -6.857984845968121,
      "raw_distinct_novel": -24.277437250736487,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.2748349152355414,
+     "novel_penalty_fixed_size": -6.861380750614422,
+     "raw_novel_nonredundant": -24.186550228680396,
+     "vs_sym0_seen": 8.378129474092178,
+     "vs_sym0_novel": 8.529373152017325
     },
     "all": {
      "raw": -6.334057902510479,
@@ -1924,7 +3988,44 @@
      "renorm_distinct": -13.721924579580442,
      "raw_distinct_seen": -7.237048279345383,
      "raw_distinct_novel": -22.961012098313425,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.6701855141967752,
+     "novel_penalty_fixed_size": -12.699548469651708,
+     "raw_novel_nonredundant": -22.25593901901595,
+     "vs_sym0_seen": 9.09382616874564,
+     "vs_sym0_novel": 8.162054372499295,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.079477538280935,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -4.069093010805392,
+       "novel": -14.591006350700304
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -5.485090653822884,
+       "novel": -15.794914243324188
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -8.871285832096445,
+       "novel": -20.77804190411618
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -9.48665652914498,
+       "novel": -38.97596212435861
+      }
+     }
     }
    },
    "tree_ad3": {
@@ -1938,7 +4039,12 @@
      "renorm_distinct": -10.441354155318662,
      "raw_distinct_seen": -6.588633352820494,
      "raw_distinct_novel": -19.063255280229466,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.40576459366029116,
+     "novel_penalty_fixed_size": -11.21260867887814,
+     "raw_novel_nonredundant": -17.47977440304979,
+     "vs_sym0_seen": 8.963193610149112,
+     "vs_sym0_novel": 7.013871737115873
     },
     "ratelaws": {
      "raw": -4.0876250077642755,
@@ -1949,7 +4055,12 @@
      "renorm_distinct": -8.45769829105025,
      "raw_distinct_seen": -6.714871361435765,
      "raw_distinct_novel": -18.650817251977166,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.3360103602318819,
+     "novel_penalty_fixed_size": -10.087676624650681,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": 9.247324403539377,
+     "vs_sym0_novel": 10.127015435017398
     },
     "ecocat2": {
      "raw": -13.95721574123666,
@@ -1960,7 +4071,12 @@
      "renorm_distinct": -16.585097833608156,
      "raw_distinct_seen": -6.853027494778456,
      "raw_distinct_novel": -24.910055638688444,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -1.3783801359966368,
+     "novel_penalty_fixed_size": -6.6249578511713025,
+     "raw_novel_nonredundant": -24.597738985475292,
+     "vs_sym0_seen": 8.38041383809281,
+     "vs_sym0_novel": 7.758870620942473
     },
     "all": {
      "raw": -6.376439483409481,
@@ -1971,7 +4087,44 @@
      "renorm_distinct": -13.863169730333917,
      "raw_distinct_seen": -7.230664948419318,
      "raw_distinct_novel": -23.406437267440545,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -0.7014158034109729,
+     "novel_penalty_fixed_size": -12.885328452532733,
+     "raw_novel_nonredundant": -22.59010794940656,
+     "vs_sym0_seen": 9.096428829813144,
+     "vs_sym0_novel": 7.694917737647328,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -3.079531794924496,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -4.06910825110328,
+       "novel": -14.433733436680695
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -5.4830873831792415,
+       "novel": -16.007007180057947
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -8.798769196987653,
+       "novel": -21.312999679659004
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -9.485529711862842,
+       "novel": -40.057058509894205
+      }
+     }
     }
    },
    "uniform symbols": {
@@ -1985,7 +4138,12 @@
      "renorm_distinct": -25.2087513241646,
      "raw_distinct_seen": -24.91665090105493,
      "raw_distinct_novel": -36.09250167285162,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5649493574615385,
+     "novel_penalty_fixed_size": 1.020483363750745e-15,
+     "raw_novel_nonredundant": -30.546215075223756,
+     "vs_sym0_seen": -7.833696984178513,
+     "vs_sym0_novel": -10.015374655506287
     },
     "ratelaws": {
      "raw": -21.593294590722707,
@@ -1996,7 +4154,12 @@
      "renorm_distinct": -36.20020942325899,
      "raw_distinct_seen": -37.53375893085383,
      "raw_distinct_novel": -56.428885864153806,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5649493574615394,
+     "novel_penalty_fixed_size": -1.3833518951797744e-15,
+     "raw_novel_nonredundant": null,
+     "vs_sym0_seen": -8.07999562784235,
+     "vs_sym0_novel": -27.65105317715924
     },
     "ecocat2": {
      "raw": -32.393293008840075,
@@ -2007,7 +4170,12 @@
      "renorm_distinct": -32.553640467653324,
      "raw_distinct_seen": -24.471003329295204,
      "raw_distinct_novel": -46.08893376688698,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.564949357461535,
+     "novel_penalty_fixed_size": -7.125496924970584e-15,
+     "raw_novel_nonredundant": -45.06982442396701,
+     "vs_sym0_seen": -8.112962370440465,
+     "vs_sym0_novel": -13.674516852083466
     },
     "all": {
      "raw": -23.89701436353207,
@@ -2018,7 +4186,44 @@
      "renorm_distinct": -32.66516000493425,
      "raw_distinct_seen": -29.924409170384592,
      "raw_distinct_novel": -44.28812557216919,
-     "n_zero": 0
+     "n_zero": 0,
+     "per_node": -2.5649493574615403,
+     "novel_penalty_fixed_size": 1.4593727484484729e-15,
+     "raw_novel_nonredundant": -40.973421787141994,
+     "vs_sym0_seen": -8.035465147819071,
+     "vs_sym0_novel": -13.495701817913213,
+     "by_size": {
+      "1-5": {
+       "n_seen": 154,
+       "n_novel": 0,
+       "seen": -11.392372470803192,
+       "novel": null
+      },
+      "6-9": {
+       "n_seen": 175,
+       "n_novel": 9,
+       "seen": -18.599547054963942,
+       "novel": -21.089583605794857
+      },
+      "10-14": {
+       "n_seen": 122,
+       "n_novel": 17,
+       "seen": -27.49962097999746,
+       "novel": -29.72323667176016
+      },
+      "15-20": {
+       "n_seen": 14,
+       "n_novel": 11,
+       "seen": -42.13845372972525,
+       "novel": -42.4382530052727
+      },
+      "21-10000": {
+       "n_seen": 26,
+       "n_novel": 15,
+       "seen": -64.71564532672186,
+       "novel": -78.48745033832303
+      }
+     }
     }
    }
   },
@@ -2027,25 +4232,33 @@
     "pairs": 110,
     "distinct": 70,
     "novel_pairs": 14,
-    "novel_distinct": 14
+    "novel_distinct": 14,
+    "redundant_novel_pairs": 3,
+    "redundant_novel_distinct": 3
    },
    "ratelaws": {
     "pairs": 344,
     "distinct": 31,
     "novel_pairs": 3,
-    "novel_distinct": 1
+    "novel_distinct": 1,
+    "redundant_novel_pairs": 3,
+    "redundant_novel_distinct": 1
    },
    "ecocat2": {
     "pairs": 89,
     "distinct": 69,
     "novel_pairs": 35,
-    "novel_distinct": 32
+    "novel_distinct": 32,
+    "redundant_novel_pairs": 7,
+    "redundant_novel_distinct": 7
    },
    "all": {
     "pairs": 543,
     "distinct": 138,
     "novel_pairs": 52,
-    "novel_distinct": 45
+    "novel_distinct": 45,
+    "redundant_novel_pairs": 13,
+    "redundant_novel_distinct": 11
    }
   },
   "train_sizes": {
@@ -2062,6 +4275,19 @@
    "allodb": 80,
    "jws": 3004
   },
+  "redundant_novel": [
+   "(c0**x1*c1 + c2)/(c0**x1*c3 + c4 + c1/c0**x1)",
+   "c0*(c1 + c2*x1)*(c3 + x1)/(c4 + x1)",
+   "c0*(c1*x1 + c2)**c3/x1",
+   "c0*exp((c1 + c2*(c3 + x1))*(c3 + x1)**2)",
+   "c0*exp(c1*x1)/(c0*exp(c1*x1) + c2) + c3",
+   "c0*exp(c3*c4/x1 + c4)/(c1 - exp(c2)*exp(c2*c3/x1))",
+   "c0*x1/sqrt(c1*x1**2 + c2) + c3",
+   "c2*exp(c3/(c8 + x1))/(c4*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))",
+   "c3*(c5*x1 + c6)/(c3*(c1*(c0*x1 + c7) + c2) + c4)",
+   "c5*exp(c4*(c2 + log(x1))**2) + c6**(x1**c7)*c8/(c6**(x1**c7)*c8 + c9) + exp(c1*(c0 + x1)**c3)",
+   "c5*exp(c4*(c2 + log(x1))**2) + c6**x1*c7/(c6**x1*c7 + c8) + exp(c1*(c0 + x1)**c3)"
+  ],
   "support": 6684,
   "n_train": 41983
  }
