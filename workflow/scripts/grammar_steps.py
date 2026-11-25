@@ -31,6 +31,15 @@ def loso(gen_path, test, weighting, out):
         json.dump(gc.make_loso(gen, test, weighting), fh)
 
 
+def holdout(gen_path, weighting, out, *named):
+    """named: name=corpus path of each hold-out source."""
+    with open(gen_path) as fh:
+        gen = json.load(fh)
+    holdouts = dict(s.split("=", 1) for s in named)
+    with open(out, "w") as fh:
+        json.dump(gc.make_holdout(gen, holdouts, weighting), fh)
+
+
 def ours(folds_path, out):
     with open(folds_path) as fh:
         F = json.load(fh)
@@ -65,4 +74,4 @@ def table(folds_path, out_json, out_md, *score_files):
 
 
 if __name__ == "__main__":
-    {"generalised": generalised, "folds": folds, "transfer": transfer, "loso": loso, "ours": ours, "table": table}[sys.argv[1]](*sys.argv[2:])
+    {"generalised": generalised, "folds": folds, "transfer": transfer, "loso": loso, "holdout": holdout, "ours": ours, "table": table}[sys.argv[1]](*sys.argv[2:])

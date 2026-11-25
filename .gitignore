@@ -9,3 +9,5 @@ results/grammar/seed*/
 results/grammar/generalised.json
 results/grammar/transfer_*/
 results/corpora/
+results/grammar/holdout_*/
+results/grammar/hpyv/trees_holdout.json
