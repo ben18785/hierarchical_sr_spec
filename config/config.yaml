@@ -103,7 +103,7 @@ lookalike:
     temporal_novel: 12
   settings: [[10, 0.02], [10, 0.1], [40, 0.02], [40, 0.1]]
   reps: 3
-  deltas: [2, 5]
+  deltas: [2, 5, 10]   # report only (the design is not rebuilt for these)
   n_starts: 10
   shards: 80
 

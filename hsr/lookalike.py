@@ -231,7 +231,9 @@ def summarise(rows, deltas):
         inA = [r[D] for r in rows if r[D]["in_set"]]
         s[f"in_set_{D}"] = float(np.mean([r[D]["in_set"] for r in rows])) if rows else None
         s[f"set_size_{D}"] = float(np.median([r[D]["set_size"] for r in rows])) if rows else None
-        for f in ("rank", "pct", "top", "mass", "gain"):
+        for f in ("rank", "pct", "top", "mass"):
             s[f"{f}_{D}"] = float(np.mean([o[f] for o in inA])) if inA else None
+        # median: a prior that gives the truth zero probability would dominate a mean of logs
+        s[f"gain_{D}"] = float(np.median([o["gain"] for o in inA])) if inA else None
         s[f"n_in_{D}"] = len(inA)
     return s

@@ -3,7 +3,7 @@
     python lookalike_steps.py design out.json mech_folds.json temporal_folds.json trees.json config.json
     python lookalike_steps.py shard design.json out.npz shard n_shards n_starts
     python lookalike_steps.py report out.md out.json design.json trees.json mech_run_dir temporal_run_dir \
-        variants(comma-separated) shard.npz ...
+        variants(comma-separated) deltas(comma-separated) shard.npz ...
 """
 import json
 import os
@@ -63,17 +63,18 @@ def _f(x, nd=2):
     return "" if x is None else f"{x:.{nd}f}"
 
 
-def report(out_md, out_json, design_path, trees_path, mech_dir, temporal_dir, variants, *shards):
+def report(out_md, out_json, design_path, trees_path, mech_dir, temporal_dir, variants, deltas, *shards):
+    """deltas: comma-separated look-alike thresholds (config lookalike.deltas; they need no new fits)."""
     variants = [v for v in variants.split(",") if v]
     with open(design_path) as fh:
-        D = json.load(fh)
+        DES = json.load(fh)
     with open(trees_path) as fh:
         trees = json.load(fh)["trees"]
-    cfg = D["config"]
-    deltas = [float(x) for x in cfg["deltas"]]
-    cands = D["candidates"]
+    cfg = DES["config"]
+    deltas = [float(x) for x in deltas.split(",")]
+    cands = DES["candidates"]
     col = {k: i for i, k in enumerate(cands)}
-    J = len(D["datasets"])
+    J = len(DES["datasets"])
     L = np.full((J, len(cands)), np.nan)
     secs = 0.0
     for p in shards:
@@ -91,7 +92,7 @@ def report(out_md, out_json, design_path, trees_path, mech_dir, temporal_dir, va
     lp_m, fam = _priors(mech_dir, "hpyv", variants, trees, msup)
     lp_t, _ = _priors(temporal_dir, "hpyvt", variants, trees, tsup)
     priors = ["flat"] + list(lp_m)
-    in_t = np.array(D["in_temporal"], bool)
+    in_t = np.array(DES["in_temporal"], bool)
     all_idx = np.arange(len(cands))
     t_idx = all_idx[in_t]
     lp_arr = {}
@@ -104,8 +105,8 @@ def report(out_md, out_json, design_path, trees_path, mech_dir, temporal_dir, va
         lp_arr[("t", p)] = np.array([lp_t[p].get(cands[i], -np.inf) for i in t_idx])
     rows = {p: [] for p in priors}
     meta = []
-    for j, ds in enumerate(D["datasets"]):
-        tf = D["true_forms"][ds["form"]]
+    for j, ds in enumerate(DES["datasets"]):
+        tf = DES["true_forms"][ds["form"]]
         temporal = tf["stratum"] == "temporal_novel"
         idx = t_idx if temporal else all_idx
         Lj = np.where(np.isfinite(L[j, idx]), L[j, idx], -np.inf)
@@ -132,7 +133,7 @@ def report(out_md, out_json, design_path, trees_path, mech_dir, temporal_dir, va
                               key=lambda p: (fam[p] != "tree", -summ[p]["all"]["p_post"]))
     res = {"config": cfg, "n_datasets": J, "n_candidates": len(cands), "n_candidates_temporal": int(in_t.sum()),
            "evidence_cpu_seconds": secs, "true_fit_fraction": float(np.mean([m["true_fit"] for m in meta])),
-           "selection": D["selection"], "pool_sizes": D["pool_sizes"], "true_forms": D["true_forms"],
+           "selection": DES["selection"], "pool_sizes": DES["pool_sizes"], "true_forms": DES["true_forms"],
            "summary": summ, "family": {p: ("-" if p == "flat" else fam[p]) for p in priors}}
     with open(out_json, "w") as fh:
         json.dump(res, fh, indent=1)
@@ -154,13 +155,13 @@ def report(out_md, out_json, design_path, trees_path, mech_dir, temporal_dir, va
     Lm.append(f"Candidate set: the {len(cands)} support forms of the mechanism hold-out run with at most "
               f"{cfg['max_consts']} constants and {cfg['max_nodes']} nodes ({int(in_t.sum())} of them in the "
               f"temporal run's support, the candidate set for temporal true forms). {J} datasets: "
-              f"{len(D['true_forms'])} true forms x {len(cfg['settings'])} (n, noise) settings x {cfg['reps']} "
+              f"{len(DES['true_forms'])} true forms x {len(cfg['settings'])} (n, noise) settings x {cfg['reps']} "
               f"replicates. The true form's fit succeeded on {res['true_fit_fraction']:.1%} of datasets. "
               f"Evidence: {secs / 3600:.1f} CPU hours.\n")
     Lm.append("Look-alike set A_D: candidates within D nats of the best log evidence. rank: rank of the truth in A_D "
               "under the prior (1 = the prior's favourite, ties count half), given the truth is in A_D; top: "
               "fraction of those datasets where the truth is the prior's strict favourite in A_D; mass: prior "
-              "probability of the truth renormalised within A_D (flat: 1/|A_D|); gain: mean log(mass x |A_D|), the "
+              "probability of the truth renormalised within A_D (flat: 1/|A_D|); gain: median over datasets of log(mass x |A_D|), the "
               "log factor by which the prior beats the flat prior on the truth; P(true): posterior probability of "
               "the truth over the whole candidate set (log evidence + log prior); MAP: fraction of datasets where "
               "the truth is the posterior mode.\n")
@@ -168,8 +169,8 @@ def report(out_md, out_json, design_path, trees_path, mech_dir, temporal_dir, va
     Lm.append("| stratum | eligible distinct forms | chosen | seen | not simulable (skipped) |")
     Lm.append("|---|---|---|---|---|")
     for s in strata:
-        sel = D["selection"][s]
-        n_seen = sum(t["seen"] for t in D["true_forms"] if t["stratum"] == s)
+        sel = DES["selection"][s]
+        n_seen = sum(t["seen"] for t in DES["true_forms"] if t["stratum"] == s)
         Lm.append(f"| {s} | {sel['eligible']} | {sel['chosen']} | {n_seen} | {sel['not_simulable']} |")
     Lm.append("")
     Lm.append("## How often is the truth a look-alike?\n")
@@ -213,7 +214,7 @@ def report(out_md, out_json, design_path, trees_path, mech_dir, temporal_dir, va
     Lm.append("## True forms used\n")
     Lm.append("| stratum | form | seen | constants | nodes |")
     Lm.append("|---|---|---|---|---|")
-    for t in D["true_forms"]:
+    for t in DES["true_forms"]:
         Lm.append(f"| {t['stratum']} | `{t['key']}` | {'yes' if t['seen'] else 'no'} | {t['n_consts']} | {t['nodes']} |")
     Lm.append("")
     with open(out_md, "w") as fh:

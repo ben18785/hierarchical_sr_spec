@@ -1035,12 +1035,13 @@ rule lookalike_report:
         json="results/grammar/lookalike.json",
     params:
         variants=",".join(HPYV_VARIANTS),
+        deltas=",".join(str(d) for d in LA["deltas"]),
     conda:
         HSR_ENV
     shell:
         "PYTHONPATH={ROOT} python workflow/scripts/lookalike_steps.py report {output.md} {output.json} "
         "{input.design} {input.trees} results/grammar/mechholdout_equal results/grammar/{LA_TRUN} "
-        "{params.variants} {input.shards}"
+        "{params.variants} {params.deltas} {input.shards}"
 
 
 # ================================================= temporal hold-out (temporal_*)
