@@ -739,3 +739,167 @@ rule hpyv_report:
     shell:
         "PYTHONPATH={ROOT} python workflow/scripts/hpyv_report.py {output} {input.trees} --notes {input.notes} "
         "--tables {input.tables} --scores {input.scores} --calib {input.calib}"
+
+
+# ================================================= temporal hold-out (temporal_*)
+# Test 3: train every prior only on models published before a cutoff year Y,
+# score the forms of models published from Y on, split into forms already used
+# before Y ("seen") and forms first used at or after Y ("novel").
+#
+#     snakemake --use-conda --cores 1 temporal
+#
+# Publication years: hsr.model_dates (records of BioModels, ModelDB, JWS
+# fetched locally; EBI blocks GitHub-hosted runners). Folds: hsr.temporal.
+# The scoring rules are the generic ones (grammar_scores, fnprior_scores,
+# hpy_scores) plus copies of hpyv_scores / hpyv_table_run that use a tree
+# file covering the temporal folds (results/grammar/temporal/trees.json).
+TEMPORAL = config["temporal"]
+TEMPORAL_RUNS = [f"temporal_{y}_{w}" for y in TEMPORAL["cutoffs"] for w in TEMPORAL["weightings"]]
+TEMPORAL_CORPORA = (expand("hsr/data/corpus_{n}.json", n=["sabiork", "cellml", "curvelib", "biocat"] + NEW_CORPORA)
+                    + ["hsr/data/corpus.json"])
+
+
+rule temporal:
+    input:
+        "results/grammar/temporal.md",
+
+
+rule model_dates_fetch:
+    """Model records with publication years: BioModels curated and non-curated
+    (EBI; run locally), ModelDB and JWS Online, one request per model of the
+    committed corpora, <= 40 requests per minute per site. Records are cached
+    under results/corpora/raw/dates/<source>/ with a manifest (URLs, sha256);
+    delete the directory to refresh."""
+    input:
+        corpora=["hsr/data/corpus.json", "hsr/data/corpus_biomodels_nc.json", "hsr/data/corpus_modeldb.json",
+                 "hsr/data/corpus_jws.json"],
+    output:
+        "results/corpora/raw/dates/manifest.json",
+    params:
+        raw="results/corpora/raw/dates",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python -m hsr.model_dates fetch {params.raw} hsr/data"
+
+
+rule model_dates:
+    """Publication year of every dated corpus model (committed): fetched records,
+    the cached SABIO-RK export (publication years), PMR workspace and file
+    names, allodb reference ids and the catalogues' references."""
+    input:
+        rec="results/corpora/raw/dates/manifest.json",
+        sabiork="results/corpora/raw/sabiork/manifest.json",
+        cellml="results/corpora/raw/cellml/manifest.json",
+        corpora=TEMPORAL_CORPORA,
+        cats=["hsr/data/sources/thermal_curves.csv", "hsr/data/sources/ecocurves_curves.csv",
+              "hsr/data/sources/bio_catalogue.csv"],
+        code="hsr/model_dates.py",
+    output:
+        "hsr/data/model_dates.json",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python -m hsr.model_dates build results/corpora/raw/dates results/corpora/raw/sabiork "
+        "{input.cellml} hsr/data {output}"
+
+
+rule temporal_folds:
+    """Train on every source's models dated before the cutoff (plus the undated
+    sources), test on the model-form pairs of models dated from the cutoff on."""
+    input:
+        gen="results/grammar/generalised.json",
+        dates="hsr/data/model_dates.json",
+        corpora=TEMPORAL_CORPORA,
+        code=["hsr/temporal.py", "hsr/grammar_compare.py", "workflow/scripts/temporal_steps.py"],
+    output:
+        "results/grammar/temporal_{cutoff}_{weighting}/folds.json",
+    wildcard_constraints:
+        cutoff=r"\d{4}",
+        weighting="pooled|equal",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/temporal_steps.py folds {input.gen} {input.dates} "
+        "{wildcards.cutoff} {wildcards.weighting} {output}"
+
+
+rule temporal_trees:
+    """Every support/train/test form of the temporal folds coded as a tree (as hpyv_trees)."""
+    input:
+        folds=expand("results/grammar/{run}/folds.json", run=TEMPORAL_RUNS),
+        code=["workflow/scripts/hpyv_trees.py", "hsr/treecode.py", "hsr/fnprior_tools.py"],
+    output:
+        "results/grammar/temporal/trees.json",
+    conda:
+        "envs/fnprior.yaml"
+    shell:
+        "python workflow/scripts/hpyv_trees.py {output} {input.folds}"
+
+
+rule temporal_hpyv_scores:
+    """hpyv_scores on a temporal fold (source labels are stored in the fold;
+    test forms are scored as a new, unseen source)."""
+    input:
+        folds="results/grammar/temporal_{trun}/folds.json",
+        trees="results/grammar/temporal/trees.json",
+        variant="results/grammar/hpyv/variants/{v}.json",
+        code=["workflow/scripts/hpyv_score.py"] + HPYV_CODE,
+    output:
+        "results/grammar/temporal_{trun}/hpyvt_{v}.json",
+    wildcard_constraints:
+        trun=r"\d{4}_(pooled|equal)",
+    params:
+        sweeps=HPYV["sweeps"],
+        keep=HPYV["keep"],
+    conda:
+        "envs/fnprior.yaml"
+    shell:
+        # the sources argument is unused when the fold carries train_labels
+        "python workflow/scripts/hpyv_score.py {input.folds} {input.trees} {input.folds} {input.variant} {output} "
+        "{params.sweeps} {params.keep}"
+
+
+ruleorder: temporal_table_run > hpyv_table_run
+
+
+rule temporal_table_run:
+    input:
+        folds="results/grammar/temporal_{trun}/folds.json",
+        trees="results/grammar/temporal/trees.json",
+        ours="results/grammar/temporal_{trun}/ours.json",
+        fnp="results/grammar/temporal_{trun}/fnprior.json",
+        hpy="results/grammar/temporal_{trun}/hpy.json",
+        v=expand("results/grammar/temporal_{{trun}}/hpyvt_{v}.json", v=HPYV_VARIANTS),
+        code="workflow/scripts/hpyv_table.py",
+    output:
+        json="results/grammar/temporal_{trun}/table_v.json",
+        md="results/grammar/temporal_{trun}/table_v.md",
+    wildcard_constraints:
+        trun=r"\d{4}_(pooled|equal)",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/hpyv_table.py {input.folds} {input.trees} {output.json} {output.md} "
+        "{input.ours} {input.fnp} {input.hpy} {input.v}"
+
+
+rule temporal_report:
+    """Summary: raw log P per prior on all, seen and novel test forms, per cutoff and weighting."""
+    input:
+        dates="hsr/data/model_dates.json",
+        tables=expand("results/grammar/{run}/table_v.json", run=TEMPORAL_RUNS),
+        scores=expand("results/grammar/{run}/{s}.json", run=TEMPORAL_RUNS,
+                      s=["ours", "fnprior", "hpy"] + [f"hpyvt_{v}" for v in HPYV_VARIANTS]),
+        code=["workflow/scripts/temporal_steps.py", "hsr/temporal.py"],
+    output:
+        md="results/grammar/temporal.md",
+        json="results/grammar/temporal.json",
+    params:
+        runs=" ".join(f"results/grammar/{r}" for r in TEMPORAL_RUNS),
+        variants=",".join(HPYV_VARIANTS),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/temporal_steps.py report {output.md} {output.json} {input.dates} "
+        "{params.variants} {params.runs}"

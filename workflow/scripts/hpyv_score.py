@@ -33,8 +33,12 @@ SPEC_ARGS = ("n", "drop_L", "drop_R", "graph", "depth_cap", "source")
 
 def train_sources(F, fold, sources):
     """Source label of every training form, and the test source."""
+    if "train_labels" in fold:                    # labels stored with the fold (temporal hold-out)
+        if len(fold["train_labels"]) != len(fold["train"]):
+            raise ValueError("train_labels and train differ in length")
+        return fold["train_labels"], fold.get("test_source", "test")
     test = F.get("test_corpus") or ""
-    if "train_sizes" in F:                       # leave one source out
+    if "train_sizes" in F:                     # leave one source out
         test_src = test.split(" ")[0]
         weighting = "equal" if "; equal)" in test else "pooled"
         parts = {n: sources[n] for n in F["train_sizes"]}

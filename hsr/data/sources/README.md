@@ -278,3 +278,35 @@ FUNCTIONs are inlined, median 8 constants against 4 for CellML; many are singlet
 | jws | 673 | 3004 | 255 | 58 | 66 |
 
 Baseline: 874 distinct forms; all twelve sources: 2185 (1311 not in the baseline).
+
+## Model dates (`model_dates.json`, temporal hold-out)
+
+Publication year of every corpus model that has one, for the temporal hold-out test (rules
+`model_dates_fetch`, `model_dates`, `temporal_*`; `hsr.model_dates`, `hsr.temporal`;
+`snakemake --use-conda --cores 1 temporal`). Format: `years` {source: {model id: year}},
+`undated` {source: [model ids]}, `undated_sources`, `how` (which field gave the year, per
+source), `coverage`.
+
+* Fetched (rule `model_dates_fetch`, run locally since EBI blocks GitHub-hosted runners; records
+  cached under `results/corpora/raw/dates/<source>/` with a manifest of URLs and sha256; <= 40
+  requests per minute per site, generic user agent):
+  * BioModels curated and non-curated: the model record (`/biomodels/<id>?format=json`),
+    `publication.year`, otherwise the year of the first revision (`history`), otherwise
+    `firstPublished`. 2026-11-25: 1075/1075 curated and 495/531 non-curated from the
+    publication, 36 non-curated from the first submission.
+  * ModelDB: the record fields `model_paper`, `name` and `created`; ModelDB answers in about 40 s
+    per request, so they are read from the four whole-database field listings
+    (`/api/v1/models/<field>`, same order as `/api/v1/models/id`). Year of the earliest model
+    paper ("Hemond P, ... (2008)"; 743 models), otherwise a year in the name (26), otherwise the
+    entry's creation (9).
+  * JWS Online: `/rest/models/<slug>/manuscript/` `year`; 522 of 673 dated (121 records without
+    a year, 30 answered HTTP 500).
+* Offline: SABIO-RK from the cached export (`publication.year` of the publication; all 5057);
+  CellML from a year in the workspace name or, when they agree on one year, the CellML file
+  names (author_year convention; 328 of 347); allodb from the reference id (53/54); thermal and
+  ecocurves from the earliest year of the model's catalogue references; biocat from the row's
+  reference (classic forms carry the year of their original paper, e.g. 1913 for
+  Michaelis-Menten).
+* Undated sources: curvelib (R library self-start functions) and nlmixr2lib (no per-model date);
+  they are always in the training set of the temporal folds. Undated models of dated sources are
+  dropped from the temporal folds (neither trained on nor tested).

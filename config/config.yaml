@@ -59,3 +59,10 @@ hpyv:
     tree_ad_depth: {model: adaptor, mode: all, n: 2, depth_cap: 6}
     form_ad3_depth: {model: adaptor, mode: root, n: 3, depth_cap: 6}
     tree_ad3_depth: {model: adaptor, mode: all, n: 3, depth_cap: 6}
+
+# temporal hold-out (rules temporal_*; hsr.temporal, hsr.model_dates): priors
+# trained on models dated before each cutoff year, scored on the forms of
+# models dated from that year on
+temporal:
+  cutoffs: [2010, 2015, 2020]
+  weightings: [equal, pooled]

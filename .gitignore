@@ -9,3 +9,6 @@ results/grammar/seed*/
 results/grammar/generalised.json
 results/grammar/transfer_*/
 results/corpora/
+results/grammar/temporal_*/
+results/grammar/temporal/
+results/grammar/temporal.json
