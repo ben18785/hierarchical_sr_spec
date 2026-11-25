@@ -71,3 +71,12 @@ holdout_sources: [rnls, ratelaws, ecocat2]
 temporal:
   cutoffs: [2010, 2015, 2020]
   weightings: [equal, pooled]
+
+# blended priors (rule blend_report; hsr.blend): mixtures of tree priors, weights
+# chosen on the LOSO runs only, evaluated on the hold-out and temporal tests.
+# pairs: P_w = w P_A + (1 - w) P_B (grid search over w); triples: EM weights.
+# The mixture of every tree prior is always added.
+blend:
+  pairs: [[tree_ad3, hpy3_depth], [tree_ad3, hpy2], [tree_ad3, fnprior_kn], [form_ad3_depth, hpy3_depth],
+          [form_ad3_depth, hpy2], [form_ad3_depth, fnprior_kn], [tree_ad3, sym0]]
+  triples: [[tree_ad3, hpy3_depth, fnprior_kn], [tree_ad3, form_ad3_depth, hpy3_depth]]

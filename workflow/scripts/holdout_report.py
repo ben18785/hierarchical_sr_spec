@@ -36,6 +36,10 @@ import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 from hsr import treecode as tc  # noqa: E402
+from hsr.gap_diagnostics import (FIXED_SIZE_NOTE, by_size_table, fixed_size_table,  # noqa: E402,F401
+                                  gap_stats, redundant)
+from hsr.gap_diagnostics import fmt as _f  # noqa: E402
+from hsr.gap_diagnostics import mean as _mean  # noqa: E402
 
 
 def _scores(run_dir, variants, trees, support):
@@ -52,61 +56,6 @@ def _scores(run_dir, variants, trees, support):
                                       for k in support])
     fam["uniform symbols"] = "tree"
     return lp, fam
-
-
-def redundant(key, n_x=40, n_draws=3, seed=0, tol=1e-8):
-    """True if the constants of form ``key`` are not identifiable: the
-    Jacobian of f(x; c) with respect to c is rank deficient at every one of
-    ``n_draws`` random constant vectors (generic points), on a grid of x."""
-    import sympy as sp
-    from hsr.candidates import skeleton_from_key
-    from hsr.canonical import consts_of
-    try:
-        expr = skeleton_from_key(key).expr
-    except Exception:
-        return False
-    cs = sorted(consts_of(expr), key=str)
-    if len(cs) < 2:
-        return False
-    x = [v for v in expr.free_symbols if str(v) == "x1"]
-    if not x:
-        return False
-    try:
-        J = sp.lambdify([x[0]] + cs, [sp.diff(expr, c) for c in cs], "numpy")
-    except Exception:
-        return False
-    rng = np.random.default_rng(seed)
-    xs = np.linspace(0.2, 3.0, n_x)
-    deficient = 0
-    with np.errstate(all="ignore"):
-        for _ in range(n_draws):
-            cv = rng.uniform(0.5, 2.0, len(cs))
-            try:
-                M = np.array([np.broadcast_to(np.asarray(col, float), xs.shape) for col in J(xs, *cv)]).T
-            except Exception:
-                return False
-            M = M[np.all(np.isfinite(M), axis=1)]
-            if M.shape[0] < len(cs):
-                return False
-            sv = np.linalg.svd(M / (np.linalg.norm(M, axis=0) + 1e-300), compute_uv=False)
-            deficient += sv[-1] < tol * sv[0]
-    return deficient == n_draws
-
-
-def _ols_novel(y, nodes, novel):
-    """(per-node slope, novelty penalty at fixed size) from
-    y = a + b * nodes + g * novel over finite y."""
-    ok = np.isfinite(y) & np.isfinite(nodes)
-    if ok.sum() < 4 or novel[ok].all() or not novel[ok].any():
-        return None, None
-    X = np.column_stack([np.ones(ok.sum()), nodes[ok], novel[ok].astype(float)])
-    b = np.linalg.lstsq(X, y[ok], rcond=None)[0]
-    return float(b[1]), float(b[2])
-
-
-def _mean(a):
-    a = a[np.isfinite(a)]
-    return float(a.mean()) if a.size else None
 
 
 def summarise(F, lp, fam, nodes_of=None, redund=frozenset()):
@@ -147,27 +96,15 @@ def summarise(F, lp, fam, nodes_of=None, redund=frozenset()):
                             "n_zero": int((~np.isfinite(raw)).sum())}
             nodes = np.array([nodes_of.get(k, np.nan) for k in keys], float)
             red = np.array([k in redund for k in keys], bool)
-            slope, pen = _ols_novel(raw, nodes, ~seen)
+            s0 = None if sym0 is None else np.array([sym0[idx[k]] for k in keys])
+            gs = gap_stats(raw, nodes, seen, red, s0, by_size=(g == "all"))
             o = out[name][g]
-            o["per_node"], o["novel_penalty_fixed_size"] = slope, pen
-            o["raw_novel_nonredundant"] = _mean(raw[~seen & ~red])
+            o.update({k: gs[k] for k in ("per_node", "novel_penalty_fixed_size", "raw_novel_nonredundant")})
             if sym0 is not None:
-                ex = raw - np.array([sym0[idx[k]] for k in keys])
-                o["vs_sym0_seen"], o["vs_sym0_novel"] = _mean(ex[seen]), _mean(ex[~seen])
+                o["vs_sym0_seen"], o["vs_sym0_novel"] = gs["vs_sym0_seen"], gs["vs_sym0_novel"]
             if g == "all":
-                o["by_size"] = {}
-                for lo, hi in SIZE_BINS:
-                    m = (nodes >= lo) & (nodes <= hi)
-                    o["by_size"][f"{lo}-{hi}"] = {"n_seen": int((m & seen).sum()), "n_novel": int((m & ~seen).sum()),
-                                                 "seen": _mean(raw[m & seen]), "novel": _mean(raw[m & ~seen])}
+                o["by_size"] = gs["by_size"]
     return out, counts
-
-
-SIZE_BINS = [(1, 5), (6, 9), (10, 14), (15, 20), (21, 10_000)]
-
-
-def _f(x):
-    return "" if x is None else f"{x:.2f}"
 
 
 def why(L, res, ws, w0, priors, groups):
@@ -176,32 +113,13 @@ def why(L, res, ws, w0, priors, groups):
     L.append("Novel forms are larger than seen ones, and every prior pays per node. sym0 (symbol frequencies "
              "only) measures what size and symbol use alone cost.\n")
     L.append("### Log P by node count (all hold-outs; seen / novel; pairs in brackets)\n")
-    bins = list(res[w0]["stats"][tree[0]]["all"]["by_size"])
     for w in ws:
         L.append(f"{w} weighting:\n")
-        L.append("| prior | " + " | ".join(f"{b} nodes" for b in bins) + " |")
-        L.append("|---|" + "---|" * len(bins))
-        bs = res[w]["stats"][tree[0]]["all"]["by_size"]
-        L.append("| pairs (seen / novel) | " + " | ".join(f"{bs[b]['n_seen']} / {bs[b]['n_novel']}" for b in bins) + " |")
-        for p in tree:
-            bs = res[w]["stats"][p]["all"]["by_size"]
-            L.append(f"| {p} | " + " | ".join(f"{_f(bs[b]['seen'])} / {_f(bs[b]['novel'])}" for b in bins) + " |")
+        L += by_size_table([(p, res[w]["stats"][p]["all"]["by_size"]) for p in tree])
         L.append("")
     L.append("### Novelty at fixed size, relative to sym0, and without redundant forms (all hold-outs)\n")
-    L.append("per node: OLS slope of log P on node count; novel penalty: OLS coefficient of the novel indicator "
-             "at fixed node count (log P = a + b nodes + g novel, over model-form pairs); vs sym0: log P minus "
-             "sym0's log P, seen / novel; novel (non-redundant): mean log P of novel pairs whose constants are "
-             "identifiable.\n")
-    L.append("| prior | weighting | seen | novel | gap | per node | novel penalty | vs sym0 seen / novel | "
-             "novel (non-redundant) |")
-    L.append("|---|---|---|---|---|---|---|---|---|")
-    for p in tree:
-        for w in ws:
-            a = res[w]["stats"][p]["all"]
-            gap = None if a["raw_seen"] is None or a["raw_novel"] is None else a["raw_seen"] - a["raw_novel"]
-            L.append(f"| {p} | {w} | {_f(a['raw_seen'])} | {_f(a['raw_novel'])} | {_f(gap)} | {_f(a['per_node'])} | "
-                     f"{_f(a['novel_penalty_fixed_size'])} | {_f(a.get('vs_sym0_seen'))} / "
-                     f"{_f(a.get('vs_sym0_novel'))} | {_f(a['raw_novel_nonredundant'])} |")
+    L.append(FIXED_SIZE_NOTE + "\n")
+    L += fixed_size_table([(p, w, res[w]["stats"][p]["all"]) for p in tree for w in ws])
     L.append("")
     c = res[w0]["counts"]
     L.append("Redundant novel forms (constants not identifiable; Jacobian rank test): " + ", ".join(
