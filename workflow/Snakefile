@@ -824,7 +824,7 @@ rule holdout_report:
         folds=expand("results/grammar/{run}/folds.json", run=HOLDOUT_RUNS),
         tables=expand("results/grammar/{run}/table_v.json", run=HOLDOUT_RUNS),
         trees="results/grammar/hpyv/trees_holdout.json",
-        code="workflow/scripts/holdout_report.py",
+        code=["workflow/scripts/holdout_report.py", "hsr/gap_diagnostics.py"],
     output:
         md="results/grammar/holdout.md",
         json="results/grammar/holdout.json",
@@ -1190,10 +1190,11 @@ rule temporal_report:
     """Summary: raw log P per prior on all, seen and novel test forms, per cutoff and weighting."""
     input:
         dates="hsr/data/model_dates.json",
+        trees="results/grammar/temporal/trees.json",
         tables=expand("results/grammar/{run}/table_v.json", run=TEMPORAL_RUNS),
         scores=expand("results/grammar/{run}/{s}.json", run=TEMPORAL_RUNS,
                       s=["ours", "fnprior", "hpy"] + [f"hpyvt_{v}" for v in HPYV_VARIANTS]),
-        code=["workflow/scripts/temporal_steps.py", "hsr/temporal.py"],
+        code=["workflow/scripts/temporal_steps.py", "hsr/temporal.py", "hsr/gap_diagnostics.py"],
     output:
         md="results/grammar/temporal.md",
         json="results/grammar/temporal.json",
@@ -1203,5 +1204,54 @@ rule temporal_report:
     conda:
         HSR_ENV
     shell:
-        "PYTHONPATH={ROOT} python workflow/scripts/temporal_steps.py report {output.md} {output.json} {input.dates} "
+        "PYTHONPATH={ROOT} python workflow/scripts/temporal_steps.py report {output.md} {output.json} {input.dates} {input.trees} "
         "{params.variants} {params.runs}"
+
+
+# ================================================= blended priors (blend)
+# Mixtures of tree priors (hsr.blend; config blend): weights chosen on the
+# LOSO runs only (mean over left-out sources of mean log P per pair), then
+# evaluated, untouched, on the hold-out sources and the temporal hold-out.
+# Reads existing scores only; nothing is refit:
+#
+#     snakemake --cores 1 --rerun-triggers=mtime blend --allowed-rules blend_report blend
+BLEND = config["blend"]
+LOSO_RUNS = [f"loso_{t}_{w}" for t in LOSO for w in ("equal", "pooled")]
+
+
+def _blend_scores(runs, prefix):
+    return expand("results/grammar/{run}/{s}.json", run=runs,
+                  s=["fnprior", "hpy"] + [f"{prefix}_{v}" for v in HPYV_VARIANTS])
+
+
+rule blend_report:
+    input:
+        loso=_blend_scores(LOSO_RUNS, "hpyv") + expand("results/grammar/{run}/folds.json", run=LOSO_RUNS),
+        holdout=_blend_scores(HOLDOUT_RUNS, "hpyv") + expand("results/grammar/{run}/folds.json", run=HOLDOUT_RUNS),
+        temporal=(_blend_scores(TEMPORAL_RUNS, "hpyvt")
+                  + expand("results/grammar/{run}/folds.json", run=TEMPORAL_RUNS)),
+        holdout_trees="results/grammar/hpyv/trees_holdout.json",
+        temporal_trees="results/grammar/temporal/trees.json",
+        code=["workflow/scripts/blend_report.py", "hsr/blend.py", "hsr/gap_diagnostics.py"],
+    output:
+        md="results/grammar/blend.md",
+        json="results/grammar/blend.json",
+    params:
+        variants=" ".join(HPYV_VARIANTS),
+        pairs=" ".join(":".join(p) for p in BLEND["pairs"]),
+        triples=" ".join(":".join(p) for p in BLEND.get("triples", [])),
+        loso=" ".join(f"results/grammar/{r}" for r in LOSO_RUNS),
+        holdout=" ".join(f"results/grammar/{r}" for r in HOLDOUT_RUNS),
+        temporal=" ".join(f"results/grammar/{r}" for r in TEMPORAL_RUNS),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/blend_report.py {output.md} {output.json} "
+        "--variants {params.variants} --pairs {params.pairs} --triples {params.triples} --loso {params.loso} "
+        "--holdout {params.holdout} --holdout-trees {input.holdout_trees} --temporal {params.temporal} "
+        "--temporal-trees {input.temporal_trees}"
+
+
+rule blend:
+    input:
+        "results/grammar/blend.md",
