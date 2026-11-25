@@ -1,0 +1,1027 @@
+{
+"dropped": {
+"copasi:Constant flux (irreversible)": "no substrate, product or modifier",
+"copasi:Constant flux (reversible)": "no substrate, product or modifier",
+"sbo:SBO_0000047": "no variable among the bound variables",
+"sbo:SBO_0000140": "no variable among the bound variables",
+"sbo:SBO_0000150": "unsupported MathML: indexed product",
+"sbo:SBO_0000163": "unsupported MathML: indexed product",
+"sbo:SBO_0000166": "unsupported MathML: indexed product",
+"sbo:SBO_0000270": "unsupported MathML: indexed sum",
+"sbo:SBO_0000273": "unsupported MathML: indexed product",
+"sbo:SBO_0000275": "unsupported MathML: indexed sum",
+"sbo:SBO_0000378": "unsupported MathML: indexed sum",
+"sbo:SBO_0000451": "unsupported MathML: indexed sum",
+"sbo:SBO_0000646": "unsupported MathML: indexed product"
+},
+"freq": {
+"(c0 + c1*x1)/(c2 + x1)": 64,
+"(c0 + c1*x1**c2)/(c3 + x1**c2)": 2,
+"(c0*x1 + c1)/(c2*x1**2 + c3 + x1)": 2,
+"(c2 + c3*x1)*(c0*x1 + c1)**c5/(c6 + (c0*x1 + c1)**c4)": 2,
+"(c2 + c3*x1)*(c0*x1 + c1)**c6/(c5 + (c0*x1 + c1)**c4)": 4,
+"c0*(c1 + x1)/(c2 + x1)": 11,
+"c0*(c1*c2*x1**c3 + c7)/(c1*x1**c3 + c4*(c1*c2*x1**c3 + c6) + c5)": 2,
+"c0*x1": 37,
+"c0*x1 + c1": 48,
+"c0*x1*(c1 + x1)*(c2 + x1)": 1,
+"c0*x1*(c2 + x1)**c4/(c1 + (c2 + x1)**c3)": 1,
+"c0*x1*(c2*x1 + c5)**c4/(c1 + (c2*x1 + c6)**c3)": 1,
+"c0*x1**2": 2,
+"c0*x1**2 + c1": 24,
+"c0*x1**2 - c0*x1": 2,
+"c0*x1**2/(c1*x1**2 + c2 + x1)": 2,
+"c0*x1**3": 1,
+"c0*x1**3 + c1": 13,
+"c0*x1**c1/(c2 + x1**c1)": 4,
+"c0*x1/(c1 + x1)": 58,
+"c0*x1/(c1*x1**2 + c2 + x1)": 2,
+"c0/(c1 + (c2*x1 + c3)**c4)": 3,
+"c0/(c1 + x1)": 37,
+"c0/(c1 + x1**c2)": 2,
+"c2*(c1 + c10*x1)/(c1*(c0*x1 + c3) + c8*(c6*(c4*x1 + c5) + c7*x1) + c9)": 2,
+"c2*(c4*x1 + c5)/(c2*(c0*x1 + c1) + c3)": 4,
+"c3*(c5*x1 + c6)/(c3*(c1*(c0*x1 + c7) + c2) + c4)": 3,
+"c5*(c1 + c4*x1)/(c1*(c0*x1 + c6) + c3*(c2*x1 + c7))": 2,
+"c5*(c4 + x1)*(c0*x1 + c1)**c3/(c6 + (c0*x1 + c1)**c2)": 2,
+"c6*(c5 + x1)*(c0*x1 + c1)**c4/(c3 + (c0*x1 + c1)**c2)": 4,
+"c7*(c1 + c6*x1)/(c1*(c0*x1 + c8) + c4*(c2*x1 + c3) + c5)": 2
+},
+"labels": {
+"copasi:Allosteric inhibition (MWC)": "Allosteric inhibition (MWC)",
+"copasi:Allosteric inhibition (empirical)": "Allosteric inhibition (empirical)",
+"copasi:Arrhenius Bimolecular (irr)": "Arrhenius Bimolecular (irr)",
+"copasi:Arrhenius Unimolecular (irr)": "Arrhenius Unimolecular (irr)",
+"copasi:Bi (irreversible)": "Bi (irreversible)",
+"copasi:Bi Bi convenience": "Bi Bi convenience",
+"copasi:Bi Bi convenience (Keq)": "Bi Bi convenience (Keq)",
+"copasi:Bi Bi convenience (Keq), catalytic activation": "Bi Bi convenience (Keq), catalytic activation",
+"copasi:Bi Bi convenience (Keq), competitive inhibition": "Bi Bi convenience (Keq), competitive inhibition",
+"copasi:Bi Bi convenience (Keq), non-competitive inhibition": "Bi Bi convenience (Keq), non-competitive inhibition",
+"copasi:Bi Bi convenience (Keq), non-essential activation": "Bi Bi convenience (Keq), non-essential activation",
+"copasi:Bi Bi convenience (Keq), specific activation": "Bi Bi convenience (Keq), specific activation",
+"copasi:Bi Bi convenience, catalytic activation": "Bi Bi convenience, catalytic activation",
+"copasi:Bi Bi convenience, competitive inhibition": "Bi Bi convenience, competitive inhibition",
+"copasi:Bi Bi convenience, non-competitive inhibition": "Bi Bi convenience, non-competitive inhibition",
+"copasi:Bi Bi convenience, non-essential activation": "Bi Bi convenience, non-essential activation",
+"copasi:Bi Bi convenience, specific activation": "Bi Bi convenience, specific activation",
+"copasi:Bi Uni convenience": "Bi Uni convenience",
+"copasi:Bi Uni convenience (Keq)": "Bi Uni convenience (Keq)",
+"copasi:Bi Uni convenience (Keq), catalytic activation": "Bi Uni convenience (Keq), catalytic activation",
+"copasi:Bi Uni convenience (Keq), competitive inhibition": "Bi Uni convenience (Keq), competitive inhibition",
+"copasi:Bi Uni convenience (Keq), non-competitive inhibition": "Bi Uni convenience (Keq), non-competitive inhibition",
+"copasi:Bi Uni convenience (Keq), non-essential activation": "Bi Uni convenience (Keq), non-essential activation",
+"copasi:Bi Uni convenience (Keq), specific activation": "Bi Uni convenience (Keq), specific activation",
+"copasi:Bi Uni convenience, catalytic activation": "Bi Uni convenience, catalytic activation",
+"copasi:Bi Uni convenience, competitive inhibition": "Bi Uni convenience, competitive inhibition",
+"copasi:Bi Uni convenience, non-competitive inhibition": "Bi Uni convenience, non-competitive inhibition",
+"copasi:Bi Uni convenience, non-essential activation": "Bi Uni convenience, non-essential activation",
+"copasi:Bi Uni convenience, specific activation": "Bi Uni convenience, specific activation",
+"copasi:Bi convenience (irreversible), catalytic activation": "Bi convenience (irreversible), catalytic activation",
+"copasi:Bi convenience (irreversible), competitive inhibition": "Bi convenience (irreversible), competitive inhibition",
+"copasi:Bi convenience (irreversible), non-competitive inhibition": "Bi convenience (irreversible), non-competitive inhibition",
+"copasi:Bi convenience (irreversible), non-essential activation": "Bi convenience (irreversible), non-essential activation",
+"copasi:Bi convenience (irreversible), specific activation": "Bi convenience (irreversible), specific activation",
+"copasi:Catalytic activation (irrev)": "Catalytic activation (irrev)",
+"copasi:Catalytic activation (rev)": "Catalytic activation (rev)",
+"copasi:Competitive inhibition (irr)": "Competitive inhibition (irr)",
+"copasi:Competitive inhibition (rev)": "Competitive inhibition (rev)",
+"copasi:Constant flux (irreversible)": "Constant flux (irreversible)",
+"copasi:Constant flux (reversible)": "Constant flux (reversible)",
+"copasi:Henri-Michaelis-Menten (irreversible)": "Henri-Michaelis-Menten (irreversible)",
+"copasi:Hill Cooperativity": "Hill Cooperativity",
+"copasi:Hyperbolic modifier (irrev)": "Hyperbolic modifier (irrev)",
+"copasi:Hyperbolic modifier (rev)": "Hyperbolic modifier (rev)",
+"copasi:Iso Uni Uni": "Iso Uni Uni",
+"copasi:Mass action (irreversible)": "Mass action (irreversible)",
+"copasi:Mass action (reversible)": "Mass action (reversible)",
+"copasi:Mixed activation (irrev)": "Mixed activation (irrev)",
+"copasi:Mixed activation (rev)": "Mixed activation (rev)",
+"copasi:Mixed inhibition (irr)": "Mixed inhibition (irr)",
+"copasi:Mixed inhibition (rev)": "Mixed inhibition (rev)",
+"copasi:Noncompetitive inhibition (irr)": "Noncompetitive inhibition (irr)",
+"copasi:Noncompetitive inhibition (rev)": "Noncompetitive inhibition (rev)",
+"copasi:Ordered Bi Bi": "Ordered Bi Bi",
+"copasi:Ordered Bi Uni": "Ordered Bi Uni",
+"copasi:Ordered Uni Bi": "Ordered Uni Bi",
+"copasi:Ping Pong Bi Bi": "Ping Pong Bi Bi",
+"copasi:Reversible Hill": "Reversible Hill",
+"copasi:Reversible Hill 1 modifier": "Reversible Hill 1 modifier",
+"copasi:Reversible Hill 2 modifiers": "Reversible Hill 2 modifiers",
+"copasi:Reversible Michaelis-Menten": "Reversible Michaelis-Menten",
+"copasi:Specific activation (irrev)": "Specific activation (irrev)",
+"copasi:Specific activation (rev)": "Specific activation (rev)",
+"copasi:Substrate activation (irr)": "Substrate activation (irr)",
+"copasi:Substrate inhibition (irr)": "Substrate inhibition (irr)",
+"copasi:Substrate inhibition (rev)": "Substrate inhibition (rev)",
+"copasi:Uncompetitive inhibition (irr)": "Uncompetitive inhibition (irr)",
+"copasi:Uncompetitive inhibition (rev)": "Uncompetitive inhibition (rev)",
+"copasi:Uni Bi convenience": "Uni Bi convenience",
+"copasi:Uni Bi convenience (Keq)": "Uni Bi convenience (Keq)",
+"copasi:Uni Bi convenience (Keq), catalytic activation": "Uni Bi convenience (Keq), catalytic activation",
+"copasi:Uni Bi convenience (Keq), non-competitive inhibition": "Uni Bi convenience (Keq), non-competitive inhibition",
+"copasi:Uni Bi convenience (Keq), non-essential activation": "Uni Bi convenience (Keq), non-essential activation",
+"copasi:Uni Bi convenience (Keq), specific activation": "Uni Bi convenience (Keq), specific activation",
+"copasi:Uni Bi convenience, catalytic activation": "Uni Bi convenience, catalytic activation",
+"copasi:Uni Bi convenience, competitive inhibition": "Uni Bi convenience, competitive inhibition",
+"copasi:Uni Bi convenience, non-competitive inhibition": "Uni Bi convenience, non-competitive inhibition",
+"copasi:Uni Bi convenience, non-essential activation": "Uni Bi convenience, non-essential activation",
+"copasi:Uni Bi convenience, specific activation": "Uni Bi convenience, specific activation",
+"copasi:Uni Uni": "Uni Uni",
+"sbo:SBO_0000028": "enzymatic rate law for irreversible non-modulated non-interacting unireactant enzymes",
+"sbo:SBO_0000029": "Henri-Michaelis-Menten rate law",
+"sbo:SBO_0000030": "Van Slyke-Cullen rate law",
+"sbo:SBO_0000031": "Briggs-Haldane rate law",
+"sbo:SBO_0000047": "mass action rate law for zeroth order irreversible reactions, continuous scheme",
+"sbo:SBO_0000049": "mass action rate law for first order irreversible reactions, continuous scheme",
+"sbo:SBO_0000052": "mass action rate law for second order irreversible reactions, one reactant, continuous scheme",
+"sbo:SBO_0000054": "mass action rate law for second order irreversible reactions, two reactants, continuous scheme",
+"sbo:SBO_0000057": "mass action rate law for third order irreversible reactions, one reactant, continuous scheme",
+"sbo:SBO_0000059": "mass action rate law for third order irreversible reactions, two reactants, continuous scheme",
+"sbo:SBO_0000061": "mass action rate law for third order irreversible reactions, three reactants, continuous scheme",
+"sbo:SBO_0000070": "mass action rate law for zeroth order forward, first order reverse, reversible reactions, continuous scheme",
+"sbo:SBO_0000072": "mass action rate law for zeroth order forward, second order reverse, reversible reactions, one product, continuous scheme",
+"sbo:SBO_0000073": "mass action rate law for zeroth order forward, second order reverse, reversible reactions, two products, continuous scheme",
+"sbo:SBO_0000075": "mass action rate law for zeroth order forward, third order reverse, reversible reactions, one product, continuous scheme",
+"sbo:SBO_0000076": "mass action rate law for zeroth order forward, third order reverse, reversible reactions, two products, continuous scheme",
+"sbo:SBO_0000077": "mass action rate law for zeroth order forward, third order reverse, reversible reactions, three products, continuous scheme",
+"sbo:SBO_0000079": "mass action rate law for first order forward, zeroth order reverse, reversible reactions, continuous scheme",
+"sbo:SBO_0000080": "mass action rate law for first order forward, first order reverse, reversible reactions, continuous scheme",
+"sbo:SBO_0000082": "mass action rate law for first order forward, second order reverse, reversible reactions, one product, continuous scheme",
+"sbo:SBO_0000083": "mass action rate law for first order forward, second order reverse, reversible reactions, two products, continuous scheme",
+"sbo:SBO_0000085": "mass action rate law for first order forward, third order reverse, reversible reactions, one product, continuous scheme",
+"sbo:SBO_0000086": "mass action rate law for first order forward, third order reverse, reversible reactions, two products, continuous scheme",
+"sbo:SBO_0000087": "mass action rate law for first order forward, third order reverse, reversible reactions, three products, continuous scheme",
+"sbo:SBO_0000090": "mass action rate law for second order forward, zeroth order reverse, reversible reactions, one reactant, continuous scheme",
+"sbo:SBO_0000091": "mass action rate law for second order forward, first order reverse, reversible reactions, one reactant, continuous scheme",
+"sbo:SBO_0000093": "mass action rate law for second order forward, second order reverse, reversible reactions, one reactant, one product, continuous scheme",
+"sbo:SBO_0000094": "mass action rate law for second order forward, second order reverse, reversible reactions, two products, continuous scheme",
+"sbo:SBO_0000096": "mass action rate law for second order forward, third order reverse, reversible reactions, one reactant, one product, continuous scheme",
+"sbo:SBO_0000097": "mass action rate law for second order forward, third order reverse, reversible reactions, one reactant, two products, continuous scheme",
+"sbo:SBO_0000098": "mass action rate law for second order forward, third order reverse, reversible reactions, one reactant, three products, continuous scheme",
+"sbo:SBO_0000100": "mass action rate law for second order forward, zeroth order reverse, reversible reactions, two reactants, continuous scheme",
+"sbo:SBO_0000101": "mass action rate law for second order forward, first order reverse, reversible reactions, two reactants, continuous scheme",
+"sbo:SBO_0000103": "mass action rate law for second order forward, second order reverse, reversible reactions, two reactants, one product, continuous scheme",
+"sbo:SBO_0000104": "mass action rate law for second order forward, second order reverse, reversible reactions, two reactants, two products, continuous scheme",
+"sbo:SBO_0000106": "mass action rate law for second order forward, third order reverse, reversible reactions, two reactants, one product, continuous scheme",
+"sbo:SBO_0000107": "mass action rate law for second order forward, third order reverse, reversible reactions, two reactants, two products, continuous scheme",
+"sbo:SBO_0000108": "mass action rate law for second order forward, third order reverse, reversible reactions, two reactants, three products, continuous scheme",
+"sbo:SBO_0000111": "mass action rate law for third order forward, zeroth order reverse, reversible reactions, two reactants, continuous scheme",
+"sbo:SBO_0000112": "mass action rate law for third order forward, first order reverse, reversible reactions, two reactants, continuous scheme",
+"sbo:SBO_0000114": "mass action rate law for third order forward, second order reverse, reversible reactions, two reactants, one product, continuous scheme",
+"sbo:SBO_0000115": "mass action rate law for third order forward, second order reverse, reversible reactions, two reactants, two products, continuous scheme",
+"sbo:SBO_0000117": "mass action rate law for third order forward, third order reverse, reversible reactions, two reactants, one product, continuous scheme",
+"sbo:SBO_0000118": "mass action rate law for third order forward, third order reverse, reversible reactions, two reactants, two products, continuous scheme",
+"sbo:SBO_0000119": "mass action rate law for third order forward, third order reverse, reversible reactions, two reactants, three products, continuous scheme",
+"sbo:SBO_0000121": "mass action rate law for third order forward, zeroth order reverse, reversible reactions, three reactants, continuous scheme",
+"sbo:SBO_0000122": "mass action rate law for third order forward, first order reverse, reversible reactions, three reactants, continuous scheme",
+"sbo:SBO_0000124": "mass action rate law for third order forward, second order reverse, reversible reactions, three reactants, one product, continuous scheme",
+"sbo:SBO_0000125": "mass action rate law for third order forward, second order reverse, reversible reactions, three reactants, two products, continuous scheme",
+"sbo:SBO_0000127": "mass action rate law for third order forward, third order reverse, reversible reactions, three reactants, one product, continuous scheme",
+"sbo:SBO_0000128": "mass action rate law for third order forward, third order reverse, reversible reactions, three reactants, two products, continuous scheme",
+"sbo:SBO_0000129": "mass action rate law for third order forward, third order reverse, reversible reactions, three reactants, three products, continuous scheme",
+"sbo:SBO_0000131": "mass action rate law for third order forward, zeroth order reverse, reversible reactions, one reactant, continuous scheme",
+"sbo:SBO_0000132": "mass action rate law for third order forward, first order reverse, reversible reactions, one reactant, continuous scheme",
+"sbo:SBO_0000134": "mass action rate law for third order forward, second order reverse, reversible reactions, one reactant, one product, continuous scheme",
+"sbo:SBO_0000135": "mass action rate law for third order forward, second order reverse, reversible reactions, one reactant, two products, continuous scheme",
+"sbo:SBO_0000137": "mass action rate law for third order forward, third order reverse, reversible reactions, one reactant, one product, continuous scheme",
+"sbo:SBO_0000138": "mass action rate law for third order forward, third order reverse, reversible reactions, one reactant, two products, continuous scheme",
+"sbo:SBO_0000139": "mass action rate law for third order forward, third order reverse, reversible reactions, one reactant, three products, continuous scheme",
+"sbo:SBO_0000140": "mass action rate law for zeroth order irreversible reactions, discrete scheme",
+"sbo:SBO_0000141": "mass action rate law for first order irreversible reactions, discrete scheme",
+"sbo:SBO_0000142": "mass action rate law for second order irreversible reactions, one reactant, discrete scheme",
+"sbo:SBO_0000143": "mass action rate law for second order irreversible reactions, two reactants, discrete scheme",
+"sbo:SBO_0000144": "mass action rate law for third order irreversible reactions, one reactant, discrete scheme",
+"sbo:SBO_0000145": "mass action rate law for third order irreversible reactions, two reactants, discrete scheme",
+"sbo:SBO_0000146": "mass action rate law for third order irreversible reactions, three reactants, discrete scheme",
+"sbo:SBO_0000150": "enzymatic rate law for irreversible non-modulated non-interacting reactant enzymes",
+"sbo:SBO_0000151": "enzymatic rate law for irreversible non-modulated non-interacting bireactant enzymes",
+"sbo:SBO_0000152": "enzymatic rate law for irreversible non-modulated non-interacting trireactant enzymes",
+"sbo:SBO_0000163": "mass action rate law for irreversible reactions, continuous scheme",
+"sbo:SBO_0000166": "mass action rate law for irreversible reactions, discrete scheme",
+"sbo:SBO_0000192": "Hill-type rate law, generalised form",
+"sbo:SBO_0000195": "Hill-type rate law, microscopic form",
+"sbo:SBO_0000198": "Hill-type rate law, reduced form",
+"sbo:SBO_0000199": "normalised enzymatic rate law for unireactant enzymes",
+"sbo:SBO_0000260": "enzymatic rate law for simple competitive inhibition of irreversible unireactant enzymes by one inhibitor",
+"sbo:SBO_0000262": "enzymatic rate law for simple uncompetitive inhibition of irreversible unireactant enzymes",
+"sbo:SBO_0000265": "enzymatic rate law for simple mixed-type inhibition of irreversible unireactant enzymes",
+"sbo:SBO_0000266": "enzymatic rate law for simple irreversible non-competitive inhibition of unireactant enzymes",
+"sbo:SBO_0000267": "enzymatic rate law for competitive inhibition of irreversible unireactant enzymes by one inhibitor",
+"sbo:SBO_0000270": "enzymatic rate law for competitive inhibition of irreversible unireactant enzymes by exclusive inhibitors",
+"sbo:SBO_0000271": "enzymatic rate law for competitive inhibition of irreversible unireactant enzymes by two exclusive inhibitors",
+"sbo:SBO_0000273": "enzymatic rate law for competitive inhibition of irreversible unireactant enzymes by non-exclusive non-cooperative inhibitors",
+"sbo:SBO_0000274": "enzymatic rate law for simple competitive inhibition of irreversible unireactant enzymes by two non-exclusive, non-cooperative inhibitors",
+"sbo:SBO_0000275": "enzymatic rate law for mixed-type inhibition of irreversible enzymes by mutually exclusive inhibitors",
+"sbo:SBO_0000276": "enzymatic rate law for mixed-type inhibition of irreversible unireactant enzymes by two inhibitors",
+"sbo:SBO_0000277": "enzymatic rate law for non-competitive inhibition of irreversible unireactant enzymes by two exclusively binding inhibitors",
+"sbo:SBO_0000333": "monoexponential decay rate law",
+"sbo:SBO_0000378": "enzymatic rate law for inhibition of irreversible unireactant enzymes by competing substrates",
+"sbo:SBO_0000379": "enzymatic rate law for simple competitive inhibition of irreversible unireactant enzymes by two non-exclusive inhibitors",
+"sbo:SBO_0000386": "enzymatic rate law for inhibition of irreversible unireactant enzymes by single competing substrate",
+"sbo:SBO_0000387": "enzymatic rate law for competitive inhibition of irreversible unireactant enzyme by product",
+"sbo:SBO_0000388": "enzymatic rate law for inhibition of irreversible unireactant enzymes by single competing substrate with product inhibition",
+"sbo:SBO_0000427": "modulated reversible Hill-type rate law with one modifier",
+"sbo:SBO_0000428": "modulated reversible Hill-type rate law with two modifiers",
+"sbo:SBO_0000431": "unmodulated reversible Hill-type rate law",
+"sbo:SBO_0000432": "irreversible Michaelis Menten rate law for two substrates",
+"sbo:SBO_0000433": "Ordered Bi-Bi mechanism rate law",
+"sbo:SBO_0000434": "Ordered Bi-Uni mechanism rate law",
+"sbo:SBO_0000435": "Ordered Uni-Bi mechanism rate law",
+"sbo:SBO_0000436": "Ping Pong Bi-Bi mechanism rate law",
+"sbo:SBO_0000437": "reversible Iso Uni-Uni",
+"sbo:SBO_0000438": "reversible Uni-Uni",
+"sbo:SBO_0000439": "Uni-Uni Reversible using Haldane relationship",
+"sbo:SBO_0000440": "enzymatic rate law for irreversible allosteric inhibition",
+"sbo:SBO_0000441": "enzymatic rate law for mixed-type inhibition of reversible enzymes by mutually exclusive inhibitors",
+"sbo:SBO_0000442": "enzymatic rate law for simple reversible non-competitive inhibition of unireactant enzymes",
+"sbo:SBO_0000444": "enzymatic rate law for reversible mixed activation",
+"sbo:SBO_0000445": "enzymatic rate law for irreversible substrate activation",
+"sbo:SBO_0000446": "enzymatic rate law for irrreversible mixed activation",
+"sbo:SBO_0000447": "enzymatic rate law for reversible catalytic activation with one activator",
+"sbo:SBO_0000448": "enzymatic rate law for reversible specific activation",
+"sbo:SBO_0000449": "enzymatic rate law for irreversible catalytic activation with one activator",
+"sbo:SBO_0000450": "enzymatic rate law for irreversible specific activation",
+"sbo:SBO_0000451": "enzymatic rate law for reversible reactions with competitive inhibition",
+"sbo:SBO_0000452": "enzymatic rate law for reversible competitive inhibition by one inhibitor",
+"sbo:SBO_0000453": "enzymatic rate law for reversible empirical allosteric inhibition by one inhibitor",
+"sbo:SBO_0000454": "enzymatic rate law for reversible substrate inhibition",
+"sbo:SBO_0000455": "enzymatic rate law for irreversible substrate inhibition",
+"sbo:SBO_0000456": "enzymatic rate law for reversible unireactant enzyme with a single hyperbolic modulator",
+"sbo:SBO_0000457": "enzymatic rate law for irreversible unireactant enzyme with a single hyperbolic modulator",
+"sbo:SBO_0000458": "enzymatic rate law for simple uncompetitive inhibition of reversible unireactant enzymes",
+"sbo:SBO_0000560": "mass action rate law for first order irreversible reactions, single essential stimulator, continuous scheme",
+"sbo:SBO_0000561": "mass action rate law for first order irreversible reactions, single essential stimulator, discrete scheme",
+"sbo:SBO_0000563": "mass action like rate law for second order irreversible reactions, one reactant, one essential stimulator, continuous scheme",
+"sbo:SBO_0000564": "mass action like rate law for second order irreversible reactions, one reactant, one essential stimulator, discrete scheme",
+"sbo:SBO_0000646": "mass action rate law for reversible reactions, continuous schema"
+},
+"not_expressible": {},
+"per_model": {
+"copasi:Allosteric inhibition (MWC)": [
+"c0*x1*(c2*x1 + c5)**c4/(c1 + (c2*x1 + c6)**c3)",
+"c0/(c1 + (c2*x1 + c3)**c4)"
+],
+"copasi:Allosteric inhibition (empirical)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1**c2)"
+],
+"copasi:Arrhenius Bimolecular (irr)": [
+"c0*x1"
+],
+"copasi:Arrhenius Unimolecular (irr)": [
+"c0*x1"
+],
+"copasi:Bi (irreversible)": [
+"c0*x1/(c1 + x1)"
+],
+"copasi:Bi Bi convenience": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"copasi:Bi Bi convenience (Keq)": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"copasi:Bi Bi convenience (Keq), catalytic activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Bi Bi convenience (Keq), competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi Bi convenience (Keq), non-competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi Bi convenience (Keq), non-essential activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1 + c1"
+],
+"copasi:Bi Bi convenience (Keq), specific activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Bi Bi convenience, catalytic activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Bi Bi convenience, competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi Bi convenience, non-competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi Bi convenience, non-essential activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1 + c1"
+],
+"copasi:Bi Bi convenience, specific activation": [
+"c0*x1/(c1 + x1)",
+"c3*(c5*x1 + c6)/(c3*(c1*(c0*x1 + c7) + c2) + c4)"
+],
+"copasi:Bi Uni convenience": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"copasi:Bi Uni convenience (Keq)": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"copasi:Bi Uni convenience (Keq), catalytic activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Bi Uni convenience (Keq), competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi Uni convenience (Keq), non-competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi Uni convenience (Keq), non-essential activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1 + c1"
+],
+"copasi:Bi Uni convenience (Keq), specific activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Bi Uni convenience, catalytic activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Bi Uni convenience, competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi Uni convenience, non-competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi Uni convenience, non-essential activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1 + c1"
+],
+"copasi:Bi Uni convenience, specific activation": [
+"c0*x1/(c1 + x1)",
+"c2*(c4*x1 + c5)/(c2*(c0*x1 + c1) + c3)",
+"c3*(c5*x1 + c6)/(c3*(c1*(c0*x1 + c7) + c2) + c4)"
+],
+"copasi:Bi convenience (irreversible), catalytic activation": [
+"c0*x1/(c1 + x1)"
+],
+"copasi:Bi convenience (irreversible), competitive inhibition": [
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi convenience (irreversible), non-competitive inhibition": [
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Bi convenience (irreversible), non-essential activation": [
+"c0*x1 + c1",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Bi convenience (irreversible), specific activation": [
+"c0*x1/(c1 + x1)"
+],
+"copasi:Catalytic activation (irrev)": [
+"c0*x1/(c1 + x1)"
+],
+"copasi:Catalytic activation (rev)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Competitive inhibition (irr)": [
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Competitive inhibition (rev)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Henri-Michaelis-Menten (irreversible)": [
+"c0*x1/(c1 + x1)"
+],
+"copasi:Hill Cooperativity": [
+"c0*x1**c1/(c2 + x1**c1)"
+],
+"copasi:Hyperbolic modifier (irrev)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Hyperbolic modifier (rev)": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"copasi:Iso Uni Uni": [
+"c0*(c1 + x1)/(c2 + x1)",
+"c5*(c1 + c4*x1)/(c1*(c0*x1 + c6) + c3*(c2*x1 + c7))"
+],
+"copasi:Mass action (irreversible)": [
+"c0*x1"
+],
+"copasi:Mass action (reversible)": [
+"c0*x1 + c1"
+],
+"copasi:Mixed activation (irrev)": [
+"c0*x1/(c1 + x1)"
+],
+"copasi:Mixed activation (rev)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Mixed inhibition (irr)": [
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Mixed inhibition (rev)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Noncompetitive inhibition (irr)": [
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Noncompetitive inhibition (rev)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Ordered Bi Bi": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c2*(c1 + c10*x1)/(c1*(c0*x1 + c3) + c8*(c6*(c4*x1 + c5) + c7*x1) + c9)"
+],
+"copasi:Ordered Bi Uni": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"copasi:Ordered Uni Bi": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*(c1 + x1)/(c2 + x1)",
+"c7*(c1 + c6*x1)/(c1*(c0*x1 + c8) + c4*(c2*x1 + c3) + c5)"
+],
+"copasi:Ping Pong Bi Bi": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"copasi:Reversible Hill": [
+"(c2 + c3*x1)*(c0*x1 + c1)**c5/(c6 + (c0*x1 + c1)**c4)",
+"c5*(c4 + x1)*(c0*x1 + c1)**c3/(c6 + (c0*x1 + c1)**c2)"
+],
+"copasi:Reversible Hill 1 modifier": [
+"(c2 + c3*x1)*(c0*x1 + c1)**c6/(c5 + (c0*x1 + c1)**c4)",
+"c0*(c1*c2*x1**c3 + c7)/(c1*x1**c3 + c4*(c1*c2*x1**c3 + c6) + c5)",
+"c6*(c5 + x1)*(c0*x1 + c1)**c4/(c3 + (c0*x1 + c1)**c2)"
+],
+"copasi:Reversible Hill 2 modifiers": [
+"(c0 + c1*x1**c2)/(c3 + x1**c2)",
+"(c2 + c3*x1)*(c0*x1 + c1)**c6/(c5 + (c0*x1 + c1)**c4)",
+"c6*(c5 + x1)*(c0*x1 + c1)**c4/(c3 + (c0*x1 + c1)**c2)"
+],
+"copasi:Reversible Michaelis-Menten": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"copasi:Specific activation (irrev)": [
+"c0*x1/(c1 + x1)"
+],
+"copasi:Specific activation (rev)": [
+"c0*x1/(c1 + x1)",
+"c2*(c4*x1 + c5)/(c2*(c0*x1 + c1) + c3)"
+],
+"copasi:Substrate activation (irr)": [
+"c0*x1**2/(c1*x1**2 + c2 + x1)"
+],
+"copasi:Substrate inhibition (irr)": [
+"c0*x1/(c1*x1**2 + c2 + x1)"
+],
+"copasi:Substrate inhibition (rev)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"(c0*x1 + c1)/(c2*x1**2 + c3 + x1)"
+],
+"copasi:Uncompetitive inhibition (irr)": [
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Uncompetitive inhibition (rev)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Uni Bi convenience": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"copasi:Uni Bi convenience (Keq)": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*(c1 + x1)/(c2 + x1)"
+],
+"copasi:Uni Bi convenience (Keq), catalytic activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*(c1 + x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Uni Bi convenience (Keq), non-competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*(c1 + x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Uni Bi convenience (Keq), non-essential activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*(c1 + x1)/(c2 + x1)",
+"c0*x1 + c1"
+],
+"copasi:Uni Bi convenience (Keq), specific activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*(c1 + x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Uni Bi convenience, catalytic activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"copasi:Uni Bi convenience, competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Uni Bi convenience, non-competitive inhibition": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"copasi:Uni Bi convenience, non-essential activation": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1 + c1"
+],
+"copasi:Uni Bi convenience, specific activation": [
+"c0*x1/(c1 + x1)",
+"c2*(c4*x1 + c5)/(c2*(c0*x1 + c1) + c3)",
+"c3*(c5*x1 + c6)/(c3*(c1*(c0*x1 + c7) + c2) + c4)"
+],
+"copasi:Uni Uni": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*(c1 + x1)/(c2 + x1)"
+],
+"sbo:SBO_0000028": [
+"c0*x1",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000029": [
+"c0*x1",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000030": [
+"c0*x1",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000031": [
+"c0*x1",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000049": [
+"c0*x1"
+],
+"sbo:SBO_0000052": [
+"c0*x1**2"
+],
+"sbo:SBO_0000054": [
+"c0*x1"
+],
+"sbo:SBO_0000057": [
+"c0*x1**3"
+],
+"sbo:SBO_0000059": [
+"c0*x1",
+"c0*x1**2"
+],
+"sbo:SBO_0000061": [
+"c0*x1"
+],
+"sbo:SBO_0000070": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000072": [
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000073": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000075": [
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000076": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000077": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000079": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000080": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000082": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000083": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000085": [
+"c0*x1 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000086": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000087": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000090": [
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000091": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000093": [
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000094": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000096": [
+"c0*x1**2 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000097": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000098": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000100": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000101": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000103": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000104": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000106": [
+"c0*x1 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000107": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000108": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000111": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000112": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000114": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000115": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000117": [
+"c0*x1 + c1",
+"c0*x1**2 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000118": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000119": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000121": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000122": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000124": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000125": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000127": [
+"c0*x1 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000128": [
+"c0*x1 + c1",
+"c0*x1**2 + c1"
+],
+"sbo:SBO_0000129": [
+"c0*x1 + c1"
+],
+"sbo:SBO_0000131": [
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000132": [
+"c0*x1 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000134": [
+"c0*x1**2 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000135": [
+"c0*x1 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000137": [
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000138": [
+"c0*x1 + c1",
+"c0*x1**2 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000139": [
+"c0*x1 + c1",
+"c0*x1**3 + c1"
+],
+"sbo:SBO_0000141": [
+"c0*x1"
+],
+"sbo:SBO_0000142": [
+"c0*x1**2 - c0*x1"
+],
+"sbo:SBO_0000143": [
+"c0*x1"
+],
+"sbo:SBO_0000144": [
+"c0*x1*(c1 + x1)*(c2 + x1)"
+],
+"sbo:SBO_0000145": [
+"c0*x1",
+"c0*x1**2 - c0*x1"
+],
+"sbo:SBO_0000146": [
+"c0*x1"
+],
+"sbo:SBO_0000151": [
+"c0*x1",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000152": [
+"c0*x1",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000192": [
+"c0*x1**c1/(c2 + x1**c1)"
+],
+"sbo:SBO_0000195": [
+"c0*x1**c1/(c2 + x1**c1)"
+],
+"sbo:SBO_0000198": [
+"c0*x1**c1/(c2 + x1**c1)"
+],
+"sbo:SBO_0000199": [
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000260": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000262": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000265": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000266": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000267": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + (c2*x1 + c3)**c4)"
+],
+"sbo:SBO_0000271": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000274": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000276": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000277": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000333": [
+"c0*x1"
+],
+"sbo:SBO_0000379": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000386": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000387": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000388": [
+"c0*x1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000427": [
+"(c2 + c3*x1)*(c0*x1 + c1)**c6/(c5 + (c0*x1 + c1)**c4)",
+"c0*(c1*c2*x1**c3 + c7)/(c1*x1**c3 + c4*(c1*c2*x1**c3 + c6) + c5)",
+"c6*(c5 + x1)*(c0*x1 + c1)**c4/(c3 + (c0*x1 + c1)**c2)"
+],
+"sbo:SBO_0000428": [
+"(c0 + c1*x1**c2)/(c3 + x1**c2)",
+"(c2 + c3*x1)*(c0*x1 + c1)**c6/(c5 + (c0*x1 + c1)**c4)",
+"c6*(c5 + x1)*(c0*x1 + c1)**c4/(c3 + (c0*x1 + c1)**c2)"
+],
+"sbo:SBO_0000431": [
+"(c2 + c3*x1)*(c0*x1 + c1)**c5/(c6 + (c0*x1 + c1)**c4)",
+"c5*(c4 + x1)*(c0*x1 + c1)**c3/(c6 + (c0*x1 + c1)**c2)"
+],
+"sbo:SBO_0000432": [
+"c0*x1",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000433": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c2*(c1 + c10*x1)/(c1*(c0*x1 + c3) + c8*(c6*(c4*x1 + c5) + c7*x1) + c9)"
+],
+"sbo:SBO_0000434": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"sbo:SBO_0000435": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*(c1 + x1)/(c2 + x1)",
+"c7*(c1 + c6*x1)/(c1*(c0*x1 + c8) + c4*(c2*x1 + c3) + c5)"
+],
+"sbo:SBO_0000436": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"sbo:SBO_0000437": [
+"c0*(c1 + x1)/(c2 + x1)",
+"c5*(c1 + c4*x1)/(c1*(c0*x1 + c6) + c3*(c2*x1 + c7))"
+],
+"sbo:SBO_0000438": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1"
+],
+"sbo:SBO_0000439": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*(c1 + x1)/(c2 + x1)"
+],
+"sbo:SBO_0000440": [
+"c0*x1*(c2 + x1)**c4/(c1 + (c2 + x1)**c3)",
+"c0/(c1 + (c2*x1 + c3)**c4)"
+],
+"sbo:SBO_0000441": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000442": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000444": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000445": [
+"c0*x1**2/(c1*x1**2 + c2 + x1)"
+],
+"sbo:SBO_0000446": [
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000447": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000448": [
+"c0*x1/(c1 + x1)",
+"c2*(c4*x1 + c5)/(c2*(c0*x1 + c1) + c3)"
+],
+"sbo:SBO_0000449": [
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000450": [
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000452": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000453": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1**c2)"
+],
+"sbo:SBO_0000454": [
+"(c0 + c1*x1)/(c2 + x1)",
+"(c0*x1 + c1)/(c2*x1**2 + c3 + x1)"
+],
+"sbo:SBO_0000455": [
+"c0*x1/(c1*x1**2 + c2 + x1)"
+],
+"sbo:SBO_0000456": [
+"(c0 + c1*x1)/(c2 + x1)"
+],
+"sbo:SBO_0000457": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0*x1/(c1 + x1)"
+],
+"sbo:SBO_0000458": [
+"(c0 + c1*x1)/(c2 + x1)",
+"c0/(c1 + x1)"
+],
+"sbo:SBO_0000560": [
+"c0*x1"
+],
+"sbo:SBO_0000561": [
+"c0*x1"
+],
+"sbo:SBO_0000563": [
+"c0*x1"
+],
+"sbo:SBO_0000564": [
+"c0*x1"
+]
+},
+"snapshot": {
+"date": "2026-11-25",
+"files": [
+{
+"bytes": 582599,
+"file": "SBO_OWL.owl",
+"sha256": "b6a6671bbaa0936fb9f11f093b07b77cd89ab476c2b55b2e11184e0473634105",
+"url": "https://raw.githubusercontent.com/EBI-BioModels/SBO/2143b2973f8912db9d4324a4fe543aabcd8f8ba7/SBO_OWL.owl"
+},
+{
+"bytes": 100511,
+"file": "FunctionDB.xml.cpp",
+"sha256": "2825c2a073cbbcfaaea60ae2bacc5878364e4c3cb692c26aecb38e78a3b1b059",
+"url": "https://raw.githubusercontent.com/copasi/COPASI/22ba1ac64c16b7a6a73ed0608738da4dbd3d4cc2/copasi/function/FunctionDB.xml.cpp"
+}
+]
+},
+"source": "Canonical rate-law libraries: the Systems Biology Ontology rate-law branch (MathML of SBO:0000001 and descendants) and COPASI's built-in function database; one model per rate-law definition; each concentration/amount (SBO) or substrate/product/modifier (COPASI) in turn is x1; literals generalised",
+"stats": {
+"copasi_definitions": 80,
+"copasi_parsed": 78,
+"copasi_reduced": 78,
+"distinct_keys": 31,
+"distinct_keys_expressible": 31,
+"dropped": 13,
+"model_key_pairs": 344,
+"model_key_pairs_expressible": 344,
+"models": 194,
+"models_with_keys": 194,
+"sbo_definitions": 127,
+"sbo_parsed": 116,
+"sbo_reduced": 116
+}
+}
