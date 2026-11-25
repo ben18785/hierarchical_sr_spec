@@ -14,3 +14,6 @@ results/grammar/temporal/
 results/grammar/temporal.json
 results/grammar/holdout_*/
 results/grammar/hpyv/trees_holdout.json
+results/grammar/mechholdout_*/
+results/grammar/hpyv/trees_mech.json
+results/lookalike/shards/

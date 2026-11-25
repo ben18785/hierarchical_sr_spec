@@ -117,6 +117,20 @@ def all_A_population(rng, n, noise_frac, J=30):
     return benchmark_population(rng, n, noise_frac, J, weights=(1.0, 0.0, 0.0), setting="all_A")
 
 
+def draw_constants(rng, cs: CompiledSkeleton, max_tries=200, sd=1.5):
+    """Constants of a form drawn N(0, sd^2), rejected unless the curve is
+    finite, bounded (|f| < 1e3) and clearly non-constant on the extended range
+    [X_LOW, X_BEYOND]; None after max_tries rejections."""
+    grid = np.linspace(X_LOW, X_BEYOND, 400)
+    for _ in range(max_tries):
+        phi = rng.normal(0, sd, cs.k)
+        with np.errstate(all="ignore"):
+            f = cs.f(grid[None, :, None], phi[None, :])[0]
+        if np.all(np.isfinite(f)) and np.max(np.abs(f)) < 1e3 and np.ptp(f) > 0.05 * (1 + np.max(np.abs(f))):
+            return phi
+    return None
+
+
 def grammar_population(rng, n, noise_frac, cands, J=30, max_tries=200):
     """J distinct forms drawn from the grammar prior (restricted to the
     candidate set, so recovery is possible) with N(0, 1.5^2) constants,
@@ -134,14 +148,8 @@ def grammar_population(rng, n, noise_frac, cands, J=30, max_tries=200):
         if sk.key in used:
             continue
         cs = CompiledSkeleton(sk)
-        grid = np.linspace(X_LOW, X_BEYOND, 400)
-        for _ in range(max_tries):
-            phi = rng.normal(0, 1.5, cs.k)
-            with np.errstate(all="ignore"):
-                f = cs.f(grid[None, :, None], phi[None, :])[0]
-            if np.all(np.isfinite(f)) and np.max(np.abs(f)) < 1e3 and np.ptp(f) > 0.05 * (1 + np.max(np.abs(f))):
-                break
-        else:
+        phi = draw_constants(rng, cs, max_tries)
+        if phi is None:
             continue
         used.add(sk.key)
         datasets.append(_make_dataset(rng, cs, phi, n, noise_frac))

@@ -71,3 +71,38 @@ holdout_sources: [rnls, ratelaws, ecocat2]
 temporal:
   cutoffs: [2010, 2015, 2020]
   weightings: [equal, pooled]
+
+# mechanism-derived forms (rules mechanism_forms, mechholdout_*, mechanisms;
+# hsr.mechanisms): n random mechanisms per class, one seed for all classes;
+# forms with more than max_consts constants (temperature: more than max_terms
+# exponential terms) are dropped and counted
+mechanisms:
+  seed: 0
+  max_consts: 8
+  max_terms: 6
+  n:
+    enzyme: 1000
+    compartment: 1000
+    temperature: 1000
+
+# look-alike discrimination test (rules lookalike_*; hsr.lookalike): true
+# forms per stratum, (n, noise) settings, replicates, candidate-set size
+# limits, look-alike thresholds D (nats) and evidence shards (GitHub Actions,
+# .github/workflows/lookalike.yml: 20 jobs x 4 shards)
+lookalike:
+  seed: 1
+  temporal_cutoff: 2015
+  max_consts: 5
+  max_nodes: 15
+  strata:
+    holdout_seen: 10
+    holdout_novel: 10
+    mech_enzyme: 8
+    mech_compartment: 8
+    mech_temperature: 8
+    temporal_novel: 12
+  settings: [[10, 0.02], [10, 0.1], [40, 0.02], [40, 0.1]]
+  reps: 3
+  deltas: [2, 5]
+  n_starts: 10
+  shards: 80

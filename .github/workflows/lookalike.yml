@@ -1,0 +1,66 @@
+# Manually triggered: gh workflow run lookalike.yml --ref lookalike
+# Look-alike discrimination test (hsr.lookalike): Laplace log evidence of
+# every candidate form on every simulated dataset of the committed design
+# (results/lookalike/design.json). Each of the 20 matrix jobs runs 4 of the
+# config lookalike.shards = 80 Snakemake shard targets (rule lookalike_shard,
+# pinned conda env workflow/envs/hsr.yaml) on its 4 cores and uploads them as
+# the artifact lookalike-shards-<job>. The report is built locally from the
+# downloaded shards (rule lookalike_report). Nothing here fetches data.
+name: lookalike
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "optional space-separated job indices to run (default: all 20)"
+        default: ""
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      jobs: ${{ steps.mk.outputs.jobs }}
+    steps:
+      - id: mk
+        env:
+          ONLY: ${{ inputs.only }}
+        run: |
+          if [ -n "$ONLY" ]; then
+            echo "jobs=[$(echo $ONLY | tr ' ' ',')]" >> "$GITHUB_OUTPUT"
+          else
+            echo "jobs=[$(seq -s, 0 19)]" >> "$GITHUB_OUTPUT"
+          fi
+
+  evidence:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        job: ${{ fromJson(needs.plan.outputs.jobs) }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          auto-activate-base: true
+          activate-environment: ""
+          python-version: "3.12"
+      - run: pip install "snakemake==9.27.2"
+      - name: evidence shards
+        run: |
+          N=$(python -c "import yaml; print(yaml.safe_load(open('config/config.yaml'))['lookalike']['shards'])")
+          TARGETS=""
+          for i in $(seq ${{ matrix.job }} 20 $((N - 1))); do
+            TARGETS="$TARGETS results/lookalike/shards/${i}of${N}.npz"
+          done
+          echo "targets:$TARGETS"
+          snakemake --use-conda --cores 4 --rerun-triggers=mtime --allowed-rules lookalike_shard $TARGETS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lookalike-shards-${{ matrix.job }}
+          path: results/lookalike/shards/

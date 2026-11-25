@@ -6,6 +6,7 @@
 Heavy fits run on GitHub Actions (.github/workflows/benchmark.yml); rules here
 consume their artifacts by run ID (config/config.yaml) and build every table.
 """
+import json
 import os
 
 configfile: "config/config.yaml"
@@ -637,8 +638,11 @@ HPYV_CODE = ["hsr/treecode.py", "hsr/pyp.py", "hsr/adaptor.py", "hsr/treecheck.p
 
 def _hpyv_trees(wc):
     """Hold-out runs have their own tree file (their support adds the hold-out forms)."""
-    return ("results/grammar/hpyv/trees_holdout.json" if wc.run.startswith("holdout_")
-            else "results/grammar/hpyv/trees.json")
+    if wc.run.startswith("holdout_"):
+        return "results/grammar/hpyv/trees_holdout.json"
+    if wc.run.startswith("mechholdout_"):
+        return "results/grammar/hpyv/trees_mech.json"
+    return "results/grammar/hpyv/trees.json"
 
 
 rule hpyv:
@@ -837,6 +841,206 @@ rule holdout_report:
 rule holdout:
     input:
         "results/grammar/holdout.md",
+
+
+# ============================================ mechanism-derived forms (test 4)
+# Forms derived from random mechanisms (hsr.mechanisms; classes enzyme,
+# compartment, temperature; config mechanisms), scored as hold-outs exactly
+# as the hold-out sources: every prior trained on all training sources and
+# scored on one run whose test set is the hold-out sources plus every
+# mechanism class (runs mechholdout_<weighting>; the support of these runs is
+# also the candidate set of the look-alike test).
+#
+#     snakemake --use-conda --cores 1 --rerun-triggers=mtime mechanisms \
+#         --allowed-rules mechanism_forms mechholdout_folds hpyv_trees_mech hpyv_sources hpyv_variant \
+#             grammar_scores fnprior_scores hpy_scores hpyv_scores hpyv_table_run mechanisms_report \
+#             mechanism_forms_report mechanisms
+MECH = config["mechanisms"]
+MECH_CLASSES = list(MECH["n"])
+MECH_NAMES = [f"mech_{c}" for c in MECH_CLASSES]
+MECH_RUNS = [f"mechholdout_{w}" for w in ("equal", "pooled")]
+
+
+rule mechanisms:
+    input:
+        "results/grammar/mechanisms.md",
+        "results/grammar/mechanism_forms.md",
+
+
+rule mechanism_forms:
+    """Corpus-style JSON (per_model, freq, records, drop counts) of the forms
+    of n random mechanisms of one class (committed)."""
+    input:
+        code="hsr/mechanisms.py",
+    output:
+        "hsr/data/corpus_mech_{cls}.json",
+    wildcard_constraints:
+        cls="|".join(MECH_CLASSES),
+    params:
+        n=lambda wc: MECH["n"][wc.cls],
+        seed=MECH["seed"],
+        max_consts=MECH["max_consts"],
+        max_terms=MECH["max_terms"],
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python -m hsr.mechanisms --class {wildcards.cls} --n {params.n} --seed {params.seed} "
+        "--max-consts {params.max_consts} --max-terms {params.max_terms} --out {output}"
+
+
+rule mechholdout_folds:
+    """As holdout_folds, with the mechanism classes as further hold-outs."""
+    input:
+        gen="results/grammar/generalised.json",
+        corpora=TRAIN_CORPORA,
+        holdouts=expand("hsr/data/corpus_{n}.json", n=HOLDOUTS + MECH_NAMES),
+        code=["hsr/grammar_compare.py", "workflow/scripts/grammar_steps.py"],
+    output:
+        "results/grammar/mechholdout_{weighting}/folds.json",
+    wildcard_constraints:
+        weighting="pooled|equal",
+    params:
+        named=" ".join(f"{n}=hsr/data/corpus_{n}.json" for n in HOLDOUTS + MECH_NAMES),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py holdout {input.gen} {wildcards.weighting} "
+        "{output} {params.named}"
+
+
+rule hpyv_trees_mech:
+    """Tree coding (as hpyv_trees) of every support form of the mechanism hold-out runs."""
+    input:
+        folds=expand("results/grammar/{run}/folds.json", run=MECH_RUNS),
+        code=["workflow/scripts/hpyv_trees.py", "hsr/treecode.py", "hsr/fnprior_tools.py"],
+    output:
+        "results/grammar/hpyv/trees_mech.json",
+    conda:
+        "envs/fnprior.yaml"
+    shell:
+        "python workflow/scripts/hpyv_trees.py {output} {input.folds}"
+
+
+rule mechanisms_report:
+    """holdout_report on the mechanism hold-out runs (hold-out sources and mechanism classes)."""
+    input:
+        folds=expand("results/grammar/{run}/folds.json", run=MECH_RUNS),
+        tables=expand("results/grammar/{run}/table_v.json", run=MECH_RUNS),
+        trees="results/grammar/hpyv/trees_mech.json",
+        code="workflow/scripts/holdout_report.py",
+    output:
+        md="results/grammar/mechanisms.md",
+        json="results/grammar/mechanisms.json",
+    params:
+        runs=" ".join(f"results/grammar/{r}" for r in MECH_RUNS),
+        variants=" ".join(HPYV_VARIANTS),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/holdout_report.py {output.md} {output.json} {input.trees} "
+        "{params.runs} --variants {params.variants} --title 'Mechanism-derived forms as hold-outs' "
+        "--target mechanisms"
+
+
+rule mechanism_forms_report:
+    """Forms of each mechanism class: frequency, constants, and whether the
+    form occurs in the training sources."""
+    input:
+        corpora=expand("hsr/data/corpus_{n}.json", n=MECH_NAMES),
+        folds="results/grammar/mechholdout_equal/folds.json",
+        code="workflow/scripts/mechanism_report.py",
+    output:
+        "results/grammar/mechanism_forms.md",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/mechanism_report.py {output} {input.folds} {input.corpora}"
+
+
+# ======================================== look-alike discrimination test (lookalike_*)
+# When the data barely distinguish candidate forms, does the prior put its
+# mass on the true one? hsr.lookalike (design and scores; config lookalike).
+# The design (true forms, simulated datasets, candidate set) is built locally
+# and committed; the evidence shards run on GitHub Actions
+# (.github/workflows/lookalike.yml; runners only run lookalike_shard on the
+# committed design); their artifacts are downloaded to results/lookalike/shards
+# and the report is built locally:
+#
+#     snakemake --use-conda --cores 1 --rerun-triggers=mtime results/lookalike/design.json \
+#         --allowed-rules lookalike_design
+#     gh workflow run lookalike.yml --ref lookalike    # then gh run download <id> -D results/lookalike/shards
+#     snakemake --use-conda --cores 1 --rerun-triggers=mtime lookalike \
+#         --allowed-rules lookalike_report lookalike
+LA = config["lookalike"]
+LA_SHARDS = [f"results/lookalike/shards/{i}of{LA['shards']}.npz" for i in range(LA["shards"])]
+LA_TRUN = f"temporal_{LA['temporal_cutoff']}_equal"
+
+
+rule lookalike:
+    input:
+        "results/grammar/lookalike.md",
+
+
+rule lookalike_design:
+    """True forms, simulated datasets and candidate set (committed; the runners' input)."""
+    input:
+        mech="results/grammar/mechholdout_equal/folds.json",
+        temporal=f"results/grammar/{LA_TRUN}/folds.json",
+        trees="results/grammar/hpyv/trees_mech.json",
+        code=["hsr/lookalike.py", "hsr/simulate.py", "workflow/scripts/lookalike_steps.py"],
+    output:
+        "results/lookalike/design.json",
+    params:
+        cfg=lambda wc: json.dumps(LA).replace("'", ""),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/lookalike_steps.py design {output} {input.mech} {input.temporal} "
+        "{input.trees} '{params.cfg}'"
+
+
+rule lookalike_shard:
+    """Laplace log evidence of every candidate in shard i (candidates i::n) on every dataset (GitHub Actions)."""
+    input:
+        design="results/lookalike/design.json",
+        code=["hsr/lookalike.py", "hsr/likelihood.py", "workflow/scripts/lookalike_steps.py"],
+    output:
+        "results/lookalike/shards/{i}of{n}.npz",
+    params:
+        n_starts=LA["n_starts"],
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/lookalike_steps.py shard {input.design} {output} {wildcards.i} "
+        "{wildcards.n} {params.n_starts}"
+
+
+rule lookalike_evidence:
+    input:
+        LA_SHARDS,
+
+
+rule lookalike_report:
+    input:
+        design="results/lookalike/design.json",
+        shards=LA_SHARDS,
+        trees="results/grammar/hpyv/trees_mech.json",
+        mech=expand("results/grammar/mechholdout_equal/{s}.json",
+                    s=["folds", "ours", "fnprior", "hpy"] + [f"hpyv_{v}" for v in HPYV_VARIANTS]),
+        temporal=expand(f"results/grammar/{LA_TRUN}/{{s}}.json",
+                        s=["folds", "ours", "fnprior", "hpy"] + [f"hpyvt_{v}" for v in HPYV_VARIANTS]),
+        code=["hsr/lookalike.py", "workflow/scripts/lookalike_steps.py"],
+    output:
+        md="results/grammar/lookalike.md",
+        json="results/grammar/lookalike.json",
+    params:
+        variants=",".join(HPYV_VARIANTS),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/lookalike_steps.py report {output.md} {output.json} "
+        "{input.design} {input.trees} results/grammar/mechholdout_equal results/grammar/{LA_TRUN} "
+        "{params.variants} {input.shards}"
 
 
 # ================================================= temporal hold-out (temporal_*)

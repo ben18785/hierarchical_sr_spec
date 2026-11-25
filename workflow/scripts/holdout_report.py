@@ -26,7 +26,8 @@ Diagnostics of the seen/novel gap (section "Why novel forms score low"):
              (e.g. c0*x1 + c1*x1), the signature of a form the canonicaliser
              failed to simplify; seen / novel means are repeated without them
 
-    python holdout_report.py out.md out.json trees.json run_dir [run_dir ...] --variants v1 v2 ...
+    python holdout_report.py out.md out.json trees.json run_dir [run_dir ...] [--title T] [--target rule] \\
+        --variants v1 v2 ...
 """
 import json
 import os
@@ -211,7 +212,20 @@ def why(L, res, ws, w0, priors, groups):
         L.append("Redundant novel keys: " + "; ".join(f"`{k}`" for k in res[w0]["redundant_novel"]) + ".\n")
 
 
+def _option(rest, name, default):
+    """Remove ``name value`` from the argument list ``rest``; return (value, rest)."""
+    rest = list(rest)
+    if name in rest:
+        i = rest.index(name)
+        val = rest[i + 1]
+        del rest[i:i + 2]
+        return val, rest
+    return default, rest
+
+
 def main(out_md, out_json, trees_path, *rest):
+    title, rest = _option(rest, "--title", "Hold-out sources")
+    target, rest = _option(rest, "--target", "holdout")
     i = rest.index("--variants")
     run_dirs, variants = rest[:i], rest[i + 1:]
     with open(trees_path) as fh:
@@ -243,7 +257,7 @@ def main(out_md, out_json, trees_path, *rest):
                                -(res[w0]["stats"][p]["all"]["raw"] or -1e9)))
     cols = [(g, w) for g in groups for w in ws]
     L = []
-    L.append("# Hold-out sources\n")
+    L.append(f"# {title}\n")
     L.append("Every prior is trained on all twelve training sources (`hsr.grammar_compare.SOURCES`; "
              "`equal`: each source replicated to the size of the largest, `pooled`: every model-form pair once) "
              "and scored on the forms of each hold-out source, which no prior ever trains on. Mean log "
@@ -251,7 +265,7 @@ def main(out_md, out_json, trees_path, *rest):
              "one space and sym0, the tree prior without context, is the honest baseline; PCFG grammars generate "
              "a different space, so raw scores compare only approximately across the two families); renorm: "
              f"renormalised over a common support of {res[w0]['support']} forms (training, candidate and hold-out "
-             "forms). Built by `snakemake --use-conda --cores 2 holdout`.\n")
+             f"forms). Built by `snakemake --use-conda --cores 2 {target}`.\n")
     L.append("| hold-out | models | model-form pairs | distinct forms | novel pairs | novel distinct forms |")
     L.append("|---|---|---|---|---|---|")
     for g in groups:
