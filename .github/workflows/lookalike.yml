@@ -6,8 +6,15 @@
 # pinned conda env workflow/envs/hsr.yaml) on its 4 cores and uploads them as
 # the artifact lookalike-shards-<job>. The report is built locally from the
 # downloaded shards (rule lookalike_report). Nothing here fetches data.
+#
+# workflow_dispatch needs the file on the default branch; until it is merged
+# there, a run is started by pushing a change to .github/lookalike-trigger
+# on a branch (its contents are free text, e.g. the reason for the run).
 name: lookalike
 on:
+  push:
+    paths:
+      - ".github/lookalike-trigger"
   workflow_dispatch:
     inputs:
       only:
