@@ -59,3 +59,8 @@ hpyv:
     tree_ad_depth: {model: adaptor, mode: all, n: 2, depth_cap: 6}
     form_ad3_depth: {model: adaptor, mode: root, n: 3, depth_cap: 6}
     tree_ad3_depth: {model: adaptor, mode: all, n: 3, depth_cap: 6}
+
+# Hold-out sources (hsr.grammar_compare.HOLDOUT_SOURCES): scored by the
+# `holdout` target after training every prior on all sources of
+# hsr.grammar_compare.SOURCES; never used to train any prior.
+holdout_sources: [rnls, ratelaws, ecocat2]

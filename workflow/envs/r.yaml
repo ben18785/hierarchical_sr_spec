@@ -1,0 +1,11 @@
+# R for the hold-out sources (rules rnls_*, ecocat2_eval): R's parser for the
+# CRAN formula miner, vegan and sads for verifying the ecology catalogue.
+# Packages not on conda-forge (MortalityLaws, plantecophys, ...) are sourced
+# from pinned CRAN source tarballs (config cran_sources), never installed.
+channels:
+  - conda-forge
+dependencies:
+  - r-base=4.5.3
+  - r-vegan=2.7_5
+  - r-sads=0.6.5
+  - r-jsonlite=2.0.0

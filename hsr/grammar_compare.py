@@ -516,6 +516,12 @@ SOURCES = {"biomodels": CORPUS,
            "allodb": os.path.join(os.path.dirname(__file__), "data", "corpus_allodb.json"),
            "jws": os.path.join(os.path.dirname(__file__), "data", "corpus_jws.json")}
 
+# Hold-out sources (config holdout_sources): never part of SOURCES, so no
+# prior (hsr.fixed_prior, make_loso) is ever trained on them; they are only
+# scored, by make_holdout, after training on every source in SOURCES.
+HOLDOUT_SOURCES = {n: os.path.join(os.path.dirname(__file__), "data", f"corpus_{n}.json")
+                   for n in ("rnls", "ratelaws", "ecocat2")}
+
 
 def source_items(path, gen_map):
     """Model-form pairs of a corpus (each model's distinct forms once), keys

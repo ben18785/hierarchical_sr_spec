@@ -417,6 +417,23 @@ rule rcurves_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py curves_build {input.src} {input.ev} {output}"
 
 
+rule r_env_versions:
+    """Versions of R and the packages of the pinned R environment (envs/r.yaml)."""
+    output:
+        "results/corpora/r_env_versions.txt",
+    conda:
+        "envs/r.yaml"
+    shell:
+        "Rscript -e 'ip <- installed.packages(); writeLines(paste(c(\"R\", ip[, \"Package\"]), "
+        "c(paste(R.version$major, R.version$minor, sep = \".\"), ip[, \"Version\"]), sep = \"=\"), \"{output}\")'"
+
+
+# hold-out sources (config holdout_sources): built here, never used for training
+include: "rules/rnls.smk"
+include: "rules/ratelaws.smk"
+include: "rules/ecocat2.smk"
+
+
 LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat", "biomodels_nc", "thermal", "ecocurves", "modeldb",
         "nlmixr2lib", "allodb", "jws"]
 NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves", "modeldb", "nlmixr2lib", "allodb", "jws"]
