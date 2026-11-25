@@ -927,7 +927,7 @@ rule mechanisms_report:
         folds=expand("results/grammar/{run}/folds.json", run=MECH_RUNS),
         tables=expand("results/grammar/{run}/table_v.json", run=MECH_RUNS),
         trees="results/grammar/hpyv/trees_mech.json",
-        code="workflow/scripts/holdout_report.py",
+        code=["workflow/scripts/holdout_report.py", "hsr/gap_diagnostics.py"],
     output:
         md="results/grammar/mechanisms.md",
         json="results/grammar/mechanisms.json",

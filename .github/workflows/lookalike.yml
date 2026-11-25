@@ -66,7 +66,8 @@ jobs:
             TARGETS="$TARGETS results/lookalike/shards/${i}of${N}.npz"
           done
           echo "targets:$TARGETS"
-          snakemake --use-conda --cores 4 --rerun-triggers=mtime --allowed-rules lookalike_shard $TARGETS
+          # targets before --allowed-rules, which takes a list
+          snakemake --use-conda --cores 4 --rerun-triggers=mtime $TARGETS --allowed-rules lookalike_shard
       - uses: actions/upload-artifact@v4
         with:
           name: lookalike-shards-${{ matrix.job }}
