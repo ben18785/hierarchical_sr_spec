@@ -1,0 +1,9 @@
+# Hold-out source ratelaws (workflow/rules/ratelaws.smk; hsr.ratelaws).
+ratelaws:
+  # SBO OWL export in EBI-BioModels/SBO (master on 2026-11-25, last commit 2023-05-16;
+  # the export itself says "Generated: 03:11:2021")
+  sbo_commit: "2143b2973f8912db9d4324a4fe543aabcd8f8ba7"
+  # COPASI function database (copasi/function/FunctionDB.xml.cpp) at tag Build-311
+  # (latest release on 2026-11-25, published 2026-10-22)
+  copasi_tag: "Build-311"
+  copasi_commit: "22ba1ac64c16b7a6a73ed0608738da4dbd3d4cc2"

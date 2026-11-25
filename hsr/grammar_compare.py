@@ -516,6 +516,12 @@ SOURCES = {"biomodels": CORPUS,
            "allodb": os.path.join(os.path.dirname(__file__), "data", "corpus_allodb.json"),
            "jws": os.path.join(os.path.dirname(__file__), "data", "corpus_jws.json")}
 
+# Hold-out sources (config holdout_sources): never part of SOURCES, so no
+# prior (hsr.fixed_prior, make_loso) is ever trained on them; they are only
+# scored, by make_holdout, after training on every source in SOURCES.
+HOLDOUT_SOURCES = {n: os.path.join(os.path.dirname(__file__), "data", f"corpus_{n}.json")
+                   for n in ("rnls", "ratelaws", "ecocat2")}
+
 
 def source_items(path, gen_map):
     """Model-form pairs of a corpus (each model's distinct forms once), keys
@@ -556,4 +562,35 @@ def make_loso(gen_map: dict, test: str, weighting="pooled", sources=None, candid
     support = sorted({gen_map.get(c, c) for c in cand} - {None} | {k for v in items.values() for k in v})
     return {"support": support, "folds": [{"train": train, "test": items[test], "test_models": []}],
             "k": 1, "seed": 0, "generalise_literals": True, "test_corpus": f"{test} (left out; {weighting})",
+            "train_sizes": {n: len(v) for n, v in train_parts.items()}}
+
+
+def make_holdout(gen_map: dict, holdouts: dict, weighting="pooled", sources=None, candidates=CANDIDATES) -> dict:
+    """Train on every training source (``SOURCES``, weighted as in make_loso),
+    test on the hold-out sources ``holdouts`` {name: corpus path}, none of
+    which may be a training source. One fold whose test list is the
+    model-form pairs of all hold-outs in turn; ``test_sources`` gives the
+    hold-out of each test item, so that one set of scores serves every
+    hold-out and their union (the training data are the same for all)."""
+    sources = sources or SOURCES
+    if set(holdouts) & set(sources):
+        raise ValueError(f"hold-out sources also in training: {sorted(set(holdouts) & set(sources))}")
+    train_parts = {name: source_items(p, gen_map) for name, p in sources.items()}
+    train_parts = {n: v for n, v in train_parts.items() if v}
+    train = weight_sources(train_parts, weighting)
+    test, labels, n_models = [], [], {}
+    for name, p in holdouts.items():
+        v = source_items(p, gen_map)
+        test += v
+        labels += [name] * len(v)
+        with open(p) as fh:
+            n_models[name] = sum(1 for ks in json.load(fh)["per_model"].values() if ks)
+    with open(candidates) as fh:
+        cand = json.load(fh)["keys"]
+    support = sorted({gen_map.get(c, c) for c in cand} - {None}
+                     | {k for v in train_parts.values() for k in v} | set(test))
+    return {"support": support, "folds": [{"train": train, "test": test, "test_models": [],
+                                           "test_sources": labels}],
+            "k": 1, "seed": 0, "generalise_literals": True,
+            "test_corpus": f"holdouts (hold-out: {', '.join(holdouts)}; {weighting})", "holdout_models": n_models,
             "train_sizes": {n: len(v) for n, v in train_parts.items()}}

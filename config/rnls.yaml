@@ -1,0 +1,14 @@
+# Hold-out source rnls (workflow/rules/rnls.smk): CRAN packages whose code is
+# mined for nls/nlme/gnls/nlsLM/nls2 formulas and selfStart definitions.
+rnls:
+  # CRAN task views whose packages are candidates (Views.rds of the index date).
+  # Hydrology is left out (physical, not biological); Phylogenetics, Omics and
+  # ChemPhys rarely fit regression curves of a single regressor.
+  views: [Agriculture, Environmetrics, Epidemiology, Pharmacokinetics, Tracking]
+  # date the index (rule rnls_index) was downloaded; the committed package list
+  # hsr/data/sources/rnls_packages.tsv pins every version
+  index_date: "2026-11-25"
+  # packages dropped by hand: they match the keyword filter only through
+  # "tree"/"forest" (decision trees, random forests), "Fisher" or "growth curve"
+  # in a non-biological sense, or are hydrological/time-series tools
+  exclude: "randomForest,rpart,party,maptree,VGAM,nsRFA,eyetrackingR,Rbeast"

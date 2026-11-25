@@ -417,6 +417,23 @@ rule rcurves_corpus:
         "PYTHONPATH={ROOT} python workflow/scripts/corpus_sources.py curves_build {input.src} {input.ev} {output}"
 
 
+rule r_env_versions:
+    """Versions of R and the packages of the pinned R environment (envs/r.yaml)."""
+    output:
+        "results/corpora/r_env_versions.txt",
+    conda:
+        "envs/r.yaml"
+    shell:
+        "Rscript -e 'ip <- installed.packages(); writeLines(paste(c(\"R\", ip[, \"Package\"]), "
+        "c(paste(R.version$major, R.version$minor, sep = \".\"), ip[, \"Version\"]), sep = \"=\"), \"{output}\")'"
+
+
+# hold-out sources (config holdout_sources): built here, never used for training
+include: "rules/rnls.smk"
+include: "rules/ratelaws.smk"
+include: "rules/ecocat2.smk"
+
+
 LOSO = ["biomodels", "sabiork", "cellml", "curvelib", "biocat", "biomodels_nc", "thermal", "ecocurves", "modeldb",
         "nlmixr2lib", "allodb", "jws"]
 NEW_CORPORA = ["biomodels_nc", "thermal", "ecocurves", "modeldb", "nlmixr2lib", "allodb", "jws"]
@@ -618,6 +635,12 @@ HPYV_RUNS = ([f"seed{s}" for s in SEEDS] + [f"transfer_{n}" for n in TRANSFER]
 HPYV_CODE = ["hsr/treecode.py", "hsr/pyp.py", "hsr/adaptor.py", "hsr/treecheck.py", "hsr/fnprior_tools.py"]
 
 
+def _hpyv_trees(wc):
+    """Hold-out runs have their own tree file (their support adds the hold-out forms)."""
+    return ("results/grammar/hpyv/trees_holdout.json" if wc.run.startswith("holdout_")
+            else "results/grammar/hpyv/trees.json")
+
+
 rule hpyv:
     input:
         "results/grammar/hpy_variants.md",
@@ -665,7 +688,7 @@ rule hpyv_sources:
 rule hpyv_scores:
     input:
         folds="results/grammar/{run}/folds.json",
-        trees="results/grammar/hpyv/trees.json",
+        trees=_hpyv_trees,
         sources="results/grammar/hpyv/sources.json",
         variant="results/grammar/hpyv/variants/{v}.json",
         code=["workflow/scripts/hpyv_score.py"] + HPYV_CODE,
@@ -686,7 +709,7 @@ rule hpyv_scores:
 rule hpyv_table_run:
     input:
         folds="results/grammar/{run}/folds.json",
-        trees="results/grammar/hpyv/trees.json",
+        trees=_hpyv_trees,
         ours="results/grammar/{run}/ours.json",
         fnp="results/grammar/{run}/fnprior.json",
         hpy="results/grammar/{run}/hpy.json",
@@ -739,6 +762,81 @@ rule hpyv_report:
     shell:
         "PYTHONPATH={ROOT} python workflow/scripts/hpyv_report.py {output} {input.trees} --notes {input.notes} "
         "--tables {input.tables} --scores {input.scores} --calib {input.calib}"
+
+
+# ------------------------------------------------------------ hold-outs
+# Every prior trained on all twelve training sources (LOSO list; equal or
+# pooled weighting) and scored on the hold-out sources of config
+# holdout_sources, which never enter any training set. One run per
+# weighting: the training data are the same for every hold-out, so the
+# per-source tables of holdout.md split one set of scores.
+#
+#     snakemake --use-conda --cores 2 --rerun-triggers=mtime holdout \
+#         --allowed-rules holdout_folds hpyv_trees_holdout hpyv_sources hpyv_variant grammar_scores \
+#             fnprior_scores hpy_scores hpyv_scores hpyv_table_run holdout_report holdout
+#
+# (--allowed-rules uses the committed corpus files as they are, without
+# rebuilding them from the raw caches; 2 cores: adaptor scoring is memory-hungry.)
+HOLDOUTS = config.get("holdout_sources", [])
+HOLDOUT_RUNS = [f"holdout_{w}" for w in ("equal", "pooled")]
+TRAIN_CORPORA = expand("hsr/data/corpus_{n}.json", n=[n for n in LOSO if n != "biomodels"]) + ["hsr/data/corpus.json"]
+
+
+rule holdout_folds:
+    """Train on every training source (weighted), test on every hold-out source."""
+    input:
+        gen="results/grammar/generalised.json",
+        corpora=TRAIN_CORPORA,
+        holdouts=expand("hsr/data/corpus_{n}.json", n=HOLDOUTS),
+        code=["hsr/grammar_compare.py", "workflow/scripts/grammar_steps.py"],
+    output:
+        "results/grammar/holdout_{weighting}/folds.json",
+    wildcard_constraints:
+        weighting="pooled|equal",
+    params:
+        named=" ".join(f"{n}=hsr/data/corpus_{n}.json" for n in HOLDOUTS),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/grammar_steps.py holdout {input.gen} {wildcards.weighting} "
+        "{output} {params.named}"
+
+
+rule hpyv_trees_holdout:
+    """Tree coding (as hpyv_trees) of every support form of the hold-out runs."""
+    input:
+        folds=expand("results/grammar/{run}/folds.json", run=HOLDOUT_RUNS),
+        code=["workflow/scripts/hpyv_trees.py", "hsr/treecode.py", "hsr/fnprior_tools.py"],
+    output:
+        "results/grammar/hpyv/trees_holdout.json",
+    conda:
+        "envs/fnprior.yaml"
+    shell:
+        "python workflow/scripts/hpyv_trees.py {output} {input.folds}"
+
+
+rule holdout_report:
+    input:
+        folds=expand("results/grammar/{run}/folds.json", run=HOLDOUT_RUNS),
+        tables=expand("results/grammar/{run}/table_v.json", run=HOLDOUT_RUNS),
+        trees="results/grammar/hpyv/trees_holdout.json",
+        code="workflow/scripts/holdout_report.py",
+    output:
+        md="results/grammar/holdout.md",
+        json="results/grammar/holdout.json",
+    params:
+        runs=" ".join(f"results/grammar/{r}" for r in HOLDOUT_RUNS),
+        variants=" ".join(HPYV_VARIANTS),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/holdout_report.py {output.md} {output.json} {input.trees} "
+        "{params.runs} --variants {params.variants}"
+
+
+rule holdout:
+    input:
+        "results/grammar/holdout.md",
 
 
 # ================================================= temporal hold-out (temporal_*)

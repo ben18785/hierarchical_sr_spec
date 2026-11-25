@@ -1,0 +1,289 @@
+{
+"freq": {
+"(c0 + c1*exp(c2*x1))/(c3 + exp(c4*x1))": 1,
+"(c0 + c1*x1)*(c2 + x1)**c3": 1,
+"(c0 + c1*x1**c2)/(c3 + x1**c2)": 1,
+"(c0*log(x1) + c1)**2": 1,
+"(c1*(c0 + x1) + c2*x1)/(c0 + x1)": 2,
+"-c0*exp(c1*x1 - c1) + c0": 1,
+"-c0*exp(c1*x1) + c0": 1,
+"-c0*x1 + c0": 1,
+"-c0*x1*exp(c1*x1) + c0*x1 + c2*exp(c1*x1)": 1,
+"c0 + x1": 1,
+"c0 - (c1 - exp(c2*x1))**c3": 1,
+"c0 - x1": 1,
+"c0*(c1 + x1)/(c2 + x1)": 1,
+"c0*(c1 - exp(c2*x1))**c3 + c4": 1,
+"c0*(c1 - x1)**c2*(c3 + x1)**c4": 1,
+"c0*(c1 - x1)/(c2 + x1)": 1,
+"c0*(c1*x1**c2 + c5)**c3 + c4": 1,
+"c0*c1*x1 - c0*sqrt(c2*x1 + (c1*x1 + c3)**2) + c4": 1,
+"c0*exp((c1 + c2*(c3 + x1))*(c3 + x1)**2)": 1,
+"c0*exp(c1*(c2 + x1)**2)": 1,
+"c0*exp(c1*(c2 + x1)**2) + c3": 1,
+"c0*exp(c1*exp(c2*x1))": 2,
+"c0*exp(c1*x1)": 2,
+"c0*exp(c1*x1) + c2": 7,
+"c0*exp(c1*x1) + c2*exp(c3*x1)": 2,
+"c0*exp(c1*x1) + c2*exp(c3*x1) + c4": 1,
+"c0*exp(c1*x1**c2) + c3": 2,
+"c0*exp(c1/(c2 + x1))": 1,
+"c0*exp(c3*c4/x1 + c4)/(c1 - exp(c2)*exp(c2*c3/x1))": 1,
+"c0*exp(c3/x1)/(c1 + exp(c2/x1))": 1,
+"c0*log(c1*exp(c2*x1) + c3)": 1,
+"c0*log(x1) + c1": 2,
+"c0*x1": 1,
+"c0*x1 + c1": 5,
+"c0*x1 + c1*exp(c2*x1)": 1,
+"c0*x1 + c1*exp(c2*x1**c3)": 1,
+"c0*x1**2 + c1*x1 + c2": 1,
+"c0*x1**c1": 3,
+"c0*x1**c1 + c2": 2,
+"c0*x1**c1 + c2*x1*x1**c1 + c3": 1,
+"c0*x1**c1*exp(c2*x1)": 1,
+"c0*x1**c1/(c2 + x1**c1)": 1,
+"c0*x1**c1/(c2 + x1**c1) + c3": 1,
+"c0*x1**c1/(c2 + x1**c3)": 1,
+"c0*x1*exp(c1*x1)": 2,
+"c0*x1/(c1 + x1)": 6,
+"c0*x1/(c1 + x1) + c2": 4,
+"c0/(c0 + x1**c1)": 1,
+"c0/(c1 + (c2 + x1)**c3)": 1,
+"c0/(c1 + exp(c2*log(x1)))": 1,
+"c0/(c1 + exp(c2*x1))": 5,
+"c0/(c1 + exp(c2*x1)) + c3": 2,
+"c0/(c1 + x1)": 2,
+"c0/(c1 + x1) + c2": 2,
+"c0/(c1 + x1) + c2*x1/(c3 + x1)": 1,
+"c0/(c1 + x1**c2)": 2,
+"c0/(c1*log(x1)**3 + c2 + log(x1))": 1,
+"c0/(c1*x1 + c2 + x1**2)": 1,
+"c0/(c1*x1 + c2 + x1**2) + c3": 1,
+"c0/sqrt(x1) + c1": 3,
+"c0/x1": 1,
+"c0/x1 + c1": 3,
+"c1*exp(c0*x1)/(c2 + c3*exp(c5*x1) + exp(c4*x1))": 1,
+"c2*exp(c3/(c8 + x1))/(c4*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))": 1,
+"c3*exp(c4/(c8 + x1))/(c2*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))": 1,
+"exp(c0*x1)": 1,
+"exp(c0*x1**c1)": 1,
+"log(c0*exp(c1*x1) + c2*exp(c3*x1))": 1,
+"x1**c0*(c1*x1 + c2)": 1,
+"x1/(c0 + x1)": 1
+},
+"licenses": {
+"cran:AgroReg": "GPL (>= 2)",
+"cran:PK": "GPL-2",
+"cran:PKNCA": "AGPL-3",
+"cran:TSDFGS": "GPL (>= 3)",
+"cran:WCM": "GPL (>= 3)",
+"cran:agridat": "MIT + file LICENSE",
+"cran:aridagri": "GPL-3",
+"cran:bigleaf": "GPL (>= 2)",
+"cran:biometryassist": "MIT + file LICENSE",
+"cran:biotools": "GPL (>= 2)",
+"cran:cercospoRa": "MIT + file LICENSE",
+"cran:clinDR": "GPL (>= 2)",
+"cran:drcte": "GPL (>= 2)",
+"cran:nlraa": "GPL-3",
+"cran:photosynthesis": "MIT + file LICENSE",
+"cran:plantecophys": "GPL",
+"cran:secr": "GPL (>= 2)",
+"cran:soiltestcorr": "MIT + file LICENSE",
+"cran:vegan": "GPL-2",
+"cran:wnl": "GPL-3",
+"cran:xgxr": "MIT + file LICENSE"
+},
+"not_expressible": {},
+"per_model": {
+"cran:AgroReg": [
+"-c0*x1 + c0",
+"c0*(c1 - x1)/(c2 + x1)",
+"c0*exp(c1*(c2 + x1)**2)",
+"c0*exp(c1*(c2 + x1)**2) + c3",
+"c0*exp(c1*x1)",
+"c0*exp(c1*x1) + c2",
+"c0*exp(c1*x1) + c2*exp(c3*x1)",
+"c0*x1 + c1*exp(c2*x1)",
+"c0*x1 + c1*exp(c2*x1**c3)",
+"c0*x1**c1",
+"c0*x1**c1/(c2 + x1**c1)",
+"c0*x1/(c1 + x1)",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1)",
+"c0/(c1*log(x1)**3 + c2 + log(x1))",
+"c0/(c1*x1 + c2 + x1**2)",
+"c0/(c1*x1 + c2 + x1**2) + c3",
+"exp(c0*x1)",
+"exp(c0*x1**c1)"
+],
+"cran:PK": [
+"c0*exp(c1*x1) + c2",
+"c0*exp(c1*x1) + c2*exp(c3*x1)",
+"c0*exp(c1*x1) + c2*exp(c3*x1) + c4",
+"c0*x1 + c1",
+"log(c0*exp(c1*x1) + c2*exp(c3*x1))"
+],
+"cran:PKNCA": [
+"-c0*exp(c1*x1) + c0"
+],
+"cran:TSDFGS": [
+"c0/(c1 + exp(c2*x1))"
+],
+"cran:WCM": [
+"-c0*x1*exp(c1*x1) + c0*x1 + c2*exp(c1*x1)",
+"c0*x1 + c1"
+],
+"cran:agridat": [
+"c0*exp(c1*x1) + c2",
+"c0*x1**2 + c1*x1 + c2",
+"c0*x1**c1*exp(c2*x1)",
+"c0*x1*exp(c1*x1)",
+"c0/(c1 + exp(c2*x1))",
+"c0/(c1 + exp(c2*x1)) + c3"
+],
+"cran:aridagri": [
+"c0*exp(c1*x1) + c2"
+],
+"cran:bigleaf": [
+"(c1*(c0 + x1) + c2*x1)/(c0 + x1)",
+"c0 + x1",
+"c0 - x1",
+"c0*log(x1) + c1",
+"c0*x1 + c1",
+"c0*x1/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2",
+"c0/(c1 + x1) + c2*x1/(c3 + x1)",
+"c0/sqrt(x1) + c1",
+"c0/x1 + c1"
+],
+"cran:biometryassist": [
+"c0/(c1 + x1**c2)"
+],
+"cran:biotools": [
+"c0*x1**c1"
+],
+"cran:cercospoRa": [
+"c0*x1/(c1 + x1)",
+"c0/(c1 + exp(c2*x1))"
+],
+"cran:clinDR": [
+"c0*x1**c1/(c2 + x1**c1) + c3",
+"c0*x1/(c1 + x1) + c2"
+],
+"cran:drcte": [
+"c0/(c1 + (c2 + x1)**c3)"
+],
+"cran:nlraa": [
+"(c0 + c1*x1)*(c2 + x1)**c3",
+"(c0 + c1*x1**c2)/(c3 + x1**c2)",
+"c0 - (c1 - exp(c2*x1))**c3",
+"c0*(c1 + x1)/(c2 + x1)",
+"c0*(c1 - exp(c2*x1))**c3 + c4",
+"c0*(c1 - x1)**c2*(c3 + x1)**c4",
+"c0*(c1*x1**c2 + c5)**c3 + c4",
+"c0*c1*x1 - c0*sqrt(c2*x1 + (c1*x1 + c3)**2) + c4",
+"c0*exp((c1 + c2*(c3 + x1))*(c3 + x1)**2)",
+"c0*exp(c1*exp(c2*x1))",
+"c0*exp(c1*x1)",
+"c0*exp(c1*x1) + c2",
+"c0*exp(c1*x1**c2) + c3",
+"c0*exp(c1/(c2 + x1))",
+"c0*log(c1*exp(c2*x1) + c3)",
+"c0*x1**c1 + c2*x1*x1**c1 + c3",
+"c0*x1**c1/(c2 + x1**c3)",
+"c0*x1*exp(c1*x1)",
+"c0*x1/(c1 + x1)",
+"c0/(c0 + x1**c1)",
+"c0/(c1 + exp(c2*x1))",
+"c0/(c1 + exp(c2*x1)) + c3",
+"c0/(c1 + x1**c2)",
+"c1*exp(c0*x1)/(c2 + c3*exp(c5*x1) + exp(c4*x1))",
+"c2*exp(c3/(c8 + x1))/(c4*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))",
+"c3*exp(c4/(c8 + x1))/(c2*exp(c1/(c6 + x1)) + c5 + exp(c0/(c7 + x1)))",
+"x1**c0*(c1*x1 + c2)",
+"x1/(c0 + x1)"
+],
+"cran:photosynthesis": [
+"(c0 + c1*exp(c2*x1))/(c3 + exp(c4*x1))",
+"c0*exp(c3*c4/x1 + c4)/(c1 - exp(c2)*exp(c2*c3/x1))",
+"c0*exp(c3/x1)/(c1 + exp(c2/x1))",
+"c0*x1 + c1",
+"c0*x1**c1 + c2",
+"c0/sqrt(x1) + c1",
+"c0/x1 + c1"
+],
+"cran:plantecophys": [
+"(c1*(c0 + x1) + c2*x1)/(c0 + x1)",
+"c0*x1",
+"c0*x1 + c1",
+"c0*x1**c1 + c2",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + x1)",
+"c0/(c1 + x1) + c2",
+"c0/sqrt(x1) + c1",
+"c0/x1",
+"c0/x1 + c1"
+],
+"cran:secr": [
+"-c0*exp(c1*x1 - c1) + c0"
+],
+"cran:soiltestcorr": [
+"c0*exp(c1*x1) + c2"
+],
+"cran:vegan": [
+"(c0*log(x1) + c1)**2",
+"c0*exp(c1*exp(c2*x1))",
+"c0*exp(c1*x1) + c2",
+"c0*exp(c1*x1**c2) + c3",
+"c0*log(x1) + c1",
+"c0*x1**c1",
+"c0*x1/(c1 + x1)",
+"c0/(c1 + exp(c2*log(x1)))",
+"c0/(c1 + exp(c2*x1))"
+],
+"cran:wnl": [
+"c0*x1/(c1 + x1)"
+],
+"cran:xgxr": [
+"c0*x1/(c1 + x1) + c2"
+]
+},
+"snapshot": {
+"date": "2026-11-25",
+"packages": 354,
+"sha256_all": "8941031d6448c5568c8e9cb879605d2e176cc5c8149a57505ca50e619c49f094"
+},
+"source": "Formulas of nls/nlme/gnls/nlsLM/nls2 calls and selfStart definitions in the R code, tests, vignettes and Rd examples of CRAN packages of the Environmetrics, Agriculture, Epidemiology and Pharmacokinetics task views (bio/eco keyword filter); one model per package; each regressor in turn is x1; literals generalised",
+"stats": {
+"distinct_keys": 70,
+"distinct_keys_expressible": 70,
+"distinct_package_formulas": 174,
+"drop_reasons": {
+"formula not resolvable": 55,
+"no canonical key (reduction failed or timed out)": 1,
+"no parameter names": 20,
+"no regressor": 4,
+"transcription: not arithmetic": 111,
+"transcription: parse: TypeError": 13
+},
+"dropped": 204,
+"duplicates_within_package": 117,
+"formulas_reduced": 173,
+"found": 494,
+"found_gnls": 29,
+"found_nlme": 82,
+"found_nls": 279,
+"found_nlsLM": 60,
+"found_selfStart": 44,
+"model_key_pairs": 110,
+"model_key_pairs_expressible": 110,
+"models": 21,
+"models_with_keys": 21,
+"multi_regressor": 39,
+"packages_downloaded": 354,
+"packages_listed": 354,
+"packages_with_calls": 27,
+"parsed": 291
+}
+}
