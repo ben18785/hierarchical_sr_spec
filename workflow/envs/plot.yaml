@@ -1,0 +1,9 @@
+# Environment for the paper-1 tables and figures (rule paper1; workflow/scripts/paper1_report.py).
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - numpy==2.5.5
+      - matplotlib==3.11.2

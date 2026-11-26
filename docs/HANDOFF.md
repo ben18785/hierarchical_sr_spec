@@ -134,6 +134,6 @@ Scores are raw log P per test model-form pair, in nats. They are not renormalise
 
 ## Main Snakemake targets
 
-`holdout`, `temporal`, `blend`, `mechanisms`, `lookalike` (report only; the fits come from Actions
+`paper1` (every paper-1 table and figure, in `results/paper1`; see its README), `holdout`, `temporal`, `blend`, `mechanisms`, `lookalike` (report only; the fits come from Actions
 artifacts) and `canon_changes` (on `canon` only). Config sections with matching names are in
 `config/config.yaml`.

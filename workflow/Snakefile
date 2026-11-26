@@ -1256,3 +1256,88 @@ rule blend_report:
 rule blend:
     input:
         "results/grammar/blend.md",
+
+
+# ======================================================== paper 1 (paper1)
+# Every table and figure of paper 1 (docs/paper1_outline.tex) as LaTeX
+# fragments (booktabs tabulars) and PDF figures in results/paper1, with a
+# guide to which file goes where in results/paper1/README.md.
+#
+# Two steps. paper1_data reads the per-run outputs (gitignored; rebuilt by the
+# rules above or taken from GitHub Actions artifacts) and writes small,
+# committed JSON extracts to results/paper1/data. paper1 draws the tables and
+# figures from those extracts, the committed reports (results/grammar/*.json)
+# and config paper1, so restyling needs no run directories:
+#
+#     snakemake --cores 1 --rerun-triggers=mtime paper1_data --allowed-rules paper1_data
+#     snakemake --use-conda --cores 1 --rerun-triggers=mtime paper1 --allowed-rules paper1_report paper1
+P1 = config["paper1"]
+P1_HOLDOUT_CORPORA = [f"hsr/data/corpus_{n}.json" for n in HOLDOUTS]
+P1_DATA = expand("results/paper1/data/{f}.json", f=["corpus", "logp_size", "loso", "temporal", "diagnostics"])
+
+
+def _p1_run_files(runs, prefix):
+    return expand("results/grammar/{run}/{s}.json", run=runs,
+                  s=["folds", "ours", "fnprior", "hpy"] + [f"{prefix}_{v}" for v in HPYV_VARIANTS])
+
+
+rule paper1_data:
+    input:
+        gen="results/grammar/generalised.json",
+        corpora=TRAIN_CORPORA + P1_HOLDOUT_CORPORA,
+        trees="results/grammar/hpyv/trees_holdout.json",
+        temporal_trees="results/grammar/temporal/trees.json",
+        temporal="results/grammar/temporal.json",
+        holdout=_p1_run_files(HOLDOUT_RUNS, "hpyv"),
+        temporal_runs=_p1_run_files(TEMPORAL_RUNS, "hpyvt"),
+        loso=_p1_run_files(LOSO_RUNS, "hpyv") + expand("results/grammar/{run}/table_v.json", run=LOSO_RUNS),
+        calib="results/grammar/hpyv/calib_fnprior_kn.json",
+        code=["workflow/scripts/paper1_data.py", "hsr/grammar_compare.py"],
+    output:
+        P1_DATA,
+    params:
+        corpora=" ".join([f"training:{n}=" + ("hsr/data/corpus.json" if n == "biomodels" else f"hsr/data/corpus_{n}.json")
+                          for n in LOSO] + [f"holdout:{n}=hsr/data/corpus_{n}.json" for n in HOLDOUTS]),
+        holdout=" ".join(f"results/grammar/{r}" for r in HOLDOUT_RUNS),
+        temporal=" ".join(f"results/grammar/{r}" for r in TEMPORAL_RUNS),
+        loso=" ".join(f"results/grammar/{r}" for r in LOSO_RUNS),
+        variants=" ".join(HPYV_VARIANTS),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/paper1_data.py results/paper1/data --gen {input.gen} "
+        "--trees {input.trees} --corpora {params.corpora} --holdout {input.trees} {params.holdout} "
+        "--temporal {input.temporal_trees} {input.temporal} {params.temporal} --loso {params.loso} "
+        "--variants {params.variants} --calib {input.calib}"
+
+
+P1_TABLES = ["corpus", "loso_main", "loso_by_source_equal", "loso_by_source_pooled", "loso_novel_by_source_equal",
+             "loso_novel_by_source_pooled", "holdout_main", "holdout_full", "holdout_seen_novel_full",
+             "holdout_gap", "temporal_main", "temporal_no_modeldb_main", "temporal_sets", "temporal_full_equal",
+             "temporal_full_pooled", "temporal_gap", "blend_main", "blend_full", "mechanisms_main",
+             "mechanisms_full", "lookalike_main", "lookalike_full", "lookalike_strata", "properness", "mcmc"]
+P1_FIGURES = ["source_overlap", "form_sizes", "logp_size", "logp_size_full_equal", "logp_size_full_pooled",
+              "adaptor_acceptance"]
+
+
+rule paper1_report:
+    input:
+        data=P1_DATA,
+        reports=expand("results/grammar/{r}.json", r=["holdout", "blend", "mechanisms", "lookalike"]),
+        code="workflow/scripts/paper1_report.py",
+    output:
+        tables=expand("results/paper1/tab_{t}.tex", t=P1_TABLES),
+        figures=expand("results/paper1/fig_{f}.pdf", f=P1_FIGURES),
+        readme="results/paper1/README.md",
+    params:
+        cfg=lambda wc: json.dumps(P1).replace("'", ""),
+        variants=",".join(HPYV_VARIANTS),
+    conda:
+        "envs/plot.yaml"
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/paper1_report.py results/paper1 results/grammar '{params.cfg}' {params.variants}"
+
+
+rule paper1:
+    input:
+        rules.paper1_report.output,

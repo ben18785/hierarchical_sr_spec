@@ -115,3 +115,35 @@ blend:
   pairs: [[tree_ad3, hpy3_depth], [tree_ad3, hpy2], [tree_ad3, fnprior_kn], [form_ad3_depth, hpy3_depth],
           [form_ad3_depth, hpy2], [form_ad3_depth, fnprior_kn], [tree_ad3, sym0]]
   triples: [[tree_ad3, hpy3_depth, fnprior_kn], [tree_ad3, form_ad3_depth, hpy3_depth]]
+
+# paper-1 tables and figures (rules paper1_data, paper1; workflow/scripts/paper1_*.py;
+# outputs in results/paper1, file-by-file guide in results/paper1/README.md).
+# main_priors: rows of the compact main-text tables and panels of the main figures;
+# main_weighting: source weighting of the compact tables and main figures; main_blend:
+# the blend shown in the compact tables; main_cutoff: temporal cutoff of the main size
+# figure; delta: look-alike threshold D (nats) of the compact look-alike table.
+# sources: display label, licence and extraction route of each corpus source,
+# summarised from hsr/data/sources/README.md (text only: every number in the corpus
+# table is computed from the corpus files).
+paper1:
+  main_priors: [sym0, fnprior_kn, hpy3_depth, form_ad3_depth, tree_ad3]
+  main_weighting: equal
+  main_blend: "tree_ad3 + hpy3_depth"
+  main_cutoff: 2015
+  delta: 5
+  sources:
+    biomodels: {label: "BioModels (curated)", licence: "CC0", route: "SBML kinetic laws"}
+    biomodels_nc: {label: "BioModels (non-curated)", licence: "CC0", route: "SBML kinetic laws"}
+    jws: {label: "JWS Online", licence: "none stated", route: "SBML kinetic laws"}
+    sabiork: {label: "SABIO-RK", licence: "non-commercial", route: "rate equations (JSON export)"}
+    cellml: {label: "CellML (PMR)", licence: "per workspace", route: "libCellML code generation"}
+    modeldb: {label: "ModelDB", licence: "citation required", route: "NMODL parser"}
+    nlmixr2lib: {label: "nlmixr2lib", licence: "GPL", route: "R parser of model blocks"}
+    allodb: {label: "allodb", licence: "GPL-3", route: "R expressions, checked in R"}
+    curvelib: {label: "R curve libraries", licence: "GPL (formulas)", route: "transcribed, verified in R"}
+    thermal: {label: "Thermal performance", licence: "GPL/MIT (formulas)", route: "transcribed, verified in R"}
+    ecocurves: {label: "Ecological curves", licence: "GPL/MIT (formulas)", route: "transcribed, verified in R"}
+    biocat: {label: "Curated catalogue", licence: "textbook forms", route: "transcribed, checked in R"}
+    rnls: {label: "CRAN nls code", licence: "GPL/MIT per package", route: "R parser of nls() calls"}
+    ratelaws: {label: "SBO and COPASI rate laws", licence: "Artistic 2.0", route: "MathML / COPASI functions"}
+    ecocat2: {label: "Ecology catalogue 2", licence: "GPL/MIT (formulas)", route: "transcribed, verified in R"}

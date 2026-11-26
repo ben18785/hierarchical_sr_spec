@@ -22,3 +22,9 @@ results/grammar/hpyv/trees.json
 .chk/
 results/grammar/hpyv/sources.json
 results/grammar/hpyv/variants/
+# run directories linked (symlinks) from another checkout
+results/grammar/loso_*
+results/grammar/holdout_*
+results/grammar/temporal_*
+results/grammar/mechholdout_*
+results/grammar/hpyv/calib_*.json
