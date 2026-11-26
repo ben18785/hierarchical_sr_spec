@@ -176,8 +176,10 @@ Main text: a condensed version of \texttt{docs/prior\_models.tex}; full version 
   \item At $\Delta = 5$, seen truths (\texttt{hpy3\_depth} vs flat): mean rank \cur{6.4 vs 53}, P(true)
   \cur{0.13 vs 0.03}, MAP accuracy \cur{0.17 vs 0.04}. Novel truths: P(true) \cur{0.03 vs 0.06};
   hold-out novel forms \cur{$\approx 0$}. Adaptors no better than \texttt{hpy2}/\texttt{fnprior}.
-  \item \todo{pooled weighting; larger constant cap (more mechanism truths); tempering $P^\tau$;
-  generated table}. Caveats: winner's curse over $\sim$5000 candidates (median \cur{5.3} nats
+  \item Larger design (up to 7 constants, 25 nodes; \cur{73 true forms including all 41 eligible
+  mechanism forms, 876 datasets}): same picture, sharper (\texttt{hpy3\_depth} P(true) \cur{0.167 seen
+  / 0.007 novel vs flat 0.041 / 0.017}). Pooled weighting changes little (\cur{$\approx 0.01$}).
+  \item \todo{generated table}. Caveats: winner's curse over $\sim$5000 candidates (median \cur{5.3} nats
   between best evidence and truth); Laplace evidence only.
   \item The price of a prior that bets on the literature: how often a novel truth is overridden.
 \end{itemize}
@@ -185,7 +187,13 @@ Main text: a condensed version of \texttt{docs/prior\_models.tex}; full version 
 \subsection{Sensitivity}
 \begin{itemize}
   \item Equal vs pooled weighting; source-labelled hierarchy (no gain).
-  \item \todo{prior tempering: $P^{\tau}$ and the look-alike results as $\tau$ varies}.
+  \item Prior tempering $P^\tau/Z$ over the candidate set: for seen truths P(true) rises with $\tau$
+  up to about 1 (\cur{0.03 at $\tau=0$, 0.12 at 0.5, 0.13 at 1}); for novel truths it falls steadily
+  (\cur{0.058 to 0.025}). Choosing $\tau$ by leave-one-truth-form-out on mean log P(true) gives
+  \cur{$\tau \approx 0.15$--$0.2$} for the tree priors (held-out log P \cur{$-15.1$ vs $-18.5$ at $\tau=1$,
+  $-15.9$ flat}). This criterion is dominated by confidently wrong cases; on P(true) or MAP
+  accuracy, $\tau \approx 0.5$--$1$ is best for seen truths. A mildly tempered prior
+  ($\tau \approx 0.5$) is a reasonable default.
   \item \todo{effect of the canonicaliser fix on all headline numbers}.
 \end{itemize}
 
