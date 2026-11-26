@@ -1,15 +1,18 @@
-# Manually triggered: gh workflow run lookalike.yml --ref lookalike
 # Look-alike discrimination test (hsr.lookalike): Laplace log evidence of
-# every candidate form on every simulated dataset of the committed design
-# (results/lookalike/design.json). Each of the 20 matrix jobs runs 4 of the
-# config lookalike.shards = 80 Snakemake shard targets (rule lookalike_shard,
+# every candidate form on every simulated dataset of a committed design.
+# Designs: base (config lookalike, results/lookalike/design.json) and c7
+# (config lookalike_c7, results/lookalike_c7/design.json). Each of the
+# <jobs> matrix jobs (config <section>.jobs) runs every jobs-th of the
+# <shards> Snakemake shard targets (rules lookalike_shard / lookalike_c7_shard,
 # pinned conda env workflow/envs/hsr.yaml) on its 4 cores and uploads them as
-# the artifact lookalike-shards-<job>. The report is built locally from the
-# downloaded shards (rule lookalike_report). Nothing here fetches data.
+# the artifact lookalike[-<design>]-shards-<job>. The reports are built
+# locally from the downloaded shards (rules lookalike_report,
+# lookalike_tempering). Nothing here fetches data.
 #
 # workflow_dispatch needs the file on the default branch; until it is merged
 # there, a run is started by pushing a change to .github/lookalike-trigger
-# on a branch (its contents are free text, e.g. the reason for the run).
+# on a branch (its contents are free text, e.g. the reason for the run; a
+# last line containing [design=c7] selects that design, otherwise base).
 name: lookalike
 on:
   push:
@@ -17,8 +20,11 @@ on:
       - ".github/lookalike-trigger"
   workflow_dispatch:
     inputs:
+      design:
+        description: "design: base or c7"
+        default: "base"
       only:
-        description: "optional space-separated job indices to run (default: all 20)"
+        description: "optional space-separated job indices to run (default: all)"
         default: ""
 
 jobs:
@@ -26,16 +32,31 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       jobs: ${{ steps.mk.outputs.jobs }}
+      design: ${{ steps.mk.outputs.design }}
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
       - id: mk
         env:
           ONLY: ${{ inputs.only }}
+          DESIGN_IN: ${{ inputs.design }}
         run: |
+          DESIGN="$DESIGN_IN"
+          if [ -z "$DESIGN" ]; then
+            DESIGN=$(tail -n 1 .github/lookalike-trigger | sed -n 's/.*\[design=\([a-z0-9_]*\)\].*/\1/p')
+          fi
+          DESIGN=${DESIGN:-base}
+          echo "design=$DESIGN" >> "$GITHUB_OUTPUT"
+          NJOBS=$(python3 -c "import sys, yaml; c = yaml.safe_load(open('config/config.yaml')); d = sys.argv[1]; s = c['lookalike'] if d == 'base' else {**c['lookalike'], **c['lookalike_' + d]}; print(s['jobs'])" "$DESIGN")
           if [ -n "$ONLY" ]; then
             echo "jobs=[$(echo $ONLY | tr ' ' ',')]" >> "$GITHUB_OUTPUT"
           else
-            echo "jobs=[$(seq -s, 0 19)]" >> "$GITHUB_OUTPUT"
+            echo "jobs=[$(seq -s, 0 $((NJOBS - 1)))]" >> "$GITHUB_OUTPUT"
           fi
+          echo "design $DESIGN, $NJOBS jobs"
 
   evidence:
     needs: plan
@@ -49,6 +70,8 @@ jobs:
     defaults:
       run:
         shell: bash -el {0}
+    env:
+      DESIGN: ${{ needs.plan.outputs.design }}
     steps:
       - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v3
@@ -59,16 +82,23 @@ jobs:
           python-version: "3.12"
       - run: pip install "snakemake==9.27.2"
       - name: evidence shards
+        id: ev
         run: |
-          N=$(python -c "import yaml; print(yaml.safe_load(open('config/config.yaml'))['lookalike']['shards'])")
+          read N NJOBS DIR RULE < <(python -c "import sys, yaml; c = yaml.safe_load(open('config/config.yaml')); d = sys.argv[1]; s = c['lookalike'] if d == 'base' else {**c['lookalike'], **c['lookalike_' + d]}; print(s['shards'], s['jobs'], 'results/lookalike' if d == 'base' else 'results/lookalike_' + d, 'lookalike_shard' if d == 'base' else 'lookalike_' + d + '_shard')" "$DESIGN")
           TARGETS=""
-          for i in $(seq ${{ matrix.job }} 20 $((N - 1))); do
-            TARGETS="$TARGETS results/lookalike/shards/${i}of${N}.npz"
+          for i in $(seq ${{ matrix.job }} $NJOBS $((N - 1))); do
+            TARGETS="$TARGETS $DIR/shards/${i}of${N}.npz"
           done
-          echo "targets:$TARGETS"
+          echo "design $DESIGN; targets:$TARGETS"
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+          if [ "$DESIGN" = "base" ]; then
+            echo "name=lookalike-shards-${{ matrix.job }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=lookalike-$DESIGN-shards-${{ matrix.job }}" >> "$GITHUB_OUTPUT"
+          fi
           # targets before --allowed-rules, which takes a list
-          snakemake --use-conda --cores 4 --rerun-triggers=mtime $TARGETS --allowed-rules lookalike_shard
+          snakemake --use-conda --cores 4 --rerun-triggers=mtime $TARGETS --allowed-rules $RULE
       - uses: actions/upload-artifact@v4
         with:
-          name: lookalike-shards-${{ matrix.job }}
-          path: results/lookalike/shards/
+          name: ${{ steps.ev.outputs.name }}
+          path: ${{ steps.ev.outputs.dir }}/shards/

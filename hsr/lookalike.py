@@ -40,6 +40,10 @@ scores (``dataset_scores``, ``summarise``)
     candidate set: posterior probability of the truth (evidence + log prior)
     and whether it is the MAP form. The flat prior (evidence only) and sym0
     (symbol frequencies only) are the baselines.
+tempering (``temper``, ``log_p_true_taus``, ``select_tau_loto``)
+    The prior raised to a power tau and renormalised over the candidate set,
+    P(form)^tau / Z (tau = 0: flat; tau = 1: the prior). tau is chosen by
+    leave-one-truth-form-out on the mean log posterior probability of the truth.
 """
 from __future__ import annotations
 
@@ -216,17 +220,87 @@ def dataset_scores(L, lp, t, deltas):
     post = np.where(fin, L, -np.inf) + lp
     ok = np.isfinite(post)
     if ok.any() and np.isfinite(post[t]):
-        out["p_post"] = float(np.exp(post[t] - logsumexp(post[ok])))
+        out["log_p_post"] = float(post[t] - logsumexp(post[ok]))
+        out["p_post"] = float(np.exp(out["log_p_post"]))
         out["map"] = bool(np.argmax(np.where(ok, post, -np.inf)) == t)
+        # rank of the truth under the posterior over the whole candidate set (1 = MAP; ties count half)
+        out["post_rank"] = float(1 + np.sum(post[ok] > post[t]) + 0.5 * (np.sum(post[ok] == post[t]) - 1))
     else:
-        out["p_post"], out["map"] = 0.0, False
+        out["p_post"], out["log_p_post"], out["map"], out["post_rank"] = 0.0, -np.inf, False, float(ok.sum() + 1)
     return out
+
+
+# --------------------------------------------------------------- tempering
+def temper(lp, tau):
+    """log of the tempered prior P(form)^tau / Z over the given candidate set.
+
+    lp: (C,) log prior over the candidate set (-inf: zero probability). The
+    result is a proper distribution on the candidate set: Z = sum_c P(c)^tau
+    is a finite sum of non-negative terms with at least one positive one.
+    tau = 0 is the flat prior 1/C on every candidate (including any the prior
+    gives zero probability); tau = 1 is the prior renormalised over the set;
+    tau > 1 sharpens it."""
+    lp = np.asarray(lp, float)
+    if tau < 0:
+        raise ValueError("tau must be >= 0")
+    if tau == 0:
+        return np.full(lp.shape, -np.log(lp.size))
+    if not np.isfinite(lp).any():
+        raise ValueError("prior gives zero probability to every candidate")
+    a = tau * lp
+    return a - logsumexp(a[np.isfinite(a)])
+
+
+def temper_all(lp, taus):
+    """(K, C) tempered log priors temper(lp, tau) for each tau in taus."""
+    return np.stack([temper(lp, tau) for tau in taus])
+
+
+def log_p_true_taus(L, lp_taus, t):
+    """(K,) log posterior probability of the truth t under each row of lp_taus
+    (temper_all). L: (C,) log evidence (-inf: failed fit)."""
+    if not np.isfinite(L[t]):
+        return np.full(lp_taus.shape[0], -np.inf)
+    fin = np.isfinite(L)
+    post = L[fin][None, :] + lp_taus[:, fin]
+    tt = int(np.sum(fin[:t]))
+    return post[:, tt] - logsumexp(post, axis=1)
+
+
+def select_tau_loto(logp, folds, taus):
+    """Leave-one-truth-form-out choice of tau.
+
+    logp: (J, K) log P(true) of dataset j at tau_k (rows with any -inf are
+    dropped by the caller), folds: (J,) truth-form index of each dataset.
+    For every form f, tau_f maximises the mean of logp over the datasets of the
+    other forms; the held-out score of dataset j is logp[j, tau_{f(j)}].
+    Returns {"tau_full": argmax over all datasets, "tau_folds": {f: tau_f},
+    "cv": (J,) held-out log P(true)}."""
+    logp = np.asarray(logp, float)
+    folds = np.asarray(folds)
+    taus = np.asarray(taus, float)
+    full = logp.mean(axis=0)
+    tot, n = logp.sum(axis=0), logp.shape[0]
+    tau_f, cv = {}, np.empty(n)
+    for f in np.unique(folds):
+        m = folds == f
+        rest = (tot - logp[m].sum(axis=0)) / max(n - m.sum(), 1)
+        k = int(np.argmax(rest))
+        tau_f[int(f)] = float(taus[k])
+        cv[m] = logp[m, k]
+    return {"tau_full": float(taus[int(np.argmax(full))]), "mean_full": full.tolist(), "tau_folds": tau_f, "cv": cv}
 
 
 def summarise(rows, deltas):
     """Means over the rows (each the output of dataset_scores) of one prior and group."""
     s = {"n": len(rows), "p_post": float(np.mean([r["p_post"] for r in rows])) if rows else None,
          "map": float(np.mean([r["map"] for r in rows])) if rows else None}
+    # log P(true) and posterior rank: over the datasets whose true-form fit succeeded
+    lg = [r["log_p_post"] for r in rows if "log_p_post" in r and np.isfinite(r["log_p_post"])]
+    s["log_p_post"] = float(np.mean(lg)) if lg else None
+    s["n_log_p"] = len(lg)
+    pr = [r["post_rank"] for r in rows if "log_p_post" in r and np.isfinite(r["log_p_post"])]
+    s["post_rank_median"] = float(np.median(pr)) if pr else None
     for D in deltas:
         inA = [r[D] for r in rows if r[D]["in_set"]]
         s[f"in_set_{D}"] = float(np.mean([r[D]["in_set"] for r in rows])) if rows else None

@@ -68,3 +68,44 @@ def test_evidence_shard_prefers_truth_on_clean_data():
     assert keys == d["candidates"]
     truth = keys.index(d["true_forms"][0]["key"])
     assert np.isfinite(L[0, truth]) and L[0, truth] >= L[0, keys.index("c0*x1")]
+
+
+def test_temper_is_proper_and_interpolates():
+    lp = np.log(np.array([0.5, 0.3, 0.2]))
+    for tau in (0.0, 0.25, 1.0, 1.5):
+        q = np.exp(la.temper(lp, tau))
+        assert np.isclose(q.sum(), 1.0) and np.all(q > 0)
+    assert np.allclose(np.exp(la.temper(lp, 0.0)), 1 / 3)
+    assert np.allclose(np.exp(la.temper(lp, 1.0)), [0.5, 0.3, 0.2])
+    assert np.allclose(np.exp(la.temper(lp + 7.0, 1.0)), [0.5, 0.3, 0.2])      # renormalised over the set
+    q2 = np.exp(la.temper(lp, 2.0))
+    assert np.allclose(q2, np.array([0.25, 0.09, 0.04]) / 0.38)
+    # zero-probability forms stay at zero for tau > 0; tau = 0 is flat on every candidate
+    lz = np.array([0.0, -np.inf, -1.0])
+    assert np.exp(la.temper(lz, 0.5))[1] == 0 and np.isclose(np.exp(la.temper(lz, 0.5)).sum(), 1)
+    assert np.allclose(np.exp(la.temper(lz, 0.0)), 1 / 3)
+
+
+def test_log_p_true_taus_matches_dataset_scores():
+    L = np.array([0.0, -1.0, -3.0, -np.inf, -10.0])
+    lp = np.log(np.array([0.1, 0.6, 0.2, 0.05, 0.05]))
+    taus = [0.0, 0.5, 1.0, 1.5]
+    got = la.log_p_true_taus(L, la.temper_all(lp, taus), 1)
+    for tau, g in zip(taus, got):
+        s = la.dataset_scores(L, la.temper(lp, tau), 1, [2])
+        assert np.isclose(g, s["log_p_post"]) and np.isclose(np.exp(g), s["p_post"])
+    assert s["post_rank"] == 1.0
+    assert np.all(np.isneginf(la.log_p_true_taus(L, la.temper_all(lp, taus), 3)))   # failed true-form fit
+
+
+def test_select_tau_loto():
+    taus = [0.0, 1.0, 2.0]
+    # form 0 prefers tau 2, forms 1 and 2 prefer tau 1
+    logp = np.array([[-3.0, -2.0, -1.0], [-3.0, -1.0, -2.0], [-3.0, -1.0, -2.5], [-3.0, -1.5, -2.0]])
+    folds = np.array([0, 1, 2, 2])
+    r = la.select_tau_loto(logp, folds, taus)
+    assert r["tau_full"] == 1.0
+    assert r["tau_folds"] == {0: 1.0, 1: 1.0, 2: 1.0}
+    assert np.allclose(r["cv"], [-2.0, -1.0, -1.0, -1.5])
+    r2 = la.select_tau_loto(logp[:2], folds[:2], taus)          # leaving form 1 out leaves form 0: tau 2
+    assert r2["tau_folds"] == {0: 1.0, 1: 2.0} and np.allclose(r2["cv"], [-2.0, -2.0])

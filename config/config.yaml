@@ -88,7 +88,7 @@ mechanisms:
 # look-alike discrimination test (rules lookalike_*; hsr.lookalike): true
 # forms per stratum, (n, noise) settings, replicates, candidate-set size
 # limits, look-alike thresholds D (nats) and evidence shards (GitHub Actions,
-# .github/workflows/lookalike.yml: 20 jobs x 4 shards)
+# .github/workflows/lookalike.yml: jobs x shards/jobs shards)
 lookalike:
   seed: 1
   temporal_cutoff: 2015
@@ -106,6 +106,34 @@ lookalike:
   deltas: [2, 5, 10]   # report only (the design is not rebuilt for these)
   n_starts: 10
   shards: 80
+  jobs: 20             # Actions matrix jobs (each runs shards/jobs shard targets on 4 cores)
+  weightings: [equal, pooled]   # report only: priors of runs mechholdout_<w> and temporal_<cutoff>_<w>
+
+# second look-alike design (rules lookalike_c7_*): the lookalike settings with
+# these overrides. A larger cap on constants and nodes, so that most
+# mechanism-derived forms (up to 7 constants, 25 nodes) qualify as true forms
+# and candidates; every eligible mechanism form is used. Evidence on Actions
+# (.github/workflows/lookalike.yml with [design=c7] in the trigger line).
+lookalike_c7:
+  max_consts: 7
+  max_nodes: 25
+  strata:
+    holdout_seen: 10
+    holdout_novel: 10
+    mech_enzyme: 15
+    mech_compartment: 20
+    mech_temperature: 6
+    temporal_novel: 12
+  shards: 80
+  jobs: 20
+
+# prior tempering in the look-alike test (rule lookalike_tempering): P^tau / Z
+# over the candidate set for each reported tau; tau chosen by
+# leave-one-truth-form-out on a grid 0, step, ..., max (must contain 0 and 1).
+lookalike_tempering:
+  taus: [0, 0.25, 0.5, 0.75, 1, 1.5]
+  tau_grid: {max: 2.0, step: 0.05}
+  priors_md: [hpy3_depth, fnprior_kn, tree_ad3, form_ad3_depth, hpy2_src, sym0, cf, position_backoff20]
 
 # blended priors (rule blend_report; hsr.blend): mixtures of tree priors, weights
 # chosen on the LOSO runs only, evaluated on the hold-out and temporal tests.

@@ -960,25 +960,69 @@ rule mechanism_forms_report:
 # ======================================== look-alike discrimination test (lookalike_*)
 # When the data barely distinguish candidate forms, does the prior put its
 # mass on the true one? hsr.lookalike (design and scores; config lookalike).
-# The design (true forms, simulated datasets, candidate set) is built locally
-# and committed; the evidence shards run on GitHub Actions
-# (.github/workflows/lookalike.yml; runners only run lookalike_shard on the
-# committed design); their artifacts are downloaded to results/lookalike/shards
-# and the report is built locally:
+# Two designs: the base design (config lookalike; results/lookalike) and c7
+# (config lookalike_c7 overrides: a larger cap on constants and nodes;
+# results/lookalike_c7). Each design (true forms, simulated datasets,
+# candidate set) is built locally and committed; the evidence shards run on
+# GitHub Actions (.github/workflows/lookalike.yml; runners only run
+# lookalike_shard / lookalike_c7_shard on the committed design), started by a
+# push that changes .github/lookalike-trigger (a last line containing
+# [design=c7] selects c7). Their artifacts are downloaded into
+# results/<dir>/shards, the run id is committed as results/<dir>/RUN_ID, and
+# the reports are built locally:
 #
-#     snakemake --use-conda --cores 1 --rerun-triggers=mtime results/lookalike/design.json \
-#         --allowed-rules lookalike_design
-#     gh workflow run lookalike.yml --ref lookalike    # then gh run download <id> -D results/lookalike/shards
+#     snakemake --use-conda --cores 1 --rerun-triggers=mtime results/lookalike_c7/design.json \
+#         --allowed-rules lookalike_c7_design
+#     gh run download <id> -D tmp; cp tmp/*/*.npz results/lookalike_c7/shards/
 #     snakemake --use-conda --cores 1 --rerun-triggers=mtime lookalike \
-#         --allowed-rules lookalike_report lookalike
+#         --allowed-rules lookalike_report lookalike_tempering lookalike
+#
+# Both reports cover both designs and both source weightings
+# (lookalike.weightings). Prior tempering (lookalike_tempering): P^tau / Z
+# over the candidate set, tau chosen by leave-one-truth-form-out; no new fits.
+LA_REPORT_ONLY = ("weightings", "jobs")
 LA = config["lookalike"]
+LA_DESIGN_CFG = {k: v for k, v in LA.items() if k not in LA_REPORT_ONLY}
+LA7 = {**LA_DESIGN_CFG, **{k: v for k, v in config["lookalike_c7"].items() if k not in LA_REPORT_ONLY}}
 LA_SHARDS = [f"results/lookalike/shards/{i}of{LA['shards']}.npz" for i in range(LA["shards"])]
+LA7_SHARDS = [f"results/lookalike_c7/shards/{i}of{LA7['shards']}.npz" for i in range(LA7["shards"])]
 LA_TRUN = f"temporal_{LA['temporal_cutoff']}_equal"
+LA_RUNS = {w: {"mech": f"results/grammar/mechholdout_{w}",
+               "temporal": f"results/grammar/temporal_{LA['temporal_cutoff']}_{w}"} for w in LA["weightings"]}
+LA_TEMPER = config["lookalike_tempering"]
+_g = LA_TEMPER["tau_grid"]
+LA_TAU_GRID = [round(i * _g["step"], 10) for i in range(int(round(_g["max"] / _g["step"])) + 1)]
+LA_SPEC = {
+    "designs": [
+        {"name": "base", "title": f"Design A: at most {LA['max_consts']} constants and {LA['max_nodes']} nodes",
+         "design": "results/lookalike/design.json", "shards": LA_SHARDS, "run_id": "results/lookalike/RUN_ID"},
+        {"name": "c7", "title": f"Design B: at most {LA7['max_consts']} constants and {LA7['max_nodes']} nodes",
+         "design": "results/lookalike_c7/design.json", "shards": LA7_SHARDS,
+         "run_id": "results/lookalike_c7/RUN_ID"},
+    ],
+    "trees": "results/grammar/hpyv/trees_mech.json",
+    "runs": LA_RUNS,
+    "variants": list(HPYV_VARIANTS),
+    "deltas": LA["deltas"],
+    "taus": LA_TEMPER["taus"],
+    "tau_grid": LA_TAU_GRID,
+    "priors_md": LA_TEMPER["priors_md"],
+}
+
+
+def _la_prior_inputs():
+    out = []
+    for w, r in LA_RUNS.items():
+        out += expand(f"{r['mech']}/{{s}}.json", s=["folds", "ours", "fnprior", "hpy"] + [f"hpyv_{v}" for v in HPYV_VARIANTS])
+        out += expand(f"{r['temporal']}/{{s}}.json",
+                      s=["folds", "ours", "fnprior", "hpy"] + [f"hpyvt_{v}" for v in HPYV_VARIANTS])
+    return out
 
 
 rule lookalike:
     input:
         "results/grammar/lookalike.md",
+        "results/grammar/lookalike_tempering.md",
 
 
 rule lookalike_design:
@@ -991,12 +1035,19 @@ rule lookalike_design:
     output:
         "results/lookalike/design.json",
     params:
-        cfg=lambda wc: json.dumps(LA).replace("'", ""),
+        cfg=lambda wc: json.dumps(LA_DESIGN_CFG).replace("'", ""),
     conda:
         HSR_ENV
     shell:
         "PYTHONPATH={ROOT} python workflow/scripts/lookalike_steps.py design {output} {input.mech} {input.temporal} "
         "{input.trees} '{params.cfg}'"
+
+
+use rule lookalike_design as lookalike_c7_design with:
+    output:
+        "results/lookalike_c7/design.json",
+    params:
+        cfg=lambda wc: json.dumps(LA7).replace("'", ""),
 
 
 rule lookalike_shard:
@@ -1015,33 +1066,61 @@ rule lookalike_shard:
         "{wildcards.n} {params.n_starts}"
 
 
+use rule lookalike_shard as lookalike_c7_shard with:
+    input:
+        design="results/lookalike_c7/design.json",
+        code=["hsr/lookalike.py", "hsr/likelihood.py", "workflow/scripts/lookalike_steps.py"],
+    output:
+        "results/lookalike_c7/shards/{i}of{n}.npz",
+    params:
+        n_starts=LA7["n_starts"],
+
+
 rule lookalike_evidence:
     input:
         LA_SHARDS,
+        LA7_SHARDS,
 
 
 rule lookalike_report:
+    """Look-alike tables for both designs and both source weightings."""
     input:
-        design="results/lookalike/design.json",
-        shards=LA_SHARDS,
+        designs=["results/lookalike/design.json", "results/lookalike_c7/design.json"],
+        run_ids=["results/lookalike/RUN_ID", "results/lookalike_c7/RUN_ID"],
+        shards=LA_SHARDS + LA7_SHARDS,
         trees="results/grammar/hpyv/trees_mech.json",
-        mech=expand("results/grammar/mechholdout_equal/{s}.json",
-                    s=["folds", "ours", "fnprior", "hpy"] + [f"hpyv_{v}" for v in HPYV_VARIANTS]),
-        temporal=expand(f"results/grammar/{LA_TRUN}/{{s}}.json",
-                        s=["folds", "ours", "fnprior", "hpy"] + [f"hpyvt_{v}" for v in HPYV_VARIANTS]),
+        priors=_la_prior_inputs(),
         code=["hsr/lookalike.py", "workflow/scripts/lookalike_steps.py"],
     output:
         md="results/grammar/lookalike.md",
         json="results/grammar/lookalike.json",
     params:
-        variants=",".join(HPYV_VARIANTS),
-        deltas=",".join(str(d) for d in LA["deltas"]),
+        spec=lambda wc: json.dumps(LA_SPEC).replace("'", ""),
     conda:
         HSR_ENV
     shell:
-        "PYTHONPATH={ROOT} python workflow/scripts/lookalike_steps.py report {output.md} {output.json} "
-        "{input.design} {input.trees} results/grammar/mechholdout_equal results/grammar/{LA_TRUN} "
-        "{params.variants} {params.deltas} {input.shards}"
+        "PYTHONPATH={ROOT} python workflow/scripts/lookalike_steps.py report {output.md} {output.json} '{params.spec}'"
+
+
+rule lookalike_tempering:
+    """Prior tempering P^tau / Z in the look-alike test, both designs and weightings (no new fits)."""
+    input:
+        designs=["results/lookalike/design.json", "results/lookalike_c7/design.json"],
+        run_ids=["results/lookalike/RUN_ID", "results/lookalike_c7/RUN_ID"],
+        shards=LA_SHARDS + LA7_SHARDS,
+        trees="results/grammar/hpyv/trees_mech.json",
+        priors=_la_prior_inputs(),
+        code=["hsr/lookalike.py", "workflow/scripts/lookalike_steps.py"],
+    output:
+        md="results/grammar/lookalike_tempering.md",
+        json="results/grammar/lookalike_tempering.json",
+    params:
+        spec=lambda wc: json.dumps(LA_SPEC).replace("'", ""),
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/lookalike_steps.py tempering {output.md} {output.json} "
+        "'{params.spec}'"
 
 
 # ================================================= temporal hold-out (temporal_*)
