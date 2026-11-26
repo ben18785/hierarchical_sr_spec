@@ -419,7 +419,7 @@ def tempering(out_md, out_json, spec):
                     Lm.append(row(p, f"{tau:g}", tau_rows[p][w][f"{tau:g}"]))
             Lm.append("")
     with open(out_json, "w") as fh:
-        json.dump(res, fh, indent=1)
+        json.dump(res, fh)          # compact: every group x prior x tau x weighting
     with open(out_md, "w") as fh:
         fh.write("\n".join(Lm))
 
