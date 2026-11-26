@@ -31,7 +31,10 @@ test them against four kinds of forms they were not trained on: whole held-out s
 published after a cutoff year, curated catalogues never used for training, and forms derived from random
 mechanisms rather than from the literature. Learned priors give unseen forms \cur{7--8 nats} more log
 probability than a symbol-frequency baseline, and the adaptor priors also predict forms that appear
-later in the literature best. A look-alike test shows \todo{headline}.
+later in the literature best. In a look-alike test, where data cannot separate the true form from
+dozens of alternatives, a learned prior raises the posterior probability of a true form already in
+the literature from \cur{0.03 to 0.13}, but lowers it for a novel form (\cur{0.06 to 0.03}): the
+prior's benefit and its cost are both concentrated where convention applies.
 
 %=========================================================================
 \section{Introduction}
@@ -78,7 +81,11 @@ Main text: a condensed version of \texttt{docs/prior\_models.tex}; full version 
   adaptors (\texttt{form\_ad}, \texttt{form\_ad3\_depth}, \texttt{tree\_ad3}); PCFG grammars as an
   alternative family.
   \item Blended prior $w P_{\text{adaptor}} + (1-w) P_{\text{context}}$, $w$ chosen by leave-one-source-out.
-  \todo{results of the blend target}.
+  Chosen adaptor weight \cur{$w \approx 0.72$--$0.84$} (jackknife range $\pm 0.03$), stable across
+  pairs of priors. On hold-out sources it gains \cur{0.4--1.2 nats} on novel forms over the better
+  component at a cost of \cur{0.05--0.1} on seen ones; the EM mixture of all tree priors is best
+  overall (\cur{$-6.30$}). Oracle weights on the test sets are closer to the adaptor
+  (\cur{0.83--0.99}), but re-tuning would gain at most \cur{0.13} nats.
   \item Training weightings: pooled vs equal per source.
 \end{itemize}
 
@@ -119,7 +126,13 @@ Main text: a condensed version of \texttt{docs/prior\_models.tex}; full version 
   \item Gain over \texttt{sym0} is as large on novel forms as on seen ones for the context models
   (\cur{$+7.2$ / $+7.6$}): they generalise rather than memorise.
   \item Figure: log P vs node count, seen and novel, per prior.
-  \item \todo{same diagnostics for the temporal split}.
+  \item Temporal split: novel test forms are much larger than seen ones (\cur{33 vs 13 nodes at
+  2010}). At fixed size the novelty penalty is small for the context models (\cur{1.5--2.6 nats for
+  \texttt{hpy2}/\texttt{fnprior}, 6--7 for \texttt{hpy3\_depth}}) and large for the adaptors
+  (\cur{17--21}), so for the context models the temporal gap is almost all size.
+  \item Redundant constants: \cur{525 of 944} novel 2010 forms flagged as redundant (mostly ModelDB
+  gating); \todo{recompute with the row-scaled rank test from the canonicaliser branch; the current
+  test has false positives}.
 \end{itemize}
 
 \subsection{Predicting the future literature}
@@ -128,30 +141,59 @@ Main text: a condensed version of \texttt{docs/prior\_models.tex}; full version 
   forms in all six settings (\cur{novel $-28$ to $-31$ vs $-36$ to $-39$ for \texttt{fnprior}}).
   \item New forms are recombinations of existing subtrees; contrast with hold-out catalogues, where
   novel forms are structurally new and adaptors lose.
-  \item Caveat: ModelDB dominates the test sets. \todo{ModelDB-excluded table}.
+  \item Caveat: ModelDB is \cur{65--80\%} of test pairs. Without it (\cur{8060 / 3612 / 1257} test
+  pairs) \texttt{tree\_ad3} is still best overall in every setting (\cur{$-5.6$ to $-6.9$}); on novel
+  forms \texttt{hpy2\_src} and \texttt{hpy3\_depth} draw level with it (\cur{novel $-27.6$ / $-28.5$ vs
+  $-28.1$ at 2010, equal weighting}). The adaptors' novelty penalty roughly halves without ModelDB
+  (\cur{$-11$ vs $-17$}): much of their temporal disadvantage on novel forms is ModelDB channel
+  kinetics.
 \end{itemize}
 
 \subsection{Is the prior just convention? Mechanism-derived forms}
 \begin{itemize}
-  \item Random King--Altman enzyme mechanisms: \cur{12 distinct forms from 1959 mechanisms; the 8 of
-  degree $\le 2$ are all in the corpus; 4 cubic-denominator forms are not}. Conventions match
-  mechanisms at low complexity; frequencies differ (substrate inhibition common mechanistically,
-  rare in the corpus).
-  \item \todo{compartment time courses and temperature dependence; prior scores on mechanism forms,
-  seen/novel}.
+  \item Three classes of random mechanism (1000 each): King--Altman enzyme mechanisms; linear
+  compartment systems (time courses, bolus or infusion, optional transit chains); enzyme mechanisms
+  with Arrhenius/Eyring rates and optional thermal inactivation (temperature dependence).
+  \item Coverage: \cur{enzyme 17 distinct forms, 8 in training, 93\% of mechanisms; compartment 22,
+  6, 86\%; temperature 8, 2, 29\%}. Conventions match mechanisms at low complexity (Michaelis--Menten,
+  one or two exponentials, Arrhenius); the novel forms are the complex ones (cubic and quartic
+  denominators, three or more exponentials, ratios of several $\exp(c/T)$ terms). Frequencies
+  differ (substrate inhibition common mechanistically, rare in the corpus).
+  \item Raw log P per mechanism, enzyme / compartment / temperature (equal weighting):
+  \cur{\texttt{hpy3\_depth} $-6.2/-5.6/-19.9$; \texttt{tree\_ad3} $-6.0/-5.5/-27.6$; \texttt{hpy2}
+  $-7.5/-7.1/-25.0$; \texttt{sym0} $-17.9/-14.3/-35.3$}. On novel mechanism forms the context
+  model beats the adaptor (\cur{novel temperature $-24.3$ vs $-36.1$}).
+  \item Over all hold-outs and mechanism classes: gain over \texttt{sym0} on novel forms
+  \cur{$+17.0$ for \texttt{hpy3\_depth}, $+11.2$ for \texttt{tree\_ad3}} (equal weighting).
 \end{itemize}
 
 \subsection{Does the prior pick the right form when data are weak? The look-alike test}
 \begin{itemize}
-  \item \todo{table: per prior, rank of truth within look-alike set, renormalised prior mass on
-  truth, MAP accuracy; by seen/novel, mechanism class, $(n, \sigma)$}.
+  \item Design: \cur{49 true forms (hold-out seen and novel, mechanism-derived, temporal novel), 4
+  settings $n \in \{10, 40\}$, $\sigma \in \{0.02, 0.1\}$, 3 replicates: 588 datasets; about 5100
+  candidates}. Look-alike set: candidates within $\Delta$ nats of the best Laplace evidence; truth
+  in the set on \cur{14\% / 43\% / 78\%} of datasets at $\Delta = 2 / 5 / 10$.
+  \item At $\Delta = 5$, seen truths (\texttt{hpy3\_depth} vs flat): mean rank \cur{6.4 vs 53}, P(true)
+  \cur{0.13 vs 0.03}, MAP accuracy \cur{0.17 vs 0.04}. Novel truths: P(true) \cur{0.03 vs 0.06};
+  hold-out novel forms \cur{$\approx 0$}. Adaptors no better than \texttt{hpy2}/\texttt{fnprior}.
+  \item Larger design (up to 7 constants, 25 nodes; \cur{73 true forms including all 41 eligible
+  mechanism forms, 876 datasets}): same picture, sharper (\texttt{hpy3\_depth} P(true) \cur{0.167 seen
+  / 0.007 novel vs flat 0.041 / 0.017}). Pooled weighting changes little (\cur{$\approx 0.01$}).
+  \item \todo{generated table}. Caveats: winner's curse over $\sim$5000 candidates (median \cur{5.3} nats
+  between best evidence and truth); Laplace evidence only.
   \item The price of a prior that bets on the literature: how often a novel truth is overridden.
 \end{itemize}
 
 \subsection{Sensitivity}
 \begin{itemize}
   \item Equal vs pooled weighting; source-labelled hierarchy (no gain).
-  \item \todo{prior tempering: $P^{\tau}$ and the look-alike results as $\tau$ varies}.
+  \item Prior tempering $P^\tau/Z$ over the candidate set: for seen truths P(true) rises with $\tau$
+  up to about 1 (\cur{0.03 at $\tau=0$, 0.12 at 0.5, 0.13 at 1}); for novel truths it falls steadily
+  (\cur{0.058 to 0.025}). Choosing $\tau$ by leave-one-truth-form-out on mean log P(true) gives
+  \cur{$\tau \approx 0.15$--$0.2$} for the tree priors (held-out log P \cur{$-15.1$ vs $-18.5$ at $\tau=1$,
+  $-15.9$ flat}). This criterion is dominated by confidently wrong cases; on P(true) or MAP
+  accuracy, $\tau \approx 0.5$--$1$ is best for seen truths. A mildly tempered prior
+  ($\tau \approx 0.5$) is a reasonable default.
   \item \todo{effect of the canonicaliser fix on all headline numbers}.
 \end{itemize}
 

@@ -88,12 +88,21 @@ Scores are raw log P per test model-form pair, in nats. They are not renormalise
   - **Novel truths:** the priors make things worse, with P(true) at 0.03 against 0.06 flat. Hold-out novel
     forms get almost zero.
   - The adaptors are no better than `hpy2`/`fnprior` here.
+  - **Follow-ups on branch `lookalike2`** (`lookalike.md`, `lookalike_tempering.md`; both cover both designs
+    and both weightings):
+    - **Design B** (`lookalike_c7`: up to 7 constants and 25 nodes; 5,792 candidates, 73 true forms including all
+      41 eligible mechanism forms, 876 datasets; Actions run 45902288688, 7.6 CPU h). Seen truths: P(true)
+      0.04 flat → 0.17 `hpy3_depth`. Novel truths: 0.017 flat → 0.007. Same picture as design A, sharper.
+    - **Pooled weighting** changes little: within ±0.01 in P(true) for the tree priors; the PCFGs gain slightly.
+    - **Tempering** P^τ/Z: leave-one-truth-form-out picks τ ≈ 0.1–0.2 for the tree priors (0–0.1 for the
+      PCFGs). Seen truths alone prefer τ ≈ 0.4–0.5; novel truths prefer τ ≈ 0–0.1. Mean log P(true) is
+      dominated by datasets where the truth fits badly, so the chosen τ is small.
   - **Caveats:**
-    - Only equal weighting was used.
-    - The size cap leaves few mechanism truths.
-    - With so many candidates, a wrong form usually fits best by chance (median 5.3 nats ahead).
-    - The evidence is a Laplace approximation only.
-  - The Actions workflow is started by a push that changes `.github/lookalike-trigger`.
+    - With so many candidates, a wrong form usually fits best by chance.
+    - The evidence is a Laplace approximation only; the true-form fit fails on 6% (A) / 11% (B) of datasets.
+    - The truth's posterior rank (median) is in the tens to hundreds, so the absolute numbers are small.
+  - The Actions workflow is started by a push that changes `.github/lookalike-trigger`; a last line with
+    `[design=c7]` runs design B instead of the base design.
     `gh workflow run` doesn't work because the workflow isn't on `prototype`, and merging it there needs
     the user's OK.
 
@@ -121,10 +130,10 @@ Scores are raw log P per test model-form pair, in nats. They are not renormalise
    - **If adopted:** rebase onto `themes`, use the new redundancy test in `gap_diagnostics.py`, and rerun
      everything downstream on Actions (generalised map → folds/scores → LOSO, hold-out, temporal, blend,
      mechanisms, look-alike → reports).
-2. **Look-alike follow-ups:** pooled weighting; a larger cap on constants so more mechanism forms qualify;
-   possibly a more accurate evidence than Laplace.
-3. **Prior sensitivity and tempering:** P^τ, and how the look-alike results change with τ (to-do in the
-   outline).
+2. **Look-alike follow-ups:** pooled weighting, the larger cap and tempering are done (branch `lookalike2`).
+   Left: a more accurate evidence than Laplace; deciding whether a tempered prior (τ from LOTO) is used in
+   paper 1.
+3. **Prior sensitivity:** tempering is in `lookalike_tempering.md`; other sensitivity checks are still open.
 4. **Paper-1 outline:** fill the red `\todo{}` items in `docs/paper1_outline.tex` from the reports above.
    Generate the tables with Snakemake targets rather than typing them. The user will need to create a new
    Overleaf project for paper 1; the old Overleaf clone at `~/Documents/GitHub/hierarchical_sr_overleaf`

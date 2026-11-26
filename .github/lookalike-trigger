@@ -1,2 +1,3 @@
 run 1: evidence for results/lookalike/design.json (b248ebd)
 run 2: targets before --allowed-rules
+run 3: evidence for results/lookalike_c7/design.json, at most 7 constants and 25 nodes [design=c7]

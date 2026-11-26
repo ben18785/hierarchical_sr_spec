@@ -17,6 +17,7 @@ results/grammar/hpyv/trees_holdout.json
 results/grammar/mechholdout_*/
 results/grammar/hpyv/trees_mech.json
 results/lookalike/shards/
+results/lookalike_c7/shards/
 results/grammar/loso_*/
 results/grammar/hpyv/trees.json
 .chk/
