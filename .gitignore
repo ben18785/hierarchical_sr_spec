@@ -14,3 +14,4 @@ results/grammar/temporal/
 results/grammar/temporal.json
 results/grammar/holdout_*/
 results/grammar/hpyv/trees_holdout.json
+results/canon/

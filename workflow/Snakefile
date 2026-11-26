@@ -507,11 +507,13 @@ rule biomodels_corpus:
         cache="results/corpora/raw/biomodels",
         first=config.get("biomodels_first", 1),
         last=config.get("biomodels_last", 1100),
+        # --config biomodels_offline=true rebuilds from the cache without any download
+        offline="--offline" if config.get("biomodels_offline", False) else "",
     conda:
         "envs/biomodels.yaml"
     shell:
         "PYTHONPATH={ROOT} python -m hsr.corpus build --out {output.corpus} --first {params.first} "
-        "--last {params.last} --cache {params.cache} && "
+        "--last {params.last} --cache {params.cache} {params.offline} && "
         "PYTHONPATH={ROOT} python workflow/scripts/manifest.py {params.cache} {output.manifest}"
 
 
@@ -837,6 +839,37 @@ rule holdout_report:
 rule holdout:
     input:
         "results/grammar/holdout.md",
+
+
+# ============================================ canonicalisation changes (canon)
+# Corpora committed at config canon_baseline (a git revision) against the
+# current ones: forms merged, redundant constants before and after.
+CANON_NAMES = ["corpus.json", "corpus_generalised.json"] + [f"corpus_{n}.json" for n in LOSO if n != "biomodels"] \
+              + [f"corpus_{n}.json" for n in HOLDOUTS]
+
+
+rule canon_baseline:
+    output:
+        expand("results/canon/baseline/{f}", f=CANON_NAMES),
+    params:
+        rev=config.get("canon_baseline", "bea2b95"),
+    shell:
+        "for f in {CANON_NAMES}; do git show {params.rev}:hsr/data/$f > results/canon/baseline/$f; done"
+
+
+rule canon_changes:
+    input:
+        base=expand("results/canon/baseline/{f}", f=CANON_NAMES),
+        new=expand("hsr/data/{f}", f=CANON_NAMES),
+        code=["workflow/scripts/canon_changes.py", "hsr/canonical.py"],
+    output:
+        md="results/grammar/canon_changes.md",
+        json="results/grammar/canon_changes.json",
+    conda:
+        HSR_ENV
+    shell:
+        "PYTHONPATH={ROOT} python workflow/scripts/canon_changes.py results/canon/baseline hsr/data "
+        "results/canon/baseline/corpus_generalised.json hsr/data/corpus_generalised.json {output.md} {output.json}"
 
 
 # ================================================= temporal hold-out (temporal_*)

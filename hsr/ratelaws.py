@@ -274,7 +274,7 @@ def build(raw_dir, out, processes=4):
         stats[f"{src}_parsed"] += bool(laws)
         if reason and not laws:
             dropped[mid] = reason
-    law_cache = cs.reduce_laws([law for _, _, laws, _ in defs for law in laws], int(processes))
+    law_cache = cs.reduce_laws([law for _, _, laws, _ in defs for law in laws], int(processes), stats=stats)
     by_model = {}
     for mid, _, laws, _ in defs:
         ks = set().union(*(law_cache[law] for law in laws)) if laws else set()

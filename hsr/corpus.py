@@ -24,6 +24,7 @@ which runs ``python -m hsr.corpus build`` and uploads corpus.json.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import re
@@ -145,7 +146,7 @@ def collapse_constants(expr, x, prefix="k"):
     return rec(expr)
 
 
-def project(expr, variables, sym_map):
+def project(expr, variables, sym_map, reduce=True):
     """One-variable canonical keys of ``expr``: for each name in ``variables``
     that occurs in it, that symbol -> x1 and every other symbol -> a constant.
     The number pi becomes a float literal first: ``canonicalise`` rejects
@@ -168,7 +169,7 @@ def project(expr, variables, sym_map):
             e = collapse_constants(expr.xreplace(sub), x1)
             e = e.xreplace({s: sp.Symbol(f"c{i}", real=True)
                             for i, s in enumerate(sorted(e.free_symbols - {x1}, key=str))})
-            sk = canonicalise(e, 1, max_consts=None)
+            sk = canonicalise(e, 1, max_consts=None, reduce=reduce)
         except Exception:
             sk = None
         if sk is not None:
@@ -215,10 +216,29 @@ def _alarm(signum, frame):
     raise _Timeout()
 
 
-def model_keys(path, law_timeout=10):
-    """Keys of one model. A law whose reduction takes longer than
-    ``law_timeout`` seconds (sympy can stall on very large laws) is skipped."""
+@contextlib.contextmanager
+def cpu_time_limit(seconds):
+    """Raise ``_Timeout`` once this process has used ``seconds`` of CPU time
+    (ITIMER_PROF) inside the block. A wall-clock limit made corpus builds
+    nondeterministic: on a loaded machine a few large laws that are reduced in
+    one build time out in the next. CPU time hardly depends on the load."""
     import signal
+    old = signal.signal(signal.SIGPROF, _alarm)
+    signal.setitimer(signal.ITIMER_PROF, float(seconds))
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_PROF, 0)
+        signal.signal(signal.SIGPROF, old)
+
+
+def model_keys(path, law_timeout=10, timeouts=None):
+    """Keys of one model. A law whose reduction takes longer than
+    ``law_timeout`` seconds of CPU time (sympy can stall on very large laws)
+    is skipped; their number is added to ``timeouts[0]`` if given. Redundant
+    constants are removed from the keys afterwards (``reduce_key``), outside
+    the time limit."""
+    from .canonical import reduce_key
     species, laws = sbml_laws(path)
     keys = set()
     n_ok = 0
@@ -229,18 +249,16 @@ def model_keys(path, law_timeout=10):
         if parsed is None:
             continue
         expr, syms = parsed
-        old = signal.signal(signal.SIGALRM, _alarm)
-        signal.alarm(law_timeout)
         try:
-            ks = project(expr, species, syms)
+            with cpu_time_limit(law_timeout):
+                ks = project(expr, species, syms, reduce=False)
         except _Timeout:
             ks = set()
-        finally:
-            signal.alarm(0)
-            signal.signal(signal.SIGALRM, old)
+            if timeouts is not None:
+                timeouts[0] += 1
         if ks:
             n_ok += 1
-        keys |= ks
+        keys |= {reduce_key(k) for k in ks}
     return keys, len(laws), n_ok
 
 
@@ -313,14 +331,21 @@ def download_model(mid, fetch=None):
     return fetch(url)
 
 
-def build(out, first, last, cache_dir, sleep=0.2):
+def build(out, first, last, cache_dir, sleep=0.2, offline=False):
+    """Corpus of curated models first..last; downloads go to ``cache_dir``.
+    With ``offline`` a model missing from the cache is counted as missing
+    instead of being downloaded (rebuilds from a complete cache)."""
     os.makedirs(cache_dir, exist_ok=True)
     freq = Counter()
     per_model = {}
     stats = Counter()
+    timeouts = [0]
     for i in range(first, last + 1):
         mid = f"BIOMD{i:010d}"
         path = os.path.join(cache_dir, mid + ".xml")
+        if not os.path.exists(path) and offline:
+            stats["missing"] += 1
+            continue
         if not os.path.exists(path):
             data, err = download_model(mid)
             if data is None:
@@ -334,7 +359,7 @@ def build(out, first, last, cache_dir, sleep=0.2):
                 fh.write(data)
             time.sleep(sleep)
         try:
-            keys, n_laws, n_ok = model_keys(path)
+            keys, n_laws, n_ok = model_keys(path, timeouts=timeouts)
         except Exception:
             stats["unreadable"] += 1
             continue
@@ -345,6 +370,8 @@ def build(out, first, last, cache_dir, sleep=0.2):
         freq.update(keys)
         if i % 50 == 0:
             print(f"{mid}: {stats['models']} models, {len(freq)} distinct keys", flush=True)
+    if timeouts[0]:
+        stats["laws_timed_out"] = timeouts[0]
     cur = curated_keys()
     for ks in cur.values():
         freq.update(ks)
@@ -400,11 +427,12 @@ def main(argv=None):
     b.add_argument("--first", type=int, default=1)
     b.add_argument("--last", type=int, default=1100)
     b.add_argument("--cache", default="corpus_cache")
+    b.add_argument("--offline", action="store_true", help="never download; models not in the cache are missing")
     s = sub.add_parser("summary")
     s.add_argument("path")
     args = ap.parse_args(argv)
     if args.cmd == "build":
-        build(args.out, args.first, args.last, args.cache)
+        build(args.out, args.first, args.last, args.cache, offline=args.offline)
     else:
         freq = load(args.path)
         g = Grammar()

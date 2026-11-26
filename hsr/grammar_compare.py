@@ -308,15 +308,20 @@ if __name__ == "__main__":
 CANDIDATES = os.path.join(os.path.dirname(__file__), "data", "candidates.json")
 
 
-def generalise(key):
+def generalise(key, reduce=True):
     """Canonical key with every numeric literal replaced by a free constant,
     except the structural ones: integer and half-integer exponents and signs.
     Neither the grammar nor fnprior models the value of a literal (both code
     it as a constant), so without this step every prior would spread its mass
     over arbitrary numeric variants (2*x1, 0.693*x1, ...) of the same form,
-    which make up about half of the candidate set."""
+    which make up about half of the candidate set.
+
+    With ``reduce`` a generalised key is put in its final form
+    (``hsr.canonical.reduce_key``: a canonical fixed point without redundant
+    constants). A key without literals is returned unchanged: corpus builders
+    apply reduce_key to their keys themselves."""
     from .candidates import skeleton_from_key
-    from .canonical import canonicalise
+    from .canonical import canonicalise, reduce_key
     expr = skeleton_from_key(key).expr
     n = [0]
     used = {int(str(c)[1:]) for c in expr.free_symbols if str(c).startswith("c")}
@@ -354,13 +359,19 @@ def generalise(key):
     new = walk(expr)
     if n[0] == 0:
         return key          # no literal to generalise: skip the (slow) re-canonicalisation
-    sk = canonicalise(str(new), 1, max_consts=None)
-    return key if sk is None else sk.key
+    sk = canonicalise(str(new), 1, max_consts=None, reduce=reduce)
+    if sk is None:
+        return key
+    return reduce_key(sk.key) if reduce else sk.key
 
 
 def generalised_map(corpus=CORPUS, candidates=CANDIDATES, generalise_literals=True) -> dict:
-    """{key: generalised key or None (unparseable)} for every corpus and candidate key."""
+    """{key: generalised key or None (unparseable)} for every corpus and candidate key.
+    With generalise_literals every key is also put in its final form
+    (``hsr.canonical.reduce_key``), so that candidates with redundant
+    constants map to the reduced form the corpora use."""
     from .candidates import skeleton_from_key
+    from .canonical import reduce_key
     with open(corpus) as fh:
         keys = {k for ks in json.load(fh)["per_model"].values() for k in ks}
     with open(candidates) as fh:
@@ -368,7 +379,7 @@ def generalised_map(corpus=CORPUS, candidates=CANDIDATES, generalise_literals=Tr
     out = {}
     for key in sorted(keys):
         try:
-            kk = generalise(key) if generalise_literals else key
+            kk = reduce_key(generalise(key)) if generalise_literals else key
             context_counts(skeleton_from_key(kk).expr)
             out[key] = kk
         except Exception:

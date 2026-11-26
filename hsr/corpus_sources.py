@@ -179,33 +179,42 @@ def tidy(expr):
     return expr
 
 
-def law_keys(formula, variables, timeout=10):
+def law_keys(formula, variables, timeout=10, status=None):
     """Generalised one-variable keys of a rate law (``hsr.corpus.project``, then
-    ``generalise``); an empty set if it cannot be parsed or reduced in time."""
-    from .corpus import _to_sympy, project
+    ``generalise``); an empty set if it cannot be parsed or reduced within
+    ``timeout`` seconds of CPU time (``status["timed_out"]`` is then set if a
+    dict is given). Redundant constants are removed afterwards
+    (``hsr.canonical.reduce_key``), outside the time limit."""
+    from .canonical import reduce_key
+    from .corpus import _Timeout as _CorpusTimeout
+    from .corpus import _to_sympy, cpu_time_limit, project
     from .grammar_compare import generalise
     parsed = _to_sympy(formula)
     if parsed is None:
         return set()
     expr, syms = parsed
-    old = signal.signal(signal.SIGALRM, _alarm)
-    signal.alarm(timeout)
+    out = set()
     try:
-        ks = project(tidy(expr), variables, syms)
-        out = set()
-        for k in ks:
-            try:
-                g = generalise(k)
-            except Exception:
-                g = None
-            if g:
-                out.add(g)
-        return out
-    except _Timeout:
+        with cpu_time_limit(timeout):
+            ks = project(tidy(expr), variables, syms, reduce=False)
+            for k in ks:
+                try:
+                    g = generalise(k, reduce=False)
+                except Exception:
+                    g = None
+                if g:
+                    out.add(g)
+    except (_Timeout, _CorpusTimeout):
+        if status is not None:
+            status["timed_out"] = True
         return set()
-    finally:
-        signal.alarm(0)
-        signal.signal(signal.SIGALRM, old)
+    reduced = set()
+    for g in out:
+        try:
+            reduced.add(reduce_key(g))
+        except Exception:
+            reduced.add(g)
+    return reduced
 
 
 def _expressible(key):
@@ -220,11 +229,14 @@ def _expressible(key):
 
 
 def _law_keys_star(args):
-    return sorted(law_keys(*args))
+    status = {}
+    ks = sorted(law_keys(*args, status=status))
+    return ks, bool(status.get("timed_out"))
 
 
-def reduce_laws(laws, processes=4):
-    """{(formula, variables): set of keys} for distinct laws, in parallel."""
+def reduce_laws(laws, processes=4, stats=None):
+    """{(formula, variables): set of keys} for distinct laws, in parallel. The
+    number of laws that timed out is added to ``stats["laws_timed_out"]``."""
     import multiprocessing as mp
     laws = sorted(set(laws))
     if processes <= 1:
@@ -232,7 +244,9 @@ def reduce_laws(laws, processes=4):
     else:
         with mp.get_context("fork").Pool(processes) as pool:
             res = pool.map(_law_keys_star, laws, chunksize=20)
-    return {law: set(ks) for law, ks in zip(laws, res)}
+    if stats is not None:
+        stats["laws_timed_out"] += sum(t for _, t in res)
+    return {law: set(ks) for law, (ks, _) in zip(laws, res)}
 
 
 def sabiork_build(raw_dir, out, processes=4):
@@ -255,7 +269,7 @@ def sabiork_build(raw_dir, out, processes=4):
             pub = (e.get("publication") or {}).get("publication_id") or (e.get("general") or {}).get("publication_id")
             mid = f"SABIORK_PUB{pub}" if pub is not None else f"SABIORK_ENTRY{e.get('id')}"
             rows.append((mid, (law[0], tuple(law[1]))))
-    law_cache = reduce_laws([ck for _, ck in rows], int(processes))
+    law_cache = reduce_laws([ck for _, ck in rows], int(processes), stats=stats)
     by_pub = {}
     for mid, ck in rows:
         ks = law_cache[ck]
@@ -410,7 +424,7 @@ def cellml_build(eq_json, out, processes=4):
                 if law[1]:
                     rows.append((f"PMR:{ws}", (law[0], tuple(law[1]))))
     stats["equations"] = len(rows)
-    law_cache = reduce_laws([ck for _, ck in rows], int(processes))
+    law_cache = reduce_laws([ck for _, ck in rows], int(processes), stats=stats)
     by_ws = {}
     for mid, ck in rows:
         ks = law_cache[ck]
@@ -734,7 +748,7 @@ def modeldb_build(eq_json, out, processes=4):
             for rhs, var in f["equations"]:
                 rows.append((f"ModelDB:{mid}", (rhs, tuple(var))))
     stats["equations"] = len(rows)
-    law_cache = reduce_laws([ck for _, ck in rows], int(processes))
+    law_cache = reduce_laws([ck for _, ck in rows], int(processes), stats=stats)
     by_model = {}
     for mid, ck in rows:
         ks = law_cache[ck]
@@ -865,7 +879,7 @@ def nlmixr2lib_build(raw_dir, tsv, out, processes=4):
         stats["statements_not_arithmetic"] += failed
         laws += [(f"nlmixr2lib:{f[:-2]}", law) for law in eqs]
     stats["equations"] = len(laws)
-    law_cache = reduce_laws([law for _, law in laws], int(processes))
+    law_cache = reduce_laws([law for _, law in laws], int(processes), stats=stats)
     by_model = {}
     for mid, law in laws:
         stats["equations_reduced"] += bool(law_cache[law])
@@ -949,7 +963,7 @@ def allodb_build(raw_dir, tsv, out, processes=4):
             continue
         stats["verified"] += 1
         laws.append((f"allodb:{r['ref_id']}", (str(expr), ("r_dbh",))))
-    law_cache = reduce_laws([law for _, law in laws], int(processes))
+    law_cache = reduce_laws([law for _, law in laws], int(processes), stats=stats)
     by_model = {}
     for mid, law in laws:
         stats["equations_reduced"] += bool(law_cache[law])
@@ -1143,11 +1157,12 @@ def jws_fetch(raw_dir, limit=None, client=None):
 
 def _model_keys_star(path):
     from .corpus import model_keys
+    timeouts = [0]
     try:
-        keys, n_laws, n_ok = model_keys(path)
-        return sorted(keys), n_laws, n_ok, None
+        keys, n_laws, n_ok = model_keys(path, timeouts=timeouts)
+        return sorted(keys), n_laws, n_ok, None, timeouts[0]
     except Exception as e:
-        return [], 0, 0, repr(e)[:200]
+        return [], 0, 0, repr(e)[:200], timeouts[0]
 
 
 def biomodels_build(raw_dir, out, processes=4, label="non-curated"):
@@ -1185,7 +1200,8 @@ def biomodels_build(raw_dir, out, processes=4, label="non-curated"):
         return gen_cache[k]
 
     by_model = {}
-    for (mid, _), (keys, n_laws, n_ok, err) in zip(todo, res):
+    for (mid, _), (keys, n_laws, n_ok, err, n_to) in zip(todo, res):
+        stats["laws_timed_out"] += n_to
         if err:
             stats["unreadable"] += 1
             continue

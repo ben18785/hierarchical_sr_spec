@@ -207,7 +207,7 @@ def build(raw_dir, packages_tsv, formulas_tsv, out, processes=4):
         seen.add((mid, law))
         laws.append((mid, law))
     stats["distinct_package_formulas"] = len(laws)
-    law_cache = reduce_laws([law for _, law in laws], int(processes))
+    law_cache = reduce_laws([law for _, law in laws], int(processes), stats=stats)
     by_model = {}
     for mid, law in laws:
         if law_cache[law]:
