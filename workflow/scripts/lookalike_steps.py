@@ -194,7 +194,7 @@ def report(out_md, out_json, design_path, trees_path, mech_dir, temporal_dir, va
                       f"{_f(s[f'top_{D}'])} | {_f(s[f'mass_{D}'], 3)} | {_f(s[f'gain_{D}'])} | "
                       f"{_f(s['p_post'], 3)} | {_f(s['map'])} |")
         Lm.append("")
-    D0 = deltas[-1]
+    D0 = deltas[len(deltas) // 2]          # the middle threshold (5 nats by default) for the splits
 
     def split(title, gs, field, nd=2):
         Lm.append(f"## {title}\n")
