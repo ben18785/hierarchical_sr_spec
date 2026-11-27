@@ -1394,15 +1394,15 @@ P1_TABLES = ["corpus", "loso_main", "loso_by_source_equal", "loso_by_source_pool
              "loso_novel_by_source_pooled", "holdout_main", "holdout_full", "holdout_seen_novel_full",
              "holdout_gap", "temporal_main", "temporal_no_modeldb_main", "temporal_sets", "temporal_full_equal",
              "temporal_full_pooled", "temporal_gap", "blend_main", "blend_full", "mechanisms_main",
-             "mechanisms_full", "lookalike_main", "lookalike_full", "lookalike_strata", "properness", "mcmc"]
+             "mechanisms_full", "lookalike_main", "lookalike_full", "lookalike_strata", "lookalike_tempering", "properness", "mcmc"]
 P1_FIGURES = ["source_overlap", "form_sizes", "logp_size", "logp_size_full_equal", "logp_size_full_pooled",
-              "adaptor_acceptance"]
+              "adaptor_acceptance", "lookalike_tempering"]
 
 
 rule paper1_report:
     input:
         data=P1_DATA,
-        reports=expand("results/grammar/{r}.json", r=["holdout", "blend", "mechanisms", "lookalike"]),
+        reports=expand("results/grammar/{r}.json", r=["holdout", "blend", "mechanisms", "lookalike", "lookalike_tempering"]),
         code="workflow/scripts/paper1_report.py",
     output:
         tables=expand("results/paper1/tab_{t}.tex", t=P1_TABLES),

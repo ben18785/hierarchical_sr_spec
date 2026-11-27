@@ -4,7 +4,7 @@ Every table is a LaTeX fragment (a booktabs tabular, to be \\input inside a
 table float) and every figure a PDF, written to OUTDIR with a README.md that
 says where each goes in docs/paper1_outline.tex and gives a short caption.
 Inputs: the paper-1 data extracts (OUTDIR/data/*.json, rule paper1_data), the
-committed reports results/grammar/{holdout,blend,mechanisms,lookalike}.json
+committed reports results/grammar/{holdout,blend,mechanisms,lookalike,lookalike_tempering}.json
 and config paper1 (passed as JSON). Nothing here is typed by hand: every
 number comes from those files.
 
@@ -154,6 +154,7 @@ class Tables:
         self.blend = load(os.path.join(gdir, "blend.json"))
         self.mech = load(os.path.join(gdir, "mechanisms.json"))
         self.look = load(os.path.join(gdir, "lookalike.json"))
+        self.temper = load(os.path.join(gdir, "lookalike_tempering.json"))
         self.w = cfg["main_weighting"]
         self.main = cfg["main_priors"]
         self.src = cfg["sources"]
@@ -406,9 +407,14 @@ class Tables:
                 ["Raw log P per mechanism."])
 
     # -- look-alike
+    def _look(self, which):
+        """(design dict, summary for one weighting, weighting, design key) of the main or supplement design."""
+        L = self.cfg["lookalike"][which]
+        d = self.look["designs"][L["design"]]
+        return d, d["summary"][L["weighting"]], L["weighting"], L["design"]
+
     def lookalike_tables(self):
-        S = self.look["summary"]
-        fam = self.look["family"]
+        dA, S, wA, _ = self._look("main")
         D = float(self.cfg["delta"])
         k = f"{D:.1f}"
         pri = ["flat"] + [p for p in self.main if p in S]
@@ -424,9 +430,12 @@ class Tables:
             body.append(row)
         tabular(self.path("lookalike_main"), "l" + "r" * 8,
                 groups_head(["Seen true forms", "Novel true forms"], ["Rank", "Mass", "$P$(true)", "MAP"], ("Prior",)),
-                body, [f"D = {self.cfg['delta']} nats. Rank and mass within the look-alike set A_D, given the truth is in it;",
-                       "P(true): posterior probability of the truth over all candidates; MAP: fraction where the mode is the truth."])
-        ds = sorted({k.split("_", 1)[1] for k in S["flat"]["all"] if k.startswith("rank_")}, key=float)
+                body, [f"{dA['title']}; {wA} weighting; D = {self.cfg['delta']} nats. Rank and mass within the",
+                       "look-alike set A_D, given the truth is in it; P(true): posterior probability of the truth over",
+                       "all candidates; MAP: fraction of datasets where the posterior mode is the truth."])
+        dB, S, wB, _ = self._look("supplement")
+        fam = dB["family"]
+        ds = sorted({x.split("_", 1)[1] for x in S["flat"]["all"] if x.startswith("rank_")}, key=float)
         allp = ["flat"] + [p for p in tree_priors({p: {"family": fam.get(p)} for p in S}, extra=("uniform symbols",))]
         allp += ["uniform symbols"] + [p for p in S if fam.get(p) == "pcfg"]
         body = [["Truth in $A_D$"] + sum([[f"{intc(S['flat']['all']['n_in_' + d])}", ""] for d in ds], []) + ["", ""],
@@ -438,13 +447,38 @@ class Tables:
         tabular(self.path("lookalike_full"), "l" + "r" * (2 * len(ds) + 2),
                 groups_head([f"$D={float(d):g}$" for d in ds], ["Rank", "Mass"], ("Prior",))[:2]
                 + [" & ".join(["Prior"] + ["Rank", "Mass"] * len(ds) + ["$P$(true)", "MAP"])], body,
-                [f"All {S['flat']['all']['n']} datasets."])
+                [f"{dB['title']}; {wB} weighting; all {S['flat']['all']['n']} datasets."])
         body = [["Datasets"] + [intc(S["flat"][g]["n"]) for g in STRATA + ["seen", "novel"]], "MID"]
         for p in allp:
             body.append([pname(p)] + [num(S[p][g][f"mass_{k}"], 3) for g in STRATA + ["seen", "novel"]])
         tabular(self.path("lookalike_strata"), "l" + "r" * (len(STRATA) + 2),
                 ["Prior & " + " & ".join(STRATUM_LABEL[g] for g in STRATA) + " & Seen & Novel"], body,
-                [f"Renormalised prior mass on the truth within A_D, D = {self.cfg['delta']} nats."])
+                [f"{dB['title']}; {wB} weighting. Renormalised prior mass on the truth within A_D, "
+                 f"D = {self.cfg['delta']} nats."])
+
+    def tempering_table(self):
+        dk = self.cfg["lookalike"]["main"]["design"]
+        w = self.cfg["lookalike"]["main"]["weighting"]
+        T = self.temper["designs"][dk]
+        taus = sorted(T["by_tau"][self.main[-1]][w], key=float)
+        body = []
+        for p in [q for q in self.main if q in T["loto"]]:
+            lo = T["loto"][p][w]
+            bt = T["by_tau"][p][w]
+            rng = (f"{lo['tau_folds_median']:g}" if lo["tau_folds_min"] == lo["tau_folds_max"]
+                   else f"{lo['tau_folds_median']:g} [{lo['tau_folds_min']:g}, {lo['tau_folds_max']:g}]")
+            body.append([pname(p), rng, f"{lo['tau_seen']:g}", f"{lo['tau_novel']:g}", num(lo["cv_log_p"]),
+                         num(lo["cv_log_p_seen"]), num(lo["cv_log_p_novel"]), num(lo["log_p_tau1"]),
+                         num(bt[taus[0]]["all"]["log_p_post"])])
+        tabular(self.path("lookalike_tempering"), "l" + "r" * 8,
+                ["Prior & $\\tau^*$ (LOTO) & $\\tau^*$ seen & $\\tau^*$ novel & \\multicolumn{3}{c}{Held-out log $P$(true)}"
+                 " & $\\tau=1$ & $\\tau=0$",
+                 "\\cmidrule(lr){5-7}",
+                 " & & & & All & Seen & Novel & & "], body,
+                [f"{self.look['designs'][dk]['title']}; {w} weighting. P_tau proportional to P^tau over the candidates.",
+                 "tau* (LOTO): leave-one-true-form-out choice on the grid (median [range] over folds); tau* seen/novel:",
+                 "best tau on seen/novel truths; log P(true): mean over datasets with a successful true-form fit;",
+                 "held-out: at the LOTO-chosen tau; tau = 0 is the flat prior."])
 
     # -- properness and MCMC
     def properness_table(self):
@@ -500,6 +534,7 @@ class Tables:
         self.blend_tables()
         self.mechanism_tables()
         self.lookalike_tables()
+        self.tempering_table()
         self.properness_table()
         self.mcmc_table()
 
@@ -573,7 +608,7 @@ def upset(T, path, top=25):
     ax_set.tick_params(axis="y", left=False, labelleft=False)
     ax_set.spines["left"].set_visible(False)
     ax_set.set_xlabel("Forms per source")
-    fig.savefig(path, bbox_inches="tight")
+    fig.savefig(path, bbox_inches="tight", metadata={"CreationDate": None})
     plt.close(fig)
     return len(sig), top
 
@@ -600,7 +635,7 @@ def form_sizes(T, path):
     ax.axhline(ys[[i for i, n in enumerate(names) if S[n]["role"] == "holdout"][0]] + 0.5, color=GREY, lw=0.6)
     ax.tick_params(axis="y", left=False)
     ax.spines["left"].set_visible(False)
-    fig.savefig(path, bbox_inches="tight")
+    fig.savefig(path, bbox_inches="tight", metadata={"CreationDate": None})
     plt.close(fig)
 
 
@@ -652,7 +687,7 @@ def logp_size(T, path, panels, priors, w):
             ax.grid(True, axis="y", color="#EEEEEE", lw=0.5)
     axes[0, -1].legend(loc="lower left", handlelength=1.2)
     fig.align_ylabels(axes[:, 0])
-    fig.savefig(path, bbox_inches="tight")
+    fig.savefig(path, bbox_inches="tight", metadata={"CreationDate": None})
     plt.close(fig)
 
 
@@ -674,7 +709,40 @@ def acceptance(T, path):
         ax.grid(True, axis="y", color="#EEEEEE", lw=0.5)
     axes[0, 0].set_ylabel("Rejections per $10^5$ proposals")
     axes[0, 0].legend(loc="upper left")
-    fig.savefig(path, bbox_inches="tight")
+    fig.savefig(path, bbox_inches="tight", metadata={"CreationDate": None})
+    plt.close(fig)
+
+
+def tempering(T, path):
+    """P(true) and MAP accuracy against tau, seen and novel true forms; the LOTO-chosen tau is marked."""
+    dk = T.cfg["lookalike"]["main"]["design"]
+    w = T.cfg["lookalike"]["main"]["weighting"]
+    R = T.temper["designs"][dk]
+    taus = sorted(R["by_tau"][T.main[-1]][w], key=float)
+    x = np.array([float(t) for t in taus])
+    pri = [p for p in T.main if p in R["by_tau"]]
+    cols = [BLUE, ORANGE, "#009E73", VERMILLION, "#CC79A7", "#56B4E9", INK]
+    marks = ["o", "s", "D", "^", "v", "P", "X"]
+    fig, axes = plt.subplots(2, 2, figsize=(5.6, 4.0), sharex=True, sharey="row")
+    for i, (f, lab) in enumerate((("p_post", "P(true)"), ("map", "MAP accuracy"))):
+        for j, g in enumerate(("seen", "novel")):
+            ax = axes[i, j]
+            flat = R["by_tau"]["flat"][g][f]
+            ax.axhline(flat, color=GREY, lw=1.0, ls="--", label="flat ($\\tau=0$)")
+            for c, m, p in zip(cols, marks, pri):
+                y = np.array([R["by_tau"][p][w][t][g][f] for t in taus])
+                ax.plot(x, y, color=c, lw=1.4, marker=m, ms=3.5, label=p)
+                ts = R["loto"][p][w]["tau_full"]
+                ax.axvline(ts, color=c, lw=0.6, alpha=0.5, ymax=0.08)
+            if i == 0:
+                ax.set_title(f"{g.capitalize()} true forms")
+            if j == 0:
+                ax.set_ylabel(lab)
+            if i == 1:
+                ax.set_xlabel("Tempering exponent $\\tau$")
+            ax.grid(True, axis="y", color="#EEEEEE", lw=0.5)
+    axes[0, 1].legend(loc="upper left", bbox_to_anchor=(1.02, 1.0))
+    fig.savefig(path, bbox_inches="tight", metadata={"CreationDate": None})
     plt.close(fig)
 
 
@@ -717,8 +785,16 @@ def readme(T, out, n_sig, top):
          "mixture of all tree priors, with their components: LOSO objective, hold-out and temporal scores.")
     item("tab_mechanisms_main.tex", "Mechanism-derived forms", "Mechanism-derived forms: log P per random mechanism, all and "
          "novel, per mechanism class.")
-    item("tab_lookalike_main.tex", "The look-alike test", f"Look-alike test (D = {D} nats): rank and renormalised mass of the "
-         "truth within the look-alike set, posterior probability of the truth and MAP accuracy, seen and novel truths.")
+    A, B = T.cfg["lookalike"]["main"], T.cfg["lookalike"]["supplement"]
+    tA, tB = T.look["designs"][A["design"]]["title"], T.look["designs"][B["design"]]["title"]
+    item("tab_lookalike_main.tex", "The look-alike test", f"Look-alike test, {tA[0].lower() + tA[1:]}, {A['weighting']} "
+         f"weighting, D = {D} nats: rank and renormalised mass of the truth within the look-alike set, posterior "
+         "probability of the truth and MAP accuracy, seen and novel truths.")
+    item("tab_lookalike_tempering.tex", "Sensitivity: prior tempering", "Tempered prior P^tau: tau chosen by "
+         "leave-one-true-form-out, held-out log P(true), and log P(true) at tau = 1 and tau = 0 (flat), "
+         f"same design and weighting as tab_lookalike_main.")
+    item("fig_lookalike_tempering.pdf", "Sensitivity: prior tempering", "P(true) and MAP accuracy against tau for "
+         "seen and novel true forms; dashed line: flat prior; ticks on the x axis: the LOTO-chosen tau.")
     L += ["", "## Supplement", ""]
     item("tab_loso_by_source_equal.tex, tab_loso_by_source_pooled.tex", "per-source tables", "LOSO log P per pair "
          "for every left-out source and tree prior.")
@@ -740,8 +816,10 @@ def readme(T, out, n_sig, top):
          "fig_logp_size for every tree prior, every cutoff and Y = " f"{mc} without ModelDB.")
     item("tab_blend_full.tex", "supplement", "Every blend and component, both weightings, every cutoff.")
     item("tab_mechanisms_full.tex", "supplement", "Mechanism classes: all, seen and novel, every prior.")
-    item("tab_lookalike_full.tex", "supplement", "Look-alike test, all datasets, every prior and threshold D.")
-    item("tab_lookalike_strata.tex", "supplement", f"Renormalised mass on the truth by stratum (D = {D}).")
+    item("tab_lookalike_full.tex", "supplement", f"Look-alike test, {tB[0].lower() + tB[1:]}, "
+         f"{B['weighting']} weighting: all datasets, every prior and threshold D.")
+    item("tab_lookalike_strata.tex", "supplement", f"As tab_lookalike_full: renormalised mass on the truth by "
+         f"stratum (D = {D}).")
     item("tab_properness.tex", "supplement, properness", "Probability mass on finite trees for every fitted prior "
          "(branching-process fixed point at the first and last kept snapshot of every fit); uniform symbols is "
          "improper.")
@@ -780,6 +858,7 @@ def main(out, gdir, cfg, variants):
         panels.append((f"Y={mc}, no ModelDB", Tm[f"{mc}_{ww}_no_modeldb"], None))
         logp_size(T, os.path.join(out, f"fig_logp_size_full_{ww}.pdf"), panels, pri, ww)
     acceptance(T, os.path.join(out, "fig_adaptor_acceptance.pdf"))
+    tempering(T, os.path.join(out, "fig_lookalike_tempering.pdf"))
     readme(T, out, n_sig, top)
 
 

@@ -159,6 +159,11 @@ paper1:
   main_blend: "tree_ad3 + hpy3_depth"
   main_cutoff: 2015
   delta: 5
+  # look-alike designs (keys of results/grammar/lookalike.json "designs"; base = design A,
+  # c7 = design B) and weightings: main text (and tempering) and supplement tables
+  lookalike:
+    main: {design: base, weighting: equal}
+    supplement: {design: c7, weighting: pooled}
   sources:
     biomodels: {label: "BioModels (curated)", licence: "CC0", route: "SBML kinetic laws"}
     biomodels_nc: {label: "BioModels (non-curated)", licence: "CC0", route: "SBML kinetic laws"}

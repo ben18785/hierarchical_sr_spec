@@ -16,7 +16,9 @@ Section names refer to `docs/paper1_outline.tex`.
 - `tab_temporal_no_modeldb_main.tex` (Predicting the future literature (ModelDB to-do)). As tab_temporal_main with ModelDB test pairs removed.
 - `tab_blend_main.tex` (Priors, blended prior (to-do)). Blend of the main adaptor and context priors and the mixture of all tree priors, with their components: LOSO objective, hold-out and temporal scores.
 - `tab_mechanisms_main.tex` (Mechanism-derived forms). Mechanism-derived forms: log P per random mechanism, all and novel, per mechanism class.
-- `tab_lookalike_main.tex` (The look-alike test). Look-alike test (D = 5 nats): rank and renormalised mass of the truth within the look-alike set, posterior probability of the truth and MAP accuracy, seen and novel truths.
+- `tab_lookalike_main.tex` (The look-alike test). Look-alike test, design A: at most 5 constants and 15 nodes, equal weighting, D = 5 nats: rank and renormalised mass of the truth within the look-alike set, posterior probability of the truth and MAP accuracy, seen and novel truths.
+- `tab_lookalike_tempering.tex` (Sensitivity: prior tempering). Tempered prior P^tau: tau chosen by leave-one-true-form-out, held-out log P(true), and log P(true) at tau = 1 and tau = 0 (flat), same design and weighting as tab_lookalike_main.
+- `fig_lookalike_tempering.pdf` (Sensitivity: prior tempering). P(true) and MAP accuracy against tau for seen and novel true forms; dashed line: flat prior; ticks on the x axis: the LOTO-chosen tau.
 
 ## Supplement
 
@@ -31,8 +33,8 @@ Section names refer to `docs/paper1_outline.tex`.
 - `fig_logp_size_full_equal.pdf, fig_logp_size_full_pooled.pdf` (Why novel forms score low, or supplement). As fig_logp_size for every tree prior, every cutoff and Y = 2015 without ModelDB.
 - `tab_blend_full.tex` (supplement). Every blend and component, both weightings, every cutoff.
 - `tab_mechanisms_full.tex` (supplement). Mechanism classes: all, seen and novel, every prior.
-- `tab_lookalike_full.tex` (supplement). Look-alike test, all datasets, every prior and threshold D.
-- `tab_lookalike_strata.tex` (supplement). Renormalised mass on the truth by stratum (D = 5).
+- `tab_lookalike_full.tex` (supplement). Look-alike test, design B: at most 7 constants and 25 nodes, pooled weighting: all datasets, every prior and threshold D.
+- `tab_lookalike_strata.tex` (supplement). As tab_lookalike_full: renormalised mass on the truth by stratum (D = 5).
 - `tab_properness.tex` (supplement, properness). Probability mass on finite trees for every fitted prior (branching-process fixed point at the first and last kept snapshot of every fit); uniform symbols is improper.
 - `tab_mcmc.tex` (supplement, MCMC diagnostics). Fit time, change in P(finite) between snapshots, adaptor acceptance and the range of root hyperparameters across fits.
 - `fig_adaptor_acceptance.pdf` (supplement, MCMC diagnostics). Adaptor Metropolis-Hastings rejection rate per sweep (median and 10-90% range over fits; traces of the log joint and hyperparameters are not saved).
