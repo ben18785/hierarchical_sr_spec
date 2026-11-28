@@ -95,7 +95,7 @@ coded as \texttt{a}. The operation applied last ($\cdot$) is the root:
 \end{center}
 Writing each node before its left subtree and then its right subtree (\emph{prefix order}) gives the
 sequence of seven symbols \texttt{* a / x + a x}. No brackets are needed: reading left to right, each
-operator waits for as many children as its arity, so \texttt{*} takes \texttt{a} and then \texttt{/};
+operator waits for as many children as its arity (i.e. number of inputs), so \texttt{*} takes \texttt{a} and then \texttt{/};
 \texttt{/} takes \texttt{x} and then \texttt{+}; and \texttt{+} takes \texttt{a} and \texttt{x}.
 \end{example}
 
@@ -108,9 +108,11 @@ in this order as $1, 2, \dots, m$, with symbol $s_i$ at node $i$. By the chain r
 \begin{equation}\label{eq:chain}
   P(T) = \prod_{i=1}^{m} P(s_i \mid s_1, \dots, s_{i-1}).
 \end{equation}
-This is exact, but each factor depends on the whole history, which we could never estimate. Every tree
-prior here makes the same kind of simplifying assumption: \emph{the choice at node $i$ depends on the
-history only through a short summary $u_i$, its context.} Then
+This holds for any distribution over trees, so on its own it is not yet a model: to specify one we
+would have to give a separate distribution for the next symbol after every possible partial tree, and
+there are infinitely many of these. Every tree prior here makes the same kind of simplifying
+assumption: \emph{the choice at node $i$ depends on the nodes before it only through a short summary
+$u_i$, its context.} Then
 \begin{equation}\label{eq:product}
   P(T) = \prod_{i=1}^{m} G_{u_i}(s_i),
 \end{equation}
