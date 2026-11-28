@@ -154,7 +154,7 @@ relations of two of its nodes.
       \node[lab=green, below=0mm of n4]  {left sibling};
       \foreach \y/\d in {0/0,-1.1/1,-2.2/2,-3.3/3} \node[font=\scriptsize, gray] at (-2.4,\y) {depth \d};
     }
-    \node[font=\small] at (0.8,-4.3) {(a) node 5, a second child};
+    \node[font=\small] at (0.8,-4.5) {(a) node 5, a second child};
   \end{scope}
   % (b) the context of node 6
   \begin{scope}[xshift=7.5cm]
@@ -167,13 +167,16 @@ relations of two of its nodes.
       \node[lab=blue, right=1mm of n5]   {parent};
       \node[lab=orange, right=1mm of n3] {grandparent};
       \node[lab=violet, right=1mm of n1] {great-grandparent};
+      \node[sym, draw, dashed, rounded corners] at (n7) {x$_7$};
+      \node[font=\small\itshape, gray, right=1mm of n7, align=left] {right sibling\\(not used)};
     }
-    \node[font=\small] at (0.8,-4.3) {(b) node 6, a first child};
+    \node[font=\small] at (0.8,-4.5) {(b) node 6, a first child};
   \end{scope}
 \end{tikzpicture}
 \caption{The Michaelis--Menten tree $a\cdot x/(a+x)$, nodes numbered in prefix order. (a) Node 5
 (\texttt{+}, the denominator's top) is the second child of \texttt{/}$_3$; its left sibling is the
 numerator \texttt{x}$_4$. (b) Node 6 (\texttt{a}) is a first child, so it has no left sibling; its
+right sibling \texttt{x}$_7$ is not part of its context, because it is generated after node 6. Its
 ancestors are \texttt{+}$_5$, \texttt{/}$_3$ and \texttt{*}$_1$.}
 \label{fig:family}
 \end{figure}
@@ -185,9 +188,13 @@ ancestors are \texttt{+}$_5$, \texttt{/}$_3$ and \texttt{*}$_1$.}
   \item The \emph{children} of a node are the nodes directly below it. The children of \texttt{/}$_3$ are
   \texttt{x}$_4$ (its \emph{first}, or left, child) and \texttt{+}$_5$ (its \emph{second}, or right, child).
   Order matters: \texttt{x}$_4$ is the numerator and \texttt{+}$_5$ the denominator.
-  \item Two nodes with the same parent are \emph{siblings}. For a second child, its \emph{left sibling} is
-  the first child of the same parent: the left sibling of \texttt{+}$_5$ is \texttt{x}$_4$. A first child
-  has no left sibling.
+  \item Two nodes with the same parent are \emph{siblings}. Because every operator has at most two
+  children, a node has at most one sibling, and it sits either to its left or to its right. A second
+  (right) child's sibling is its \emph{left sibling}: the left sibling of \texttt{+}$_5$ is
+  \texttt{x}$_4$. A first (left) child's sibling is its \emph{right sibling}: the right sibling of
+  \texttt{x}$_4$ is \texttt{+}$_5$, and that of \texttt{a}$_6$ is \texttt{x}$_7$. Children of a unary
+  operator such as \texttt{exp}, and the root, have no siblings. As explained below, a context can
+  use a left sibling but never a right one.
   \item The \emph{depth} of a node is how many steps it is below the root: \texttt{*}$_1$ has depth 0,
   \texttt{a}$_2$ and \texttt{/}$_3$ depth 1, and \texttt{a}$_6$ and \texttt{x}$_7$ depth 3.
 \end{itemize}
