@@ -199,12 +199,20 @@ In this notation, the components a context can use are
   \item $d$: the depth, capped at 6;
   \item $s$: the corpus source of the training form (used by one variant only).
 \end{itemize}
-First children (and the root) and second children are always kept apart: they have separate
-distributions even when their components agree. Following \texttt{fnprior}, with ``order'' $n$ a
-first child's context is its $n$ nearest ancestors $(a_n,\dots,a_1)$, and a second child's context is its
-$n-1$ nearest ancestors and its left sibling, $(a_{n-1},\dots,a_1,l)$. The left sibling matters
-because the two inputs of an operator are related: in the denominator of \texttt{/}$_3$, a \texttt{+}
-is likely when the numerator is \texttt{x}, since forms like $x/(a+x)$ are common.
+Following \texttt{fnprior}, with ``order'' $n$ a first child's context is its $n$ nearest ancestors
+$(a_n,\dots,a_1)$, and a second child's context is its $n-1$ nearest ancestors and its left sibling,
+$(a_{n-1},\dots,a_1,l)$. Whether a node is a first or a second child is always part of its context, so
+the two never share a distribution, even when the listed symbols happen to agree: the numerator and
+the denominator of a division are predicted separately. The root counts as a first child.
+
+Why does a second child look at its left sibling, but a first child not at its right sibling? Because
+of the order in which the tree is generated (Section~\ref{sec:trees}): the whole first branch is
+chosen before the second child is, so when the first child is chosen its right sibling does not exist
+yet. Each factor in eq.~\eqref{eq:chain} may depend only on nodes that come earlier in prefix order;
+letting a node depend on later ones would mean the product no longer defines a probability
+distribution over trees. The dependence between the two inputs of an operator is still captured, once,
+through the second child: in the denominator of \texttt{/}$_3$, a \texttt{+} is likely when the
+numerator is \texttt{x}, since forms like $x/(a+x)$ are common.
 
 \begin{example}\label{ex:contexts}
 With $n=2$, each first child is described by its (grandparent, parent) and each second child by its
