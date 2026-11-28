@@ -4,6 +4,7 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{tikz}
+\usetikzlibrary{positioning}
 \usepackage{hyperref}
 
 \newtheorem{example}{Example}
@@ -122,39 +123,114 @@ corpus.
 
 \subsection{Contexts}
 
-The context of a node is built from a few named components:
+The context of a node describes where it sits in the tree, using family words. Take the
+Michaelis--Menten tree again, with its nodes numbered in prefix order. Figure~\ref{fig:family} shows the family
+relations of two of its nodes.
+\begin{figure}[ht]
+\centering
+\newcommand{\mmtree}[1]{%
+  \node[sym] (n1) at (0,0)      {*$_1$};
+  \node[sym] (n2) at (-1.3,-1.1) {a$_2$};
+  \node[sym] (n3) at (1.3,-1.1)  {/$_3$};
+  \node[sym] (n4) at (0.4,-2.2)  {x$_4$};
+  \node[sym] (n5) at (2.2,-2.2)  {+$_5$};
+  \node[sym] (n6) at (1.4,-3.3)  {a$_6$};
+  \node[sym] (n7) at (3.0,-3.3)  {x$_7$};
+  \foreach \a/\b in {n1/n2,n1/n3,n3/n4,n3/n5,n5/n6,n5/n7} \draw[gray] (\a) -- (\b);
+  #1}
+\begin{tikzpicture}[sym/.style={font=\ttfamily, inner sep=2pt, minimum size=6mm},
+                    hl/.style={draw, thick, rounded corners, fill=#1!20},
+                    lab/.style={font=\small\itshape, text=#1!70!black}]
+  % (a) the context of node 5
+  \begin{scope}
+    \mmtree{
+      \node[sym, hl=red]    at (n5) {+$_5$};
+      \node[sym, hl=blue]   at (n3) {/$_3$};
+      \node[sym, hl=orange] at (n1) {*$_1$};
+      \node[sym, hl=green]  at (n4) {x$_4$};
+      \node[lab=red, right=1mm of n5]    {this node};
+      \node[lab=blue, right=1mm of n3]   {parent};
+      \node[lab=orange, right=1mm of n1] {grandparent};
+      \node[lab=green, below=0mm of n4]  {left sibling};
+      \foreach \y/\d in {0/0,-1.1/1,-2.2/2,-3.3/3} \node[font=\scriptsize, gray] at (-2.4,\y) {depth \d};
+    }
+    \node[font=\small] at (0.8,-4.3) {(a) node 5, a second child};
+  \end{scope}
+  % (b) the context of node 6
+  \begin{scope}[xshift=7.5cm]
+    \mmtree{
+      \node[sym, hl=red]    at (n6) {a$_6$};
+      \node[sym, hl=blue]   at (n5) {+$_5$};
+      \node[sym, hl=orange] at (n3) {/$_3$};
+      \node[sym, hl=violet] at (n1) {*$_1$};
+      \node[lab=red, below=0mm of n6]    {this node};
+      \node[lab=blue, right=1mm of n5]   {parent};
+      \node[lab=orange, right=1mm of n3] {grandparent};
+      \node[lab=violet, right=1mm of n1] {great-grandparent};
+    }
+    \node[font=\small] at (0.8,-4.3) {(b) node 6, a first child};
+  \end{scope}
+\end{tikzpicture}
+\caption{The Michaelis--Menten tree $a\cdot x/(a+x)$, nodes numbered in prefix order. (a) Node 5
+(\texttt{+}, the denominator's top) is the second child of \texttt{/}$_3$; its left sibling is the
+numerator \texttt{x}$_4$. (b) Node 6 (\texttt{a}) is a first child, so it has no left sibling; its
+ancestors are \texttt{+}$_5$, \texttt{/}$_3$ and \texttt{*}$_1$.}
+\label{fig:family}
+\end{figure}
 \begin{itemize}
-  \item $a_1$ (the parent's symbol), $a_2$ (the grandparent's), $a_3$ (the great-grandparent's); at the
-  root these are all a special ``none'' symbol, so the root has its own context;
-  \item $l$, the left sibling's symbol, for a second child;
-  \item $d$, the node's depth in the tree (the root has depth $0$), capped at 6;
-  \item $s$, the corpus source of the training form (used by one variant only).
+  \item The \emph{parent} of a node is the node directly above it: the parent of \texttt{+}$_5$ is
+  \texttt{/}$_3$. The \emph{grandparent} is the parent's parent (for \texttt{+}$_5$ it is
+  \texttt{*}$_1$), and the \emph{great-grandparent} is one step further up. Together these are the
+  node's \emph{ancestors}. The root (\texttt{*}$_1$) has no ancestors.
+  \item The \emph{children} of a node are the nodes directly below it. The children of \texttt{/}$_3$ are
+  \texttt{x}$_4$ (its \emph{first}, or left, child) and \texttt{+}$_5$ (its \emph{second}, or right, child).
+  Order matters: \texttt{x}$_4$ is the numerator and \texttt{+}$_5$ the denominator.
+  \item Two nodes with the same parent are \emph{siblings}. For a second child, its \emph{left sibling} is
+  the first child of the same parent: the left sibling of \texttt{+}$_5$ is \texttt{x}$_4$. A first child
+  has no left sibling.
+  \item The \emph{depth} of a node is how many steps it is below the root: \texttt{*}$_1$ has depth 0,
+  \texttt{a}$_2$ and \texttt{/}$_3$ depth 1, and \texttt{a}$_6$ and \texttt{x}$_7$ depth 3.
+\end{itemize}
+In this notation, the components a context can use are
+\begin{itemize}
+  \item $a_1$, $a_2$, $a_3$: the symbols of the parent, grandparent and great-grandparent (a special
+  ``none'' symbol where an ancestor does not exist, e.g.\ above the root);
+  \item $l$: the symbol of the left sibling (second children only);
+  \item $d$: the depth, capped at 6;
+  \item $s$: the corpus source of the training form (used by one variant only).
 \end{itemize}
 First children (and the root) and second children are always kept apart: they have separate
 distributions even when their components agree. Following \texttt{fnprior}, with ``order'' $n$ a
-first child's context is its $n$ nearest ancestors $(a_n,\dots,a_1)$ and a second child's context is its
-$n-1$ nearest ancestors and its left sibling, $(a_{n-1},\dots,a_1,l)$. The left sibling matters: in
-$x - x$ or $x \cdot x$ the second argument is more predictable once the first is known.
+first child's context is its $n$ nearest ancestors $(a_n,\dots,a_1)$, and a second child's context is its
+$n-1$ nearest ancestors and its left sibling, $(a_{n-1},\dots,a_1,l)$. The left sibling matters
+because the two inputs of an operator are related: in the denominator of \texttt{/}$_3$, a \texttt{+}
+is likely when the numerator is \texttt{x}, since forms like $x/(a+x)$ are common.
 
 \begin{example}\label{ex:contexts}
-With $n=2$ the seven nodes of the Michaelis--Menten tree have these contexts:
+With $n=2$, each first child is described by its (grandparent, parent) and each second child by its
+(parent, left sibling). For the seven nodes above:
 \begin{center}
 \begin{tabular}{clll}
   \toprule
   node & symbol & kind & context\\
   \midrule
   1 & \texttt{*} & root & (none, none)\\
-  2 & \texttt{a} & first child & (grandparent none, parent \texttt{*})\\
-  3 & \texttt{/} & second child & (parent \texttt{*}, left sibling \texttt{a})\\
-  4 & \texttt{x} & first child & (grandparent \texttt{*}, parent \texttt{/})\\
-  5 & \texttt{+} & second child & (parent \texttt{/}, left sibling \texttt{x})\\
-  6 & \texttt{a} & first child & (grandparent \texttt{/}, parent \texttt{+})\\
-  7 & \texttt{x} & second child & (parent \texttt{+}, left sibling \texttt{a})\\
+  2 & \texttt{a} & first child of \texttt{*}$_1$ & (grandparent none, parent \texttt{*})\\
+  3 & \texttt{/} & second child of \texttt{*}$_1$ & (parent \texttt{*}, left sibling \texttt{a})\\
+  4 & \texttt{x} & first child of \texttt{/}$_3$ & (grandparent \texttt{*}, parent \texttt{/})\\
+  5 & \texttt{+} & second child of \texttt{/}$_3$ & (parent \texttt{/}, left sibling \texttt{x})\\
+  6 & \texttt{a} & first child of \texttt{+}$_5$ & (grandparent \texttt{/}, parent \texttt{+})\\
+  7 & \texttt{x} & second child of \texttt{+}$_5$ & (parent \texttt{+}, left sibling \texttt{a})\\
   \bottomrule
 \end{tabular}
 \end{center}
-so $P(T) = G_{\text{root}}(\texttt{*})\,G_{(\cdot,\texttt{*})}(\texttt{a})\,G_{(\texttt{*},\texttt{a})}(\texttt{/})
+Reading a row: node 5 asks ``given that we are in the second input of a division whose first input is
+\texttt{x}, which symbol comes next?'', and the answer here is \texttt{+}. The probability of the
+whole tree is the product of the seven answers' probabilities,
+$P(T) = G_{\text{root}}(\texttt{*})\,G_{(\text{none},\texttt{*})}(\texttt{a})\,G_{(\texttt{*},\texttt{a})}(\texttt{/})
 \cdots G_{(\texttt{+},\texttt{a})}(\texttt{x})$.
+Note that nodes 2 and 6 are both \texttt{a}, but in different contexts, so their probabilities come
+from different distributions.
 \end{example}
 
 \subsection{When is a tree prior proper?}\label{sec:proper}
