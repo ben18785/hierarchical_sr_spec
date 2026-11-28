@@ -3,6 +3,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{tikz}
 \usepackage{hyperref}
 
 \newtheorem{example}{Example}
@@ -64,7 +65,9 @@ probabilities to the pieces.
 \subsection{The tree coding}
 
 Every form is written as an \emph{expression tree}. The internal nodes are operators and the leaves are
-the variable or a constant. We use the coding of Bartlett, Desmond and Ferreira's \texttt{fnprior}
+the variable or a constant. A symbol's \emph{arity} is the number of inputs it takes, which is
+the number of children it has in the tree: $\exp$ has arity 1, $+$ has arity 2, and the leaves have
+arity 0. We use the coding of Bartlett, Desmond and Ferreira's \texttt{fnprior}
 (the symbol set they call the basis), with 13 symbols:
 \begin{center}
 \begin{tabular}{lll}
@@ -81,13 +84,19 @@ Every constant is coded by the same symbol \texttt{a}: the prior is over forms, 
 values.
 
 \begin{example}\label{ex:mm}
-The Michaelis--Menten form $c_0 x/(c_1+x)$ is the tree
-\[
-  \texttt{*}\big(\texttt{a},\ \texttt{/}(\texttt{x},\ \texttt{+}(\texttt{a},\texttt{x}))\big),
-\]
-which, read from the top down and left to right (\emph{prefix order}), is the sequence of seven symbols
-\texttt{* a / x + a x}. Because each symbol's arity is known, this sequence determines the tree
-uniquely.
+The Michaelis--Menten form $c_0 x/(c_1+x)$ becomes $a \cdot x/(a+x)$ once both constants are
+coded as \texttt{a}. The operation applied last ($\cdot$) is the root:
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\ttfamily}, level distance=8mm,
+                    level 1/.style={sibling distance=18mm}, level/.style={sibling distance=14mm}]
+  \node {*} child {node {a}} child {node {/} child {node {x}} child {node {+} child {node {a}}
+    child {node {x}}}};
+\end{tikzpicture}
+\end{center}
+Writing each node before its left subtree and then its right subtree (\emph{prefix order}) gives the
+sequence of seven symbols \texttt{* a / x + a x}. No brackets are needed: reading left to right, each
+operator waits for as many children as its arity, so \texttt{*} takes \texttt{a} and then \texttt{/};
+\texttt{/} takes \texttt{x} and then \texttt{+}; and \texttt{+} takes \texttt{a} and \texttt{x}.
 \end{example}
 
 \subsection{A tree probability as a product of choices}
